@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section1-2">
+  <title>1.2 Basic Concepts</title>
+  <body>
+    <p>Understanding the basic concepts of DITA to EPUB transformation.</p>
+    <p>Key concepts include topic types, map structures, and metadata handling.</p>
+  </body>
+</topic>

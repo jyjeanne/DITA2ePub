@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="preface">
+  <title>Preface</title>
+  <shortdesc>Welcome to the comprehensive test publication for the Dita2epub plugin. This document exercises all major DITA features to ensure proper EPUB3 transformation.</shortdesc>
+  <body>
+    <p>This test publication has been created to thoroughly validate the Dita2epub plugin's ability to transform DITA content into high-quality EPUB3 publications.</p>
+
+    <section>
+      <title>Purpose of This Document</title>
+      <p>The primary purposes of this comprehensive test are:</p>
+      <ul>
+        <li>Validate all DITA element transformations to EPUB3/HTML5</li>
+        <li>Test navigation generation (TOC, landmarks, etc.)</li>
+        <li>Verify metadata extraction from DITA bookmeta</li>
+        <li>Ensure accessibility features are properly implemented</li>
+        <li>Confirm proper handling of images, tables, and multimedia</li>
+        <li>Test code sample rendering</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Structure of This Document</title>
+      <p>This publication is organized into three main chapters:</p>
+      <dl>
+        <dlentry>
+          <dt>Chapter 1: Basic Elements</dt>
+          <dd>Covers fundamental DITA elements like paragraphs, lists, tables, and images.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Chapter 2: Advanced Features</dt>
+          <dd>Explores complex features including notes, code samples, links, and structural elements.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Chapter 3: Special Content</dt>
+          <dd>Demonstrates specialized topic types and content patterns.</dd>
+        </dlentry>
+      </dl>
+    </section>
+
+    <section>
+      <title>How to Use This Test</title>
+      <ol>
+        <li>Transform this DITA map to EPUB3 using the Dita2epub plugin</li>
+        <li>Validate the resulting EPUB with EPUBCheck</li>
+        <li>Open the EPUB in multiple readers (Calibre, Adobe Digital Editions, iBooks)</li>
+        <li>Verify all elements render correctly</li>
+        <li>Test navigation functionality</li>
+        <li>Check accessibility features with screen readers</li>
+      </ol>
+    </section>
+
+    <note type="important">All content in this test publication is for testing purposes only and does not represent actual documentation.</note>
+  </body>
+</topic>

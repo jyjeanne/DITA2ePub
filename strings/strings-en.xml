@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings xml:lang="en">
+  <!-- Navigation -->
+  <str name="Table of Contents">Table of Contents</str>
+  <str name="List of Figures">List of Figures</str>
+  <str name="List of Tables">List of Tables</str>
+  <str name="List of Illustrations">List of Illustrations</str>
+  <str name="Index">Index</str>
+  <str name="Glossary">Glossary</str>
+
+  <!-- Landmarks -->
+  <str name="Cover">Cover</str>
+  <str name="Title Page">Title Page</str>
+  <str name="Landmarks">Landmarks</str>
+  <str name="Start of Content">Start of Content</str>
+
+  <!-- Accessibility -->
+  <str name="Skip to main content">Skip to main content</str>
+  <str name="Skip to navigation">Skip to navigation</str>
+
+  <!-- Common -->
+  <str name="Chapter">Chapter</str>
+  <str name="Section">Section</str>
+  <str name="Figure">Figure</str>
+  <str name="Table">Table</str>
+  <str name="Example">Example</str>
+  <str name="Note">Note</str>
+  <str name="Warning">Warning</str>
+  <str name="Caution">Caution</str>
+  <str name="Important">Important</str>
+  <str name="Tip">Tip</str>
+
+  <!-- Page elements -->
+  <str name="Previous">Previous</str>
+  <str name="Next">Next</str>
+  <str name="Page">Page</str>
+</strings>

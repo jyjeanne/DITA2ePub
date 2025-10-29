@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:xhtml="http://www.w3.org/1999/xhtml"
+                xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:opf="http://www.idpf.org/2007/opf"
+                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                xmlns:dita="http://dita-ot.sourceforge.net"
+                exclude-result-prefixes="xs xhtml epub opf dc dita"
+                version="3.0">
+
+  <!--
+    Dita2epub - Modern EPUB3 Transformation Plugin for DITA-OT 4.3.5
+
+    Main entry point for DITA to EPUB3 transformation
+
+    Copyright 2025 J. Jeanne
+    Licensed under Apache License 2.0
+  -->
+
+  <!-- Import DITA-OT base HTML5 transformation -->
+  <xsl:import href="plugin:org.dita.html5:xsl/dita2html5.xsl"/>
+
+  <!-- Import plugin-specific modules -->
+  <xsl:include href="epub3-params.xsl"/>
+  <xsl:include href="epub3-common.xsl"/>
+  <xsl:include href="epub3-metadata.xsl"/>
+  <xsl:include href="epub3-content.xsl"/>
+  <xsl:include href="epub3-impl.xsl"/>
+
+  <!-- Output method for XHTML5 -->
+  <xsl:output method="xhtml"
+              encoding="UTF-8"
+              indent="yes"
+              omit-xml-declaration="no"
+              doctype-system="about:legacy-compat"/>
+
+  <!-- Root template -->
+  <xsl:template match="/">
+    <xsl:message>
+      <xsl:text>Dita2epub v1.0.0 - Starting EPUB3 transformation</xsl:text>
+    </xsl:message>
+    <xsl:message>
+      <xsl:text>DITA-OT Version: 4.3.5</xsl:text>
+    </xsl:message>
+    <xsl:message>
+      <xsl:text>EPUB Version: </xsl:text>
+      <xsl:value-of select="$epub.version"/>
+    </xsl:message>
+
+    <!-- Process the DITA map -->
+    <xsl:apply-templates select="." mode="epub3-generate"/>
+  </xsl:template>
+
+  <!-- Main EPUB3 generation mode -->
+  <xsl:template match="/" mode="epub3-generate">
+    <xsl:variable name="map" select="*[contains(@class, ' map/map ')]"/>
+
+    <xsl:message>Generating EPUB3 components...</xsl:message>
+    <xsl:message>Map title: <xsl:value-of select="epub:get-title($map)"/></xsl:message>
+
+    <!-- Generate OPF package document -->
+    <xsl:call-template name="generate-opf">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
+    <!-- Generate EPUB3 navigation document -->
+    <xsl:call-template name="generate-nav">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
+    <!-- Generate cover page if cover image is specified -->
+    <xsl:call-template name="generate-cover-page">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
+    <!-- Generate content files -->
+    <xsl:call-template name="generate-content">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
+    <!-- Generate container.xml -->
+    <xsl:call-template name="generate-container"/>
+
+    <xsl:message>EPUB3 generation complete.</xsl:message>
+  </xsl:template>
+
+</xsl:stylesheet>

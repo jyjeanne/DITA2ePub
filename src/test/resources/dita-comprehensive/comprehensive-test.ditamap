@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bookmap PUBLIC "-//OASIS//DTD DITA BookMap//EN" "bookmap.dtd">
+<bookmap id="comprehensive-test" xml:lang="en">
+  <booktitle>
+    <mainbooktitle>Comprehensive EPUB Test Publication</mainbooktitle>
+    <booktitlealt>Testing All DITA Features with Dita2epub Plugin</booktitlealt>
+  </booktitle>
+
+  <bookmeta>
+    <author>
+      <data name="firstname">Jane</data>
+      <data name="lastname">Smith</data>
+    </author>
+    <author>
+      <data name="firstname">John</data>
+      <data name="lastname">Doe</data>
+    </author>
+    <publisher>Dita2epub Test Suite</publisher>
+    <critdates>
+      <created date="2025-10-29"/>
+      <revised modified="2025-10-29"/>
+    </critdates>
+    <bookrights>
+      <copyrfirst>
+        <year>2025</year>
+      </copyrfirst>
+      <bookowner>
+        <organization>Open Source Community</organization>
+      </bookowner>
+    </bookrights>
+    <bookid>
+      <isbn>978-0-000000-00-0</isbn>
+    </bookid>
+    <keywords>
+      <keyword>DITA</keyword>
+      <keyword>EPUB3</keyword>
+      <keyword>Publishing</keyword>
+      <keyword>Transformation</keyword>
+      <keyword>Testing</keyword>
+      <keyword>Documentation</keyword>
+    </keywords>
+    <category>Technical Documentation</category>
+  </bookmeta>
+
+  <frontmatter>
+    <booklists>
+      <toc/>
+      <figurelist/>
+      <tablelist/>
+    </booklists>
+    <topicref href="topics/preface.dita" navtitle="Preface"/>
+    <topicref href="topics/introduction.dita" navtitle="Introduction"/>
+  </frontmatter>
+
+  <chapter href="topics/chapter1/overview.dita" navtitle="Chapter 1: Basic Elements">
+    <topicref href="topics/chapter1/paragraphs.dita" navtitle="1.1 Paragraphs and Text"/>
+    <topicref href="topics/chapter1/lists.dita" navtitle="1.2 Lists">
+      <topicref href="topics/chapter1/unordered-lists.dita" navtitle="1.2.1 Unordered Lists"/>
+      <topicref href="topics/chapter1/ordered-lists.dita" navtitle="1.2.2 Ordered Lists"/>
+      <topicref href="topics/chapter1/definition-lists.dita" navtitle="1.2.3 Definition Lists"/>
+    </topicref>
+    <topicref href="topics/chapter1/tables.dita" navtitle="1.3 Tables">
+      <topicref href="topics/chapter1/simple-tables.dita" navtitle="1.3.1 Simple Tables"/>
+      <topicref href="topics/chapter1/complex-tables.dita" navtitle="1.3.2 Complex Tables"/>
+    </topicref>
+    <topicref href="topics/chapter1/images.dita" navtitle="1.4 Images and Figures"/>
+  </chapter>
+
+  <chapter href="topics/chapter2/overview.dita" navtitle="Chapter 2: Advanced Features">
+    <topicref href="topics/chapter2/notes.dita" navtitle="2.1 Notes and Admonitions"/>
+    <topicref href="topics/chapter2/code-samples.dita" navtitle="2.2 Code Samples">
+      <topicref href="topics/chapter2/inline-code.dita" navtitle="2.2.1 Inline Code"/>
+      <topicref href="topics/chapter2/code-blocks.dita" navtitle="2.2.2 Code Blocks"/>
+    </topicref>
+    <topicref href="topics/chapter2/links.dita" navtitle="2.3 Links and References">
+      <topicref href="topics/chapter2/internal-links.dita" navtitle="2.3.1 Internal Links"/>
+      <topicref href="topics/chapter2/external-links.dita" navtitle="2.3.2 External Links"/>
+    </topicref>
+    <topicref href="topics/chapter2/sections.dita" navtitle="2.4 Sections and Structure"/>
+  </chapter>
+
+  <chapter href="topics/chapter3/overview.dita" navtitle="Chapter 3: Special Content">
+    <topicref href="topics/chapter3/procedures.dita" navtitle="3.1 Tasks and Procedures"/>
+    <topicref href="topics/chapter3/concepts.dita" navtitle="3.2 Concepts"/>
+    <topicref href="topics/chapter3/references.dita" navtitle="3.3 Reference Materials"/>
+    <topicref href="topics/chapter3/examples.dita" navtitle="3.4 Examples"/>
+  </chapter>
+
+  <appendices>
+    <appendix href="topics/appendix-a.dita" navtitle="Appendix A: Quick Reference"/>
+    <appendix href="topics/appendix-b.dita" navtitle="Appendix B: Resources"/>
+  </appendices>
+
+  <backmatter>
+    <topicref href="topics/glossary.dita" navtitle="Glossary"/>
+    <topicref href="topics/index-placeholder.dita" navtitle="Index"/>
+  </backmatter>
+</bookmap>

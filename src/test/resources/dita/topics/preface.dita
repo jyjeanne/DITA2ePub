@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="preface">
+  <title>Preface</title>
+  <shortdesc>This is a sample EPUB book demonstrating the Dita2epub transformation plugin.</shortdesc>
+  <body>
+    <p>Welcome to this sample EPUB book. This publication demonstrates the capabilities of the Dita2epub plugin for DITA Open Toolkit 4.3.5.</p>
+
+    <section>
+      <title>About This Book</title>
+      <p>This book serves as a test case for the EPUB3 transformation. It includes various DITA elements to demonstrate proper conversion to EPUB3 format.</p>
+    </section>
+
+    <section>
+      <title>Intended Audience</title>
+      <p>This book is intended for:</p>
+      <ul>
+        <li>Technical writers working with DITA</li>
+        <li>Documentation teams adopting EPUB formats</li>
+        <li>Developers testing the Dita2epub plugin</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>How to Use This Book</title>
+      <p>Navigate through the chapters using the table of contents. Each chapter demonstrates different DITA features and their EPUB3 equivalents.</p>
+    </section>
+  </body>
+</topic>

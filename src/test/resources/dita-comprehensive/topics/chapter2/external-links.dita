@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="external-links">
+  <title>2.3.2 External Links</title>
+  <body>
+    <p>External links point to resources outside the publication.</p>
+    <p>Example: <xref href="https://www.dita-ot.org" format="html" scope="external">DITA-OT Website</xref></p>
+  </body>
+</topic>

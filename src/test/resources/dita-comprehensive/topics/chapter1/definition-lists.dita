@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="definition-lists">
+  <title>1.2.3 Definition Lists</title>
+  <body>
+    <p>Definition lists present term-definition pairs.</p>
+    <dl>
+      <dlentry>
+        <dt>DITA</dt>
+        <dd>Darwin Information Typing Architecture</dd>
+      </dlentry>
+      <dlentry>
+        <dt>EPUB</dt>
+        <dd>Electronic Publication</dd>
+      </dlentry>
+    </dl>
+  </body>
+</topic>

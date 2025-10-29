@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ordered-lists">
+  <title>1.2.2 Ordered Lists</title>
+  <body>
+    <p>Ordered lists present items in a specific sequence.</p>
+    <ol>
+      <li>Step one</li>
+      <li>Step two</li>
+      <li>Step three</li>
+    </ol>
+  </body>
+</topic>

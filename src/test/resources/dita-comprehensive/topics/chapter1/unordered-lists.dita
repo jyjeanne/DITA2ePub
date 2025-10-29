@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="unordered-lists">
+  <title>1.2.1 Unordered Lists</title>
+  <body>
+    <p>Unordered lists present items without implying sequence or priority.</p>
+    <section>
+      <title>Basic Unordered List</title>
+      <ul>
+        <li>First item</li>
+        <li>Second item</li>
+        <li>Third item</li>
+      </ul>
+    </section>
+    <section>
+      <title>Nested Unordered Lists</title>
+      <ul>
+        <li>Main item 1
+          <ul>
+            <li>Sub-item 1.1</li>
+            <li>Sub-item 1.2</li>
+          </ul>
+        </li>
+        <li>Main item 2</li>
+      </ul>
+    </section>
+  </body>
+</topic>

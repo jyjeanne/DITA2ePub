@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter1-overview">
+  <title>Chapter 1: Basic Elements</title>
+  <shortdesc>This chapter covers fundamental DITA elements and their transformation to EPUB3/HTML5.</shortdesc>
+  <body>
+    <p>Basic DITA elements form the foundation of structured content. This chapter demonstrates how paragraphs, lists, tables, and images transform into semantic HTML5 in the resulting EPUB.</p>
+    <p>Each section provides examples and best practices for using these elements effectively.</p>
+  </body>
+</topic>

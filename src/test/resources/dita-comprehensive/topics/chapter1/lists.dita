@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="lists">
+  <title>1.2 Lists</title>
+  <shortdesc>DITA supports multiple list types for organizing information hierarchically.</shortdesc>
+  <body>
+    <p>Lists are essential for presenting structured information. This section covers the three main list types in DITA.</p>
+
+    <section>
+      <title>When to Use Lists</title>
+      <p>Choose the appropriate list type based on your content:</p>
+      <ul>
+        <li><b>Unordered lists</b> for items with no specific sequence</li>
+        <li><b>Ordered lists</b> for sequential steps or ranked items</li>
+        <li><b>Definition lists</b> for term-definition pairs</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>List Best Practices</title>
+      <ol>
+        <li>Keep list items parallel in structure</li>
+        <li>Use consistent punctuation across items</li>
+        <li>Limit list depth to maintain readability</li>
+        <li>Introduce lists with a complete sentence</li>
+      </ol>
+    </section>
+  </body>
+</topic>

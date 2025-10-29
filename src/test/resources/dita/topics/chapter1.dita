@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter1">
+  <title>Chapter 1: Introduction</title>
+  <shortdesc>An introduction to DITA and EPUB transformation.</shortdesc>
+  <body>
+    <p>This chapter introduces the fundamental concepts of DITA to EPUB transformation using modern tools and standards.</p>
+
+    <section>
+      <title>What is DITA?</title>
+      <p>DITA (Darwin Information Typing Architecture) is an XML standard for creating and managing content. It provides:</p>
+      <ul>
+        <li>Structured authoring framework</li>
+        <li>Content reuse through conref and keyref</li>
+        <li>Multi-channel publishing</li>
+        <li>Topic-based organization</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>What is EPUB3?</title>
+      <p>EPUB3 is the third major revision of the EPUB standard. Key features include:</p>
+      <ol>
+        <li>HTML5 and CSS3 support</li>
+        <li>Rich media embedding</li>
+        <li>Enhanced accessibility</li>
+        <li>JavaScript interactivity</li>
+        <li>MathML support</li>
+      </ol>
+    </section>
+
+    <note type="tip">Modern EPUB3 readers provide excellent support for accessibility features, making content available to wider audiences.</note>
+
+    <section>
+      <title>Why Transform DITA to EPUB?</title>
+      <p>Converting DITA content to EPUB provides several benefits:</p>
+      <table>
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry>Benefit</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Portability</entry>
+              <entry>EPUB files work on multiple devices and platforms</entry>
+            </row>
+            <row>
+              <entry>Offline Access</entry>
+              <entry>Users can read content without internet connection</entry>
+            </row>
+            <row>
+              <entry>Accessibility</entry>
+              <entry>Built-in support for screen readers and assistive technologies</entry>
+            </row>
+            <row>
+              <entry>Reflow</entry>
+              <entry>Content adapts to different screen sizes</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+  </body>
+</topic>

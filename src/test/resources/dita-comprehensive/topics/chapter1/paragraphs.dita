@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="paragraphs">
+  <title>1.1 Paragraphs and Text</title>
+  <body>
+    <p>Paragraphs are the most basic building block of content. In DITA, they are represented by the <codeph>&lt;p&gt;</codeph> element and transform directly to HTML <codeph>&lt;p&gt;</codeph> elements.</p>
+
+    <section>
+      <title>Basic Paragraphs</title>
+      <p>This is a simple paragraph with no special formatting. It demonstrates basic text flow and wrapping.</p>
+      <p>Multiple paragraphs are separated by whitespace in the rendered output, providing clear visual distinction between thoughts.</p>
+    </section>
+
+    <section>
+      <title>Text Formatting</title>
+      <p>DITA supports various inline formatting options:</p>
+      <p><b>Bold text</b> uses the <codeph>&lt;b&gt;</codeph> element and renders as <codeph>&lt;strong&gt;</codeph> in HTML.</p>
+      <p><i>Italic text</i> uses the <codeph>&lt;i&gt;</codeph> element and renders as <codeph>&lt;em&gt;</codeph> in HTML.</p>
+      <p><u>Underlined text</u> uses the <codeph>&lt;u&gt;</codeph> element for emphasis.</p>
+      <p>You can combine formatting: <b><i>bold and italic</i></b> text.</p>
+    </section>
+
+    <section>
+      <title>Special Characters and Entities</title>
+      <p>DITA handles special characters properly: &lt; &gt; &amp; &quot; &apos;</p>
+      <p>Em dashes — and en dashes – are preserved in transformation.</p>
+      <p>Copyright © and trademark ™ symbols render correctly.</p>
+    </section>
+
+    <section>
+      <title>Line Breaks and Whitespace</title>
+      <p>DITA normalizes whitespace, so multiple spaces    are    reduced to    single    spaces.</p>
+      <p>However, line breaks can be explicitly controlled when needed for specific formatting requirements.</p>
+    </section>
+  </body>
+</topic>

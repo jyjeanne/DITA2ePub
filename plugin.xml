@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="io.github.jyjeanne.dita2epub" version="1.0.1">
+  <feature extension="package.version" value="1.0.1"/>
+
+  <!-- Require DITA-OT 4.3.5 or later -->
+  <require plugin="org.dita.base"/>
+  <require plugin="org.dita.html5"/>
+
+  <!-- Register transtype -->
+  <transtype name="epub3"
+             desc="EPUB3 - Modern EPUB 3.3 publication format"
+             abstract="false">
+    <param name="epub.version"
+           desc="EPUB version (3.3 recommended, 2.0.1 for legacy)"
+           type="enum">
+      <val default="true">3.3</val>
+      <val>3.0</val>
+      <val>2.0.1</val>
+    </param>
+    <param name="epub.cover.image"
+           desc="Path to cover image file"
+           type="file"/>
+    <param name="epub.toc.depth"
+           desc="Maximum depth of table of contents"
+           type="int">5</param>
+    <param name="epub.nav.depth"
+           desc="Maximum depth of navigation document"
+           type="int">5</param>
+    <param name="epub.topics.dir"
+           desc="Directory name for topic content"
+           type="string">content</param>
+    <param name="epub.images.dir"
+           desc="Directory name for images"
+           type="string">images</param>
+    <param name="epub.fonts.dir"
+           desc="Directory name for fonts"
+           type="string">fonts</param>
+    <param name="epub.css.dir"
+           desc="Directory name for CSS files"
+           type="string">styles</param>
+    <param name="epub.accessibility"
+           desc="WCAG accessibility level"
+           type="enum">
+      <val>wcag-a</val>
+      <val default="true">wcag-aa</val>
+      <val>wcag-aaa</val>
+    </param>
+    <param name="epub.aria.landmarks"
+           desc="Generate ARIA landmarks"
+           type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.validate"
+           desc="Run EPUBCheck validation after build"
+           type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.embed.fonts"
+           desc="Comma-separated list of font files or directory path to embed"
+           type="string"/>
+    <param name="epub.obfuscate.fonts"
+           desc="Obfuscate embedded fonts (Adobe algorithm)"
+           type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="epub.generate.cover.page"
+           desc="Generate HTML cover page from cover image"
+           type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.cover.page.style"
+           desc="Cover page styling"
+           type="enum">
+      <val default="true">full-page</val>
+      <val>centered</val>
+      <val>custom</val>
+    </param>
+  </transtype>
+
+  <!-- String resources for internationalization -->
+  <!-- <feature extension="dita.xsl.messages" file="strings/strings.xml"/> -->
+
+  <!-- Integration with DITA-OT pipeline -->
+  <feature extension="depend.preprocess.post"
+           value="epub3.init"/>
+
+  <feature extension="dita.conductor.target.relative"
+           file="build-epub3.xml"/>
+</plugin>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="glossary">
+  <title>Glossary</title>
+  <body>
+    <dl>
+      <dlentry>
+        <dt>DITA</dt>
+        <dd>Darwin Information Typing Architecture - XML standard for technical documentation</dd>
+      </dlentry>
+      <dlentry>
+        <dt>EPUB</dt>
+        <dd>Electronic Publication - open ebook standard</dd>
+      </dlentry>
+      <dlentry>
+        <dt>XSLT</dt>
+        <dd>eXtensible Stylesheet Language Transformations</dd>
+      </dlentry>
+    </dl>
+  </body>
+</topic>

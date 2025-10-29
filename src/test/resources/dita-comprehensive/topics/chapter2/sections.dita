@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="sections">
+  <title>2.4 Sections and Structure</title>
+  <body>
+    <section>
+      <title>Primary Section</title>
+      <p>Sections organize content within topics.</p>
+    </section>
+    <section>
+      <title>Secondary Section</title>
+      <p>Multiple sections provide clear structure.</p>
+    </section>
+  </body>
+</topic>

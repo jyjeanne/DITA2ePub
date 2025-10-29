@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="introduction">
+  <title>Introduction</title>
+  <shortdesc>An introduction to DITA-to-EPUB transformation and the capabilities of modern publishing systems.</shortdesc>
+  <body>
+    <p>The transformation of structured content from DITA to EPUB represents a critical capability in modern technical communication workflows.</p>
+    
+    <section>
+      <title>What is DITA?</title>
+      <p>DITA (Darwin Information Typing Architecture) is an XML-based architecture for authoring, producing, and delivering technical information. Key characteristics include:</p>
+      <ul>
+        <li><b>Topic-based authoring:</b> Content is organized into discrete, reusable topics</li>
+        <li><b>Structured markup:</b> Semantic elements provide meaning and structure</li>
+        <li><b>Content reuse:</b> Topics can be reused across multiple publications</li>
+        <li><b>Conditional processing:</b> Content can be filtered based on attributes</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>What is EPUB3?</title>
+      <p>EPUB3 is the third major revision of the EPUB (Electronic Publication) standard, offering:</p>
+      <ol>
+        <li>HTML5 and CSS3 support for rich content presentation</li>
+        <li>Enhanced accessibility features compliant with WCAG guidelines</li>
+        <li>Support for multimedia and interactive content</li>
+        <li>MathML for mathematical equations</li>
+        <li>JavaScript for enhanced interactivity</li>
+        <li>Improved internationalization support</li>
+      </ol>
+    </section>
+
+    <section>
+      <title>The Transformation Process</title>
+      <p>The Dita2epub plugin transforms DITA content through a multi-stage process:</p>
+      <table>
+        <title>Transformation Stages</title>
+        <tgroup cols="3">
+          <colspec colname="c1"/>
+          <colspec colname="c2"/>
+          <colspec colname="c3"/>
+          <thead>
+            <row>
+              <entry>Stage</entry>
+              <entry>Description</entry>
+              <entry>Output</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Preprocessing</entry>
+              <entry>DITA-OT resolves references and applies filters</entry>
+              <entry>Resolved DITA map</entry>
+            </row>
+            <row>
+              <entry>Content Generation</entry>
+              <entry>XSLT transforms topics to XHTML5</entry>
+              <entry>HTML content files</entry>
+            </row>
+            <row>
+              <entry>Navigation Generation</entry>
+              <entry>Creates TOC and navigation documents</entry>
+              <entry>nav.xhtml, landmarks</entry>
+            </row>
+            <row>
+              <entry>Packaging</entry>
+              <entry>Assembles EPUB container with metadata</entry>
+              <entry>content.opf, container.xml</entry>
+            </row>
+            <row>
+              <entry>Validation</entry>
+              <entry>Verifies EPUB3 compliance</entry>
+              <entry>Validation report</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <note type="tip">For best results, structure your DITA content with clear hierarchies and meaningful metadata.</note>
+  </body>
+</topic>

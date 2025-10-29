@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="dita2epub3">
+
+  <!--
+    Ant build file for EPUB3 transformation
+    Integrates with DITA-OT 4.3.5 build pipeline
+  -->
+
+  <!-- Initialize EPUB3 transformation -->
+  <target name="epub3.init">
+    <echo message="Initializing EPUB3 transformation"/>
+
+    <!-- Set default values for EPUB3 parameters -->
+    <property name="epub.version" value="3.3"/>
+    <property name="epub.topics.dir" value="content"/>
+    <property name="epub.images.dir" value="images"/>
+    <property name="epub.fonts.dir" value="fonts"/>
+    <property name="epub.css.dir" value="styles"/>
+    <property name="epub.toc.depth" value="5"/>
+    <property name="epub.nav.depth" value="5"/>
+    <property name="epub.accessibility" value="wcag-aa"/>
+    <property name="epub.aria.landmarks" value="yes"/>
+    <property name="epub.cover.image" value=""/>
+    <property name="epub.generate.cover.page" value="yes"/>
+    <property name="epub.cover.page.style" value="full-page"/>
+    <property name="epub.embed.fonts" value=""/>
+    <property name="epub.embedded.fonts" value=""/>
+    <property name="epub.obfuscate.fonts" value="no"/>
+    <property name="args.css" value="epub-default.css"/>
+
+    <!-- Create output directories -->
+    <mkdir dir="${output.dir}/${epub.topics.dir}"/>
+    <mkdir dir="${output.dir}/${epub.images.dir}"/>
+    <mkdir dir="${output.dir}/${epub.fonts.dir}"/>
+    <mkdir dir="${output.dir}/${epub.css.dir}"/>
+    <mkdir dir="${output.dir}/META-INF"/>
+
+    <echo message="EPUB3 initialization complete"/>
+  </target>
+
+  <!-- Main EPUB3 transformation target -->
+  <target name="dita2epub3"
+          depends="epub3.init,
+                   build-init,
+                   preprocess,
+                   epub3.transform,
+                   epub3.copy.css,
+                   epub3.copy.images,
+                   epub3.copy.fonts,
+                   epub3.create.mimetype,
+                   epub3.package,
+                   epub3.validate">
+    <echo message="EPUB3 transformation complete"/>
+  </target>
+
+  <!-- Run XSLT transformation -->
+  <target name="epub3.transform">
+    <echo message="Running EPUB3 XSLT transformation"/>
+
+    <xslt basedir="${dita.temp.dir}"
+          destdir="${output.dir}"
+          style="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/src/main/xsl/map2epub3.xsl"
+          filenameparameter="FILENAME"
+          filedirparameter="FILEDIR">
+
+      <!-- Input file -->
+      <include name="**/*.ditamap"/>
+
+      <!-- XSLT Parameters -->
+      <param name="epub.version" expression="${epub.version}"/>
+      <param name="epub.toc.depth" expression="${epub.toc.depth}"/>
+      <param name="epub.nav.depth" expression="${epub.nav.depth}"/>
+      <param name="epub.topics.dir" expression="${epub.topics.dir}"/>
+      <param name="epub.images.dir" expression="${epub.images.dir}"/>
+      <param name="epub.fonts.dir" expression="${epub.fonts.dir}"/>
+      <param name="epub.css.dir" expression="${epub.css.dir}"/>
+      <param name="epub.accessibility" expression="${epub.accessibility}"/>
+      <param name="epub.aria.landmarks" expression="${epub.aria.landmarks}"/>
+      <param name="epub.cover.image" expression="${epub.cover.image}"/>
+      <param name="epub.generate.cover.page" expression="${epub.generate.cover.page}"/>
+      <param name="epub.cover.page.style" expression="${epub.cover.page.style}"/>
+      <param name="epub.embed.fonts" expression="${epub.embed.fonts}"/>
+      <param name="epub.embedded.fonts" expression="${epub.embedded.fonts}"/>
+      <param name="epub.obfuscate.fonts" expression="${epub.obfuscate.fonts}"/>
+      <param name="args.css" expression="${args.css}"/>
+
+      <!-- Use DITA-OT XML catalog for plugin URI resolution -->
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+
+    <echo message="XSLT transformation complete"/>
+  </target>
+
+  <!-- Copy CSS files -->
+  <target name="epub3.copy.css">
+    <echo message="Copying CSS files"/>
+
+    <!-- Copy default CSS from plugin -->
+    <copy file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/src/main/resources/css/epub-default.css"
+          todir="${output.dir}/${epub.css.dir}"
+          failonerror="false"/>
+
+    <!-- Copy custom CSS if specified -->
+    <!-- Removed conditional copy to avoid namespace issues -->
+
+    <echo message="CSS files copied"/>
+  </target>
+
+  <!-- Copy images -->
+  <target name="epub3.copy.images">
+    <echo message="Copying images"/>
+
+    <!-- Get the directory containing the input map -->
+    <dirname property="input.dir" file="${args.input}"/>
+
+    <!-- Copy all images from source directory -->
+    <copy todir="${output.dir}/${epub.images.dir}" failonerror="false" flatten="false">
+      <fileset dir="${input.dir}" erroronmissingdir="false">
+        <include name="**/*.png"/>
+        <include name="**/*.jpg"/>
+        <include name="**/*.jpeg"/>
+        <include name="**/*.gif"/>
+        <include name="**/*.svg"/>
+        <include name="**/*.webp"/>
+      </fileset>
+    </copy>
+
+    <!-- Also check for images in dita.temp.dir (preprocessed) -->
+    <copy todir="${output.dir}/${epub.images.dir}" failonerror="false" flatten="false">
+      <fileset dir="${dita.temp.dir}" erroronmissingdir="false">
+        <include name="**/*.png"/>
+        <include name="**/*.jpg"/>
+        <include name="**/*.jpeg"/>
+        <include name="**/*.gif"/>
+        <include name="**/*.svg"/>
+        <include name="**/*.webp"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy cover image if specified -->
+    <antcall target="epub3.copy.cover"/>
+  </target>
+
+  <!-- Copy cover image (separate target for conditionals) -->
+  <target name="epub3.copy.cover">
+    <condition property="has.cover.image">
+      <and>
+        <isset property="epub.cover.image"/>
+        <length string="${epub.cover.image}" when="greater" length="0"/>
+      </and>
+    </condition>
+
+    <antcall target="epub3.copy.cover.do"/>
+  </target>
+
+  <target name="epub3.copy.cover.do" if="has.cover.image">
+    <basename property="cover.filename" file="${epub.cover.image}"/>
+    <copy tofile="${output.dir}/${epub.images.dir}/${cover.filename}"
+          file="${epub.cover.image}"
+          failonerror="false"/>
+    <echo message="Cover image copied: ${cover.filename}"/>
+  </target>
+
+  <!-- Copy fonts -->
+  <target name="epub3.copy.fonts">
+    <echo message="Checking for fonts to embed..."/>
+
+    <!-- Check if fonts are specified -->
+    <condition property="has.fonts">
+      <and>
+        <or>
+          <isset property="epub.embed.fonts"/>
+          <isset property="epub.embedded.fonts"/>
+        </or>
+        <or>
+          <length string="${epub.embed.fonts}" when="greater" length="0"/>
+          <length string="${epub.embedded.fonts}" when="greater" length="0"/>
+        </or>
+      </and>
+    </condition>
+
+    <antcall target="epub3.copy.fonts.do"/>
+  </target>
+
+  <target name="epub3.copy.fonts.do" if="has.fonts">
+    <echo message="Copying embedded fonts..."/>
+
+    <!-- Support both parameter names for backward compatibility -->
+    <condition property="font.source" value="${epub.embed.fonts}">
+      <and>
+        <isset property="epub.embed.fonts"/>
+        <length string="${epub.embed.fonts}" when="greater" length="0"/>
+      </and>
+    </condition>
+    <condition property="font.source" value="${epub.embedded.fonts}">
+      <and>
+        <not><isset property="font.source"/></not>
+        <isset property="epub.embedded.fonts"/>
+        <length string="${epub.embedded.fonts}" when="greater" length="0"/>
+      </and>
+    </condition>
+
+    <!-- Check if font source is a directory -->
+    <available file="${font.source}" type="dir" property="font.source.isdir"/>
+
+    <!-- Copy fonts from directory -->
+    <copy todir="${output.dir}/${epub.fonts.dir}" failonerror="false" if="font.source.isdir">
+      <fileset dir="${font.source}">
+        <include name="**/*.ttf"/>
+        <include name="**/*.otf"/>
+        <include name="**/*.woff"/>
+        <include name="**/*.woff2"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy individual font files (comma-separated list) -->
+    <antcall target="epub3.copy.fonts.list"/>
+
+    <echo message="Fonts copied to ${epub.fonts.dir}/"/>
+  </target>
+
+  <target name="epub3.copy.fonts.list" unless="font.source.isdir">
+    <!-- Handle comma-separated list of font files -->
+    <!-- Note: This is a simplified version - for production, consider using a custom task -->
+    <echo message="Font list processing not yet implemented - please use directory path"/>
+  </target>
+
+  <!-- Create mimetype file (must be uncompressed) -->
+  <target name="epub3.create.mimetype">
+    <echo message="Creating mimetype file"/>
+
+    <echo file="${output.dir}/mimetype" message="application/epub+zip"/>
+
+    <echo message="mimetype file created"/>
+  </target>
+
+  <!-- Package EPUB -->
+  <target name="epub3.package">
+    <echo message="Packaging EPUB"/>
+
+    <property name="epub.output.filename" value="${dita.map.filename.root}.epub"/>
+
+    <!-- Delete existing EPUB if present -->
+    <delete file="${output.dir}/${epub.output.filename}" quiet="true"/>
+
+    <!-- Create EPUB ZIP file -->
+    <!-- Note: mimetype must be first and uncompressed -->
+    <zip destfile="${output.dir}/${epub.output.filename}" compress="false">
+      <fileset dir="${output.dir}" includes="mimetype"/>
+    </zip>
+
+    <!-- Add remaining files compressed -->
+    <zip destfile="${output.dir}/${epub.output.filename}" update="true" compress="true">
+      <fileset dir="${output.dir}">
+        <include name="META-INF/**"/>
+        <include name="${epub.topics.dir}/**"/>
+        <include name="${epub.images.dir}/**"/>
+        <include name="${epub.css.dir}/**"/>
+        <include name="${epub.fonts.dir}/**"/>
+        <exclude name="mimetype"/>
+        <exclude name="*.epub"/>
+      </fileset>
+    </zip>
+
+    <echo message="EPUB packaged: ${epub.output.filename}"/>
+  </target>
+
+  <!-- Validate EPUB (optional) -->
+  <target name="epub3.validate" depends="epub3.package">
+    <echo message="Checking for EPUBCheck..."/>
+
+    <!-- Check if EPUBCheck jar exists -->
+    <available file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/lib/epubcheck.jar"
+               property="epubcheck.available"/>
+
+    <!-- Check if validation is enabled (defaults to yes) -->
+    <condition property="epub.validate.enabled">
+      <or>
+        <not><isset property="epub.validate"/></not>
+        <equals arg1="${epub.validate}" arg2="yes"/>
+        <equals arg1="${epub.validate}" arg2="true"/>
+      </or>
+    </condition>
+
+    <!-- Check if validation should run -->
+    <condition property="should.validate">
+      <and>
+        <isset property="epubcheck.available"/>
+        <isset property="epub.validate.enabled"/>
+      </and>
+    </condition>
+
+    <antcall target="epub3.validate.run"/>
+    <antcall target="epub3.validate.warn.missing"/>
+  </target>
+
+  <!-- Run validation if conditions are met -->
+  <target name="epub3.validate.run" if="should.validate">
+    <echo message="Validating EPUB with EPUBCheck..."/>
+    <java jar="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/lib/epubcheck.jar"
+          fork="true"
+          failonerror="false">
+      <arg value="${output.dir}/${epub.output.filename}"/>
+    </java>
+    <echo message="EPUB validation complete"/>
+  </target>
+
+  <!-- Warn if EPUBCheck not available -->
+  <target name="epub3.validate.warn.missing" unless="epubcheck.available">
+    <echo message="EPUBCheck not found. Skipping validation."/>
+    <echo message="To enable validation, download EPUBCheck from:"/>
+    <echo message="  https://github.com/w3c/epubcheck/releases"/>
+    <echo message="  and place epubcheck.jar in: lib/"/>
+  </target>
+
+</project>

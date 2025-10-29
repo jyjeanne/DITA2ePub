@@ -1,0 +1,103 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  validate-docs:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check markdown links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          use-verbose-mode: 'yes'
+          config-file: '.github/markdown-link-check-config.json'
+        continue-on-error: true
+
+      - name: Validate documentation structure
+        run: |
+          echo "## Documentation Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check required documentation files
+          required_files=("README.md" "SPECIFICATION.md" "QUICKSTART.md" "RELEASE_NOTES.md" "CONTRIBUTING.md" "LICENSE" "TEST_COVERAGE.md" "TEST_SUMMARY.md")
+
+          echo "### Required Files" >> $GITHUB_STEP_SUMMARY
+          for file in "${required_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ $file (missing)" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Documentation Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total markdown files:** $(find . -name '*.md' -not -path './node_modules/*' -not -path './build/*' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total documentation lines:** $(find . -name '*.md' -not -path './node_modules/*' -not -path './build/*' -exec cat {} \; | wc -l)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check documentation examples
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Code Examples" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Count code examples in documentation
+          bash_examples=$(grep -r '```bash' --include='*.md' . | wc -l)
+          java_examples=$(grep -r '```java' --include='*.md' . | wc -l)
+          xml_examples=$(grep -r '```xml' --include='*.md' . | wc -l)
+          xsl_examples=$(grep -r '```xsl' --include='*.md' . | wc -l)
+
+          echo "- **Bash examples:** $bash_examples" >> $GITHUB_STEP_SUMMARY
+          echo "- **Java examples:** $java_examples" >> $GITHUB_STEP_SUMMARY
+          echo "- **XML examples:** $xml_examples" >> $GITHUB_STEP_SUMMARY
+          echo "- **XSL examples:** $xsl_examples" >> $GITHUB_STEP_SUMMARY
+
+  check-spelling:
+    name: Check Spelling
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check spelling
+        uses: streetsidesoftware/cspell-action@v5
+        with:
+          files: |
+            **/*.md
+            **/*.java
+          config: '.github/cspell.json'
+        continue-on-error: true
+
+  generate-docs-report:
+    name: Generate Documentation Report
+    runs-on: ubuntu-latest
+    needs: [validate-docs, check-spelling]
+    if: always()
+
+    steps:
+      - name: Create documentation summary
+        run: |
+          echo "## 📚 Documentation Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All documentation validation checks have been completed." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Review the detailed logs above for any issues." >> $GITHUB_STEP_SUMMARY

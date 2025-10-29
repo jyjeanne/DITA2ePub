@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="code-blocks">
+  <title>2.2.2 Code Blocks</title>
+  <body>
+    <p>Code blocks display larger code samples.</p>
+    <codeblock>public class Example {
+  public static void main(String[] args) {
+    System.out.println("Hello, DITA!");
+  }
+}</codeblock>
+  </body>
+</topic>

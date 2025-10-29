@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bookmap PUBLIC "-//OASIS//DTD DITA BookMap//EN" "bookmap.dtd">
+<bookmap id="sample-bookmap" xml:lang="en">
+  <booktitle>
+    <mainbooktitle>Sample EPUB Book</mainbooktitle>
+    <booktitlealt>A Test Publication for Dita2epub</booktitlealt>
+  </booktitle>
+
+  <bookmeta>
+    <author>John Doe</author>
+    <publisherinformation>
+      <organization>Sample Publisher</organization>
+    </publisherinformation>
+    <keywords>
+      <keyword>DITA</keyword>
+      <keyword>EPUB3</keyword>
+      <keyword>Publishing</keyword>
+    </keywords>
+    <bookid>
+      <isbn>978-0-123456-78-9</isbn>
+    </bookid>
+    <bookrights>
+      <copyrfirst>
+        <year>2025</year>
+      </copyrfirst>
+      <bookowner>
+        <organization>Sample Publisher</organization>
+      </bookowner>
+    </bookrights>
+  </bookmeta>
+
+  <frontmatter>
+    <topicref href="topics/preface.dita" navtitle="Preface"/>
+  </frontmatter>
+
+  <chapter href="topics/chapter1.dita" navtitle="Chapter 1: Introduction">
+    <topicref href="topics/section1-1.dita" navtitle="1.1 Getting Started"/>
+    <topicref href="topics/section1-2.dita" navtitle="1.2 Basic Concepts"/>
+  </chapter>
+
+  <chapter href="topics/chapter2.dita" navtitle="Chapter 2: Advanced Topics">
+    <topicref href="topics/section2-1.dita" navtitle="2.1 Advanced Features"/>
+    <topicref href="topics/section2-2.dita" navtitle="2.2 Best Practices"/>
+  </chapter>
+
+  <backmatter>
+    <topicref href="topics/appendix.dita" navtitle="Appendix"/>
+    <topicref href="topics/glossary.dita" navtitle="Glossary"/>
+  </backmatter>
+</bookmap>

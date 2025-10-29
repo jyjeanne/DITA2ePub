@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section1-1">
+  <title>1.1 Getting Started</title>
+  <body>
+    <p>This section covers the basics of getting started with DITA and EPUB transformation.</p>
+
+    <section>
+      <title>Prerequisites</title>
+      <p>Before you begin, ensure you have:</p>
+      <ul>
+        <li>DITA Open Toolkit 4.3.5 or later</li>
+        <li>Java 17 or later</li>
+        <li>Basic understanding of XML</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Installation</title>
+      <p>Follow these steps to install the Dita2epub plugin:</p>
+      <ol>
+        <li>Download the plugin</li>
+        <li>Extract to your DITA-OT plugins directory</li>
+        <li>Run <codeph>dita install</codeph></li>
+      </ol>
+    </section>
+
+    <note type="important">Make sure your DITA-OT installation is properly configured before adding plugins.</note>
+  </body>
+</topic>

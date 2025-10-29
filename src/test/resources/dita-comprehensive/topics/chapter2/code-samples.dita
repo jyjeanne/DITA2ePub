@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="code-samples">
+  <title>2.2 Code Samples</title>
+  <body>
+    <p>Code samples demonstrate programming concepts.</p>
+    <codeblock>function hello() {
+  console.log("Hello, World!");
+}</codeblock>
+  </body>
+</topic>

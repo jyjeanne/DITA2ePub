@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="images">
+  <title>1.4 Images and Figures</title>
+  <body>
+    <p>Images enhance content with visual information.</p>
+    <fig>
+      <title>Sample Figure</title>
+      <desc>This is a placeholder for an image</desc>
+    </fig>
+  </body>
+</topic>

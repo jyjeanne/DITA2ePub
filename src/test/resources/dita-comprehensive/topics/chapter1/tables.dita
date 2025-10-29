@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="tables">
+  <title>1.3 Tables</title>
+  <body>
+    <p>Tables organize data into rows and columns.</p>
+    <table>
+      <title>Sample Table</title>
+      <tgroup cols="3">
+        <thead>
+          <row>
+            <entry>Column 1</entry>
+            <entry>Column 2</entry>
+            <entry>Column 3</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Data 1</entry>
+            <entry>Data 2</entry>
+            <entry>Data 3</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+  </body>
+</topic>
