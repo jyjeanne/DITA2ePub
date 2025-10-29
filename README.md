@@ -1,5 +1,7 @@
 # Dita2epub - Modern EPUB3 Transformation Plugin
 
+<div align="center">
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![DITA-OT](https://img.shields.io/badge/DITA--OT-4.3.5-green.svg)](https://www.dita-ot.org/)
 [![EPUB](https://img.shields.io/badge/EPUB-3.3-purple.svg)](https://www.w3.org/publishing/epub3/)
@@ -10,7 +12,32 @@
 [![Nightly Tests](https://github.com/jyjeanne/dita2epub/actions/workflows/nightly-tests.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/nightly-tests.yml)
 [![Documentation](https://github.com/jyjeanne/dita2epub/actions/workflows/docs.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/docs.yml)
 
-A professional-grade DITA-OT plugin for transforming DITA content into standards-compliant EPUB 3.3 publications with built-in accessibility, custom fonts, and cover page generation.
+**Transform your DITA content into professional, accessible EPUB 3.3 publications**
+
+[Quick Start](#-quick-start) • [Documentation](#-documentation-hub) • [Features](#-key-features) • [Examples](#-usage)
+
+</div>
+
+---
+
+## 📖 About
+
+**Dita2epub** is a production-ready DITA-OT plugin that transforms DITA content into standards-compliant EPUB 3.3 publications. Built for technical writers, documentation teams, and publishers who demand professional-quality e-books with modern features and accessibility compliance.
+
+### Why Dita2epub?
+
+- **📚 Standards-Compliant**: Full EPUB 3.3 specification compliance with WCAG 2.1 accessibility
+- **🎨 Professional Output**: Custom cover pages, embedded fonts, and optimized images
+- **⚡ Production-Ready**: 44 comprehensive tests, CI/CD automation, and multi-platform support
+- **🔧 Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
+- **🚀 Modern Stack**: Built on DITA-OT 4.3.5, Java 17+, and latest web standards
+
+### What's New in v1.0.1?
+
+- ✨ **Cover Page Generation** - Automatic HTML cover pages with 3 customizable styles
+- ✨ **Font Embedding** - Embed custom fonts (TTF, OTF, WOFF, WOFF2) with proper manifest generation
+- ✨ **Comprehensive Testing** - 44 tests across 6 test classes with 100% unit test pass rate
+- ✨ **GitHub Actions CI/CD** - Automated testing, releases, and documentation validation
 
 ---
 
@@ -40,19 +67,22 @@ A professional-grade DITA-OT plugin for transforming DITA content into standards
 
 ## 📋 Table of Contents
 
-- [Requirements](#requirements)
-- [Quick Start](#quick-start)
-- [Usage](#usage)
+- [About](#-about) - Why Dita2epub? What's new?
+- [Key Features](#-key-features) - Core capabilities and advanced features
+- [Requirements](#-requirements) - System requirements
+- [Quick Start](#-quick-start) - Installation and first EPUB
+- [Usage](#-usage) - Examples and use cases
   - [Basic Transformation](#basic-transformation)
   - [Cover Page Generation](#cover-page-generation)
   - [Font Embedding](#font-embedding)
   - [Advanced Configuration](#advanced-configuration)
-- [Configuration Parameters](#configuration-parameters)
-- [Project Structure](#project-structure)
-- [Testing](#testing)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
+- [Configuration Parameters](#-configuration-parameters) - Complete reference
+- [Project Structure](#-project-structure) - Codebase organization
+- [Testing](#-testing) - Test suite and coverage
+- [Documentation Hub](#-documentation-hub) - All documentation links
+- [Use Cases](#-use-cases) - Real-world examples
+- [Contributing](#-contributing) - How to contribute
+- [License](#-license) - Apache 2.0
 
 ---
 
@@ -322,21 +352,53 @@ open build/reports/tests/test/index.html
 
 ---
 
-## 📚 Documentation
+## 📚 Documentation Hub
 
-### User Guides
-- **[QUICKSTART.md](QUICKSTART.md)** - 5-minute setup guide
-- **[SPECIFICATION.md](SPECIFICATION.md)** - Complete parameter reference
-- **[EXAMPLES.md](docs/EXAMPLES.md)** - Real-world examples and recipes
+### 🚀 Getting Started
 
-### Technical Documentation
-- **[RELEASE_NOTES.md](RELEASE_NOTES.md)** - Version history and changelog
-- **[TEST_COVERAGE.md](TEST_COVERAGE.md)** - Test suite documentation
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
+| Document | Description | For |
+|----------|-------------|-----|
+| **[QUICKSTART.md](QUICKSTART.md)** | 5-minute setup and first EPUB | New users |
+| **[SPECIFICATION.md](SPECIFICATION.md)** | Complete parameter reference (2000+ lines) | All users |
+| **[PROJECT_STATUS.md](PROJECT_STATUS.md)** | Current status, roadmap, and metrics | Project overview |
 
-### Resources
-- **[Font Embedding Guide](src/main/resources/fonts/README.md)** - Font setup instructions
-- **[EPUBCheck Setup](lib/README.md)** - Validation configuration
+### 📖 User Documentation
+
+| Document | Description | Details |
+|----------|-------------|---------|
+| **[Font Embedding Guide](src/main/resources/fonts/README.md)** | Font setup and configuration | 200+ lines with examples |
+| **[RELEASE_NOTES.md](RELEASE_NOTES.md)** | Version history and changelog | v1.0.1 release details |
+
+### 🧪 Testing & Quality
+
+| Document | Description | Coverage |
+|----------|-------------|----------|
+| **[TEST_COVERAGE.md](TEST_COVERAGE.md)** | Detailed test documentation | 44 tests across 6 classes |
+| **[TEST_SUMMARY.md](TEST_SUMMARY.md)** | Executive test summary | 100% unit test pass rate |
+
+### 🔧 Development & CI/CD
+
+| Document | Description | Content |
+|----------|-------------|---------|
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines | 500+ lines with code examples |
+| **[.github/README.md](.github/README.md)** | CI/CD documentation | Complete GitHub Actions guide |
+| **[.github/ACTIONS_SETUP.md](.github/ACTIONS_SETUP.md)** | CI/CD setup summary | Workflow descriptions |
+
+### 🔗 External Resources
+
+- **[GitHub Repository](https://github.com/jyjeanne/dita2epub)** - Source code and releases
+- **[GitHub Issues](https://github.com/jyjeanne/dita2epub/issues)** - Bug reports and feature requests
+- **[GitHub Discussions](https://github.com/jyjeanne/dita2epub/discussions)** - Community discussions
+- **[GitHub Actions](https://github.com/jyjeanne/dita2epub/actions)** - CI/CD workflow runs
+- **[DITA-OT Documentation](https://www.dita-ot.org/)** - DITA Open Toolkit docs
+- **[EPUB 3.3 Specification](https://www.w3.org/publishing/epub3/)** - W3C EPUB standard
+
+### 📊 Quick Links
+
+- [Installation Guide](#1-installation)
+- [Configuration Parameters](#-configuration-parameters)
+- [Test Reports](#-testing)
+- [Project Structure](#-project-structure)
 
 ---
 
