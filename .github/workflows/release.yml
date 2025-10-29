@@ -42,7 +42,16 @@ jobs:
 
       - name: Install plugin and validate
         run: |
-          cp -r . "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub"
+          # Create plugin directory
+          mkdir -p "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub"
+
+          # Copy only necessary plugin files to DITA-OT
+          cp plugin.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
+          cp plugin-info.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
+          cp build-epub3.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
+          cp -r src "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
+          [ -d strings ] && cp -r strings "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/" || true
+
           cd "$DITA_HOME"
           ./bin/dita install
 
