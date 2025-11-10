@@ -1,7 +1,6 @@
 plugins {
     id("io.github.jyjeanne.dita-ot-gradle") version "2.2.0"
     id("java")
-    id("maven-publish")
 }
 
 group = "io.github.jyjeanne"
@@ -159,43 +158,5 @@ tasks.register("installPlugin") {
 
         println("Plugin installed to: $pluginDir")
         println("Next step: Run 'dita install' in the DITA-OT directory to integrate the plugin")
-    }
-}
-
-// Maven publishing configuration
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "io.github.jyjeanne"
-            artifactId = "dita2epub"
-            version = project.version.toString()
-
-            pom {
-                name.set("Dita2epub")
-                description.set("Modern EPUB3 transformation plugin for DITA-OT 4.3.5")
-                url.set("https://github.com/jyjeanne/dita2epub")
-
-                licenses {
-                    license {
-                        name.set("Apache License 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("jyjeanne")
-                        name.set("J. Jeanne")
-                        email.set("jyjeanne@github.com")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:git://github.com/jyjeanne/dita2epub.git")
-                    developerConnection.set("scm:git:ssh://github.com/jyjeanne/dita2epub.git")
-                    url.set("https://github.com/jyjeanne/dita2epub")
-                }
-            }
-        }
     }
 }
