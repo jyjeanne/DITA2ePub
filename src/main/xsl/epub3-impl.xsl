@@ -72,6 +72,11 @@
                   media-type="application/xhtml+xml"/>
           </xsl:if>
 
+          <!-- Title page -->
+          <item id="titlepage"
+                href="titlepage.xhtml"
+                media-type="application/xhtml+xml"/>
+
           <!-- Content documents -->
           <xsl:for-each select="$all-topicrefs">
             <xsl:variable name="filename" select="epub:get-topic-filename(.)"/>
@@ -106,6 +111,9 @@
           <xsl:if test="epub:is-true($epub.generate.cover.page) and $epub.cover.image != ''">
             <itemref idref="cover" linear="yes"/>
           </xsl:if>
+
+          <!-- Title page -->
+          <itemref idref="titlepage"/>
 
           <!-- Main content -->
           <xsl:for-each select="$all-topicrefs">
@@ -411,6 +419,160 @@
 
       <xsl:message>Cover page generated.</xsl:message>
     </xsl:if>
+  </xsl:template>
+
+  <!-- Generate title page XHTML -->
+  <xsl:template name="generate-title-page">
+    <xsl:param name="map" as="element()"/>
+
+    <xsl:message>Generating title page...</xsl:message>
+
+    <!-- Extract metadata from bookmap -->
+    <xsl:variable name="main-title" select="epub:get-title($map)"/>
+    <xsl:variable name="subtitle" select="($map//*[contains(@class, ' bookmap/booktitlealt ')])[1]"/>
+    <xsl:variable name="edition" select="($map//*[contains(@class, ' bookmap/edition ')])[1]"/>
+    <xsl:variable name="author-first" select="($map//*[contains(@class, ' xnal-d/firstname ')])[1]"/>
+    <xsl:variable name="author-last" select="($map//*[contains(@class, ' xnal-d/lastname ')])[1]"/>
+    <xsl:variable name="author-name">
+      <xsl:choose>
+        <xsl:when test="$author-first and $author-last">
+          <xsl:value-of select="concat(normalize-space($author-first), ' ', normalize-space($author-last))"/>
+        </xsl:when>
+        <xsl:when test="$map//*[contains(@class, ' xnal-d/personname ')]">
+          <xsl:value-of select="normalize-space(($map//*[contains(@class, ' xnal-d/personname ')])[1])"/>
+        </xsl:when>
+        <xsl:otherwise/>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="copyright-first" select="($map//*[contains(@class, ' bookmap/copyrfirst ')]/*[contains(@class, ' bookmap/year ')])[1]"/>
+    <xsl:variable name="copyright-last" select="($map//*[contains(@class, ' bookmap/copyrlast ')]/*[contains(@class, ' bookmap/year ')])[1]"/>
+    <xsl:variable name="translator" select="($map//*[contains(@class, ' topic/data ')][@name='translator'])[1]"/>
+    <xsl:variable name="translator-url" select="($map//*[contains(@class, ' topic/data ')][@name='translator-url'])[1]"/>
+    <xsl:variable name="license" select="($map//*[contains(@class, ' topic/data ')][@name='license'])[1]"/>
+    <xsl:variable name="license-url" select="($map//*[contains(@class, ' topic/data ')][@name='license-url'])[1]"/>
+    <xsl:variable name="lang" select="epub:get-language($map)"/>
+
+    <xsl:result-document href="{concat($epub.topics.dir, '/titlepage.xhtml')}"
+                         method="xhtml"
+                         encoding="UTF-8"
+                         indent="yes">
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{$lang}">
+        <head>
+          <meta charset="UTF-8"/>
+          <title><xsl:value-of select="$main-title"/></title>
+          <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
+          <style type="text/css">
+            .titlepage {
+              text-align: center;
+              padding: 2em;
+            }
+            .titlepage h1 {
+              font-size: 2em;
+              margin-bottom: 0.5em;
+            }
+            .titlepage h2 {
+              font-size: 1.2em;
+              font-weight: normal;
+              margin-bottom: 2em;
+            }
+            .titlepage h3 {
+              font-size: 1.1em;
+              font-weight: normal;
+              margin: 2em 0;
+            }
+            .titlepage p {
+              margin: 1em 0;
+            }
+            .titlepage .copyright,
+            .titlepage .translator,
+            .titlepage .license {
+              font-size: 0.9em;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="titlepage">
+            <h1><xsl:value-of select="if ($subtitle and string-length(normalize-space($subtitle)) > 0) then normalize-space($subtitle) else $main-title"/></h1>
+
+            <xsl:if test="$edition and string-length(normalize-space($edition)) > 0">
+              <h2><xsl:value-of select="normalize-space($edition)"/></h2>
+            </xsl:if>
+
+            <p><br/></p>
+
+            <xsl:if test="string-length($author-name) > 0">
+              <h3>
+                <xsl:choose>
+                  <xsl:when test="starts-with($lang, 'fr')">Par : </xsl:when>
+                  <xsl:when test="starts-with($lang, 'de')">Von: </xsl:when>
+                  <xsl:when test="starts-with($lang, 'es')">Por: </xsl:when>
+                  <xsl:otherwise>By: </xsl:otherwise>
+                </xsl:choose>
+                <xsl:value-of select="$author-name"/>
+              </h3>
+            </xsl:if>
+
+            <p><br/><br/></p>
+
+            <xsl:if test="$copyright-first">
+              <p class="copyright">
+                <xsl:text>Copyright © </xsl:text>
+                <xsl:value-of select="normalize-space($copyright-first)"/>
+                <xsl:if test="$copyright-last and normalize-space($copyright-last) != normalize-space($copyright-first)">
+                  <xsl:text>-</xsl:text>
+                  <xsl:value-of select="normalize-space($copyright-last)"/>
+                </xsl:if>
+                <xsl:if test="string-length($author-name) > 0">
+                  <xsl:text> </xsl:text>
+                  <xsl:value-of select="$author-name"/>
+                </xsl:if>
+              </p>
+            </xsl:if>
+
+            <xsl:if test="$translator and string-length(normalize-space($translator)) > 0">
+              <p class="translator">
+                <xsl:choose>
+                  <xsl:when test="starts-with($lang, 'fr')">Traduction: </xsl:when>
+                  <xsl:when test="starts-with($lang, 'de')">Übersetzung: </xsl:when>
+                  <xsl:when test="starts-with($lang, 'es')">Traducción: </xsl:when>
+                  <xsl:otherwise>Translation: </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                  <xsl:when test="$translator-url and string-length(normalize-space($translator-url)) > 0">
+                    <a href="{normalize-space($translator-url)}"><xsl:value-of select="normalize-space($translator)"/></a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:value-of select="normalize-space($translator)"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </p>
+            </xsl:if>
+
+            <xsl:if test="$license and string-length(normalize-space($license)) > 0">
+              <p class="license">
+                <xsl:choose>
+                  <xsl:when test="starts-with($lang, 'fr')">Sous licence </xsl:when>
+                  <xsl:when test="starts-with($lang, 'de')">Lizenziert unter </xsl:when>
+                  <xsl:when test="starts-with($lang, 'es')">Licenciado bajo </xsl:when>
+                  <xsl:otherwise>Licensed under </xsl:otherwise>
+                </xsl:choose>
+                <xsl:choose>
+                  <xsl:when test="$license-url and string-length(normalize-space($license-url)) > 0">
+                    <a href="{normalize-space($license-url)}"><xsl:value-of select="normalize-space($license)"/></a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:value-of select="normalize-space($license)"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+                <xsl:text>.</xsl:text>
+              </p>
+            </xsl:if>
+          </div>
+        </body>
+      </html>
+    </xsl:result-document>
+
+    <xsl:message>Title page generated.</xsl:message>
   </xsl:template>
 
   <!-- Generate NCX table of contents for backwards compatibility -->

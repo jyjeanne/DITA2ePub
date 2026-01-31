@@ -79,6 +79,11 @@
       <xsl:with-param name="map" select="$map"/>
     </xsl:call-template>
 
+    <!-- Generate title page -->
+    <xsl:call-template name="generate-title-page">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
     <!-- Generate content files -->
     <xsl:call-template name="generate-content">
       <xsl:with-param name="map" select="$map"/>
