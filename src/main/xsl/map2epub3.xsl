@@ -69,6 +69,11 @@
       <xsl:with-param name="map" select="$map"/>
     </xsl:call-template>
 
+    <!-- Generate NCX table of contents for backwards compatibility -->
+    <xsl:call-template name="generate-ncx">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
     <!-- Generate cover page if cover image is specified -->
     <xsl:call-template name="generate-cover-page">
       <xsl:with-param name="map" select="$map"/>

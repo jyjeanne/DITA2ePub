@@ -52,8 +52,16 @@
     <xsl:param name="topicref" as="element()"/>
     <xsl:param name="filename" as="xs:string"/>
 
+    <!-- Load topic to get its language and title -->
+    <xsl:variable name="topic-doc" select="if ($topicref/@href) then document($topicref/@href, $topicref) else ()"/>
+    <xsl:variable name="topic" select="$topic-doc/*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference]"/>
+    <xsl:variable name="topic-lang" select="($topic/@xml:lang, epub:get-language(/*))[1]"/>
+
     <xsl:variable name="topic-title">
       <xsl:choose>
+        <xsl:when test="$topic/*[contains(@class, ' topic/title ') or self::title]">
+          <xsl:value-of select="$topic/*[contains(@class, ' topic/title ') or self::title]"/>
+        </xsl:when>
         <xsl:when test="$topicref/@navtitle">
           <xsl:value-of select="$topicref/@navtitle"/>
         </xsl:when>
@@ -68,7 +76,7 @@
 
     <html xmlns="http://www.w3.org/1999/xhtml"
           xmlns:epub="http://www.idpf.org/2007/ops"
-          xml:lang="{epub:get-language(/*)}">
+          xml:lang="{$topic-lang}">
       <head>
         <meta charset="UTF-8"/>
         <title><xsl:value-of select="epub:clean-text($topic-title)"/></title>
@@ -99,8 +107,13 @@
   <xsl:template name="generate-topic-body">
     <xsl:param name="topicref" as="element()"/>
 
-    <!-- Topic title -->
-    <xsl:variable name="title">
+    <!-- Load the DITA topic file -->
+    <xsl:variable name="topic-href" select="$topicref/@href"/>
+    <xsl:variable name="topic-doc" select="if ($topic-href) then document($topic-href, $topicref) else ()"/>
+    <xsl:variable name="topic" select="$topic-doc/*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference]"/>
+
+    <!-- Fallback title from topicref -->
+    <xsl:variable name="fallback-title">
       <xsl:choose>
         <xsl:when test="$topicref/@navtitle">
           <xsl:value-of select="$topicref/@navtitle"/>
@@ -115,79 +128,138 @@
     </xsl:variable>
 
     <article epub:type="chapter">
-      <h1><xsl:value-of select="$title"/></h1>
-
-      <!-- Placeholder for actual topic content -->
-      <!-- In a full implementation, this would load and transform the actual DITA topic file -->
-      <p>This is a placeholder for topic content from: <xsl:value-of select="$topicref/@href"/></p>
-
-      <!-- TODO: Implement actual DITA topic loading and transformation -->
-      <!-- This would involve:
-           1. Loading the DITA topic file referenced by @href
-           2. Transforming DITA elements to HTML5 elements
-           3. Handling DITA-specific features (conref, keyref, etc.)
-           4. Adding accessibility attributes
-           5. Processing inline elements, images, tables, etc.
-      -->
+      <xsl:choose>
+        <xsl:when test="$topic">
+          <!-- Process actual topic content -->
+          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/title ') or self::title]" mode="topic-content"/>
+          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/shortdesc ') or self::shortdesc]" mode="topic-content"/>
+          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/body ') or self::body or self::conbody or self::taskbody or self::refbody]" mode="topic-content"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <!-- Fallback for missing topics -->
+          <h1><xsl:value-of select="$fallback-title"/></h1>
+          <p class="error">Topic file not found: <xsl:value-of select="$topic-href"/></p>
+        </xsl:otherwise>
+      </xsl:choose>
     </article>
   </xsl:template>
 
+  <!-- Transform DITA topic title to HTML h1 -->
+  <xsl:template match="*[contains(@class, ' topic/title ')] | title" mode="topic-content">
+    <h1>
+      <xsl:if test="parent::*/@id">
+        <xsl:attribute name="id" select="parent::*/@id"/>
+      </xsl:if>
+      <xsl:apply-templates mode="topic-content"/>
+    </h1>
+  </xsl:template>
+
+  <!-- Transform DITA shortdesc to HTML p with class -->
+  <xsl:template match="*[contains(@class, ' topic/shortdesc ')] | shortdesc" mode="topic-content">
+    <p class="shortdesc">
+      <xsl:apply-templates mode="topic-content"/>
+    </p>
+  </xsl:template>
+
+  <!-- Transform DITA topic body - pass through to process children -->
+  <xsl:template match="*[contains(@class, ' topic/body ')] | body | conbody | taskbody | refbody" mode="topic-content">
+    <xsl:apply-templates mode="topic-content"/>
+  </xsl:template>
+
   <!-- Transform DITA paragraph to HTML p -->
-  <xsl:template match="*[contains(@class, ' topic/p ')]" mode="topic-content">
+  <xsl:template match="*[contains(@class, ' topic/p ')] | p" mode="topic-content">
     <p>
-      <xsl:apply-templates select="@* | node()" mode="topic-content"/>
+      <xsl:if test="@id">
+        <xsl:attribute name="id" select="@id"/>
+      </xsl:if>
+      <xsl:apply-templates mode="topic-content"/>
     </p>
   </xsl:template>
 
   <!-- Transform DITA section to HTML section -->
-  <xsl:template match="*[contains(@class, ' topic/section ')]" mode="topic-content">
+  <xsl:template match="*[contains(@class, ' topic/section ')] | section" mode="topic-content">
     <section>
-      <xsl:if test="*[contains(@class, ' topic/title ')]">
-        <h2>
-          <xsl:apply-templates select="*[contains(@class, ' topic/title ')]/node()" mode="topic-content"/>
-        </h2>
+      <xsl:if test="@id">
+        <xsl:attribute name="id" select="@id"/>
       </xsl:if>
-      <xsl:apply-templates select="*[not(contains(@class, ' topic/title '))]" mode="topic-content"/>
+      <xsl:apply-templates mode="topic-content"/>
     </section>
   </xsl:template>
 
+  <!-- Transform section title to h2 -->
+  <xsl:template match="*[contains(@class, ' topic/section ')]/*[contains(@class, ' topic/title ')] | section/title" mode="topic-content" priority="10">
+    <h2>
+      <xsl:apply-templates mode="topic-content"/>
+    </h2>
+  </xsl:template>
+
   <!-- Transform DITA ul to HTML ul -->
-  <xsl:template match="*[contains(@class, ' topic/ul ')]" mode="topic-content">
+  <xsl:template match="*[contains(@class, ' topic/ul ')] | ul" mode="topic-content">
     <ul>
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </ul>
   </xsl:template>
 
   <!-- Transform DITA ol to HTML ol -->
-  <xsl:template match="*[contains(@class, ' topic/ol ')]" mode="topic-content">
+  <xsl:template match="*[contains(@class, ' topic/ol ')] | ol" mode="topic-content">
     <ol>
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </ol>
   </xsl:template>
 
   <!-- Transform DITA li to HTML li -->
-  <xsl:template match="*[contains(@class, ' topic/li ')]" mode="topic-content">
+  <xsl:template match="*[contains(@class, ' topic/li ')] | li" mode="topic-content">
     <li>
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </li>
   </xsl:template>
 
   <!-- Transform DITA note to HTML aside with class -->
-  <xsl:template match="*[contains(@class, ' topic/note ')]" mode="topic-content">
-    <aside class="note {if (@type) then @type else 'note'}" role="note">
+  <xsl:template match="*[contains(@class, ' topic/note ')] | note" mode="topic-content">
+    <aside class="note note-{(@type, 'note')[1]}" role="note">
       <xsl:if test="@type">
-        <strong><xsl:value-of select="upper-case(substring(@type, 1, 1))"/><xsl:value-of select="substring(@type, 2)"/>: </strong>
+        <strong class="note-label">
+          <xsl:choose>
+            <xsl:when test="@type = 'tip'">Astuce : </xsl:when>
+            <xsl:when test="@type = 'important'">Important : </xsl:when>
+            <xsl:when test="@type = 'warning'">Attention : </xsl:when>
+            <xsl:when test="@type = 'caution'">Attention : </xsl:when>
+            <xsl:when test="@type = 'danger'">Danger : </xsl:when>
+            <xsl:when test="@type = 'notice'">Remarque : </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="concat(upper-case(substring(@type, 1, 1)), substring(@type, 2), ' : ')"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </strong>
       </xsl:if>
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </aside>
   </xsl:template>
 
   <!-- Transform DITA xref to HTML a -->
-  <xsl:template match="*[contains(@class, ' topic/xref ')]" mode="topic-content">
-    <a href="{@href}">
+  <xsl:template match="*[contains(@class, ' topic/xref ')] | xref" mode="topic-content">
+    <a>
+      <xsl:attribute name="href">
+        <xsl:choose>
+          <xsl:when test="@scope = 'external'">
+            <xsl:value-of select="@href"/>
+          </xsl:when>
+          <xsl:when test="@format = 'dita' or ends-with(@href, '.dita')">
+            <!-- Convert .dita to .xhtml -->
+            <xsl:value-of select="replace(@href, '\.dita$', '.xhtml')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@href"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
+      <xsl:if test="@scope = 'external'">
+        <xsl:attribute name="target">_blank</xsl:attribute>
+        <xsl:attribute name="rel">noopener noreferrer</xsl:attribute>
+      </xsl:if>
       <xsl:choose>
         <xsl:when test="node()">
-          <xsl:apply-templates select="node()" mode="topic-content"/>
+          <xsl:apply-templates mode="topic-content"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="@href"/>

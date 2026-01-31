@@ -186,6 +186,92 @@ class EpubGenerationIntegrationTest {
     }
 
     @Test
+    @EnabledIf("isDitaOtAvailable")
+    void testGenerateEpubFromCalibreGuide(@TempDir Path tempDir) throws IOException, InterruptedException {
+        // Locate Calibre Guide test resources (French content)
+        Path testResourcesPath = Paths.get("src/test/resources/dita-calibre");
+        File ditamapFile = testResourcesPath.resolve("calibre-guide.ditamap").toFile();
+
+        if (!ditamapFile.exists()) {
+            System.out.println("Calibre Guide ditamap not found, skipping test");
+            return;
+        }
+
+        assertTrue(ditamapFile.exists(), "Calibre Guide bookmap should exist");
+
+        // Set output directory
+        File outputDir = tempDir.resolve("epub-calibre").toFile();
+        outputDir.mkdirs();
+
+        // Build DITA command with French language settings
+        List<String> command = new ArrayList<>();
+        command.add("dita");
+        command.add("--input=" + ditamapFile.getAbsolutePath());
+        command.add("--format=epub3");
+        command.add("--output=" + outputDir.getAbsolutePath());
+        command.add("-Depub.version=3.3");
+        command.add("-Depub.toc.depth=3");
+        command.add("-Depub.nav.depth=3");
+        command.add("-Depub.accessibility=wcag-aa");
+
+        System.out.println("Running DITA-OT command for Calibre Guide: " + String.join(" ", command));
+
+        // Execute DITA-OT transformation
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+
+        // Capture output
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+                System.out.println(line);
+            }
+        }
+
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            System.err.println("DITA-OT output:\n" + output.toString());
+            fail("DITA-OT transformation failed with exit code: " + exitCode);
+        }
+
+        // Verify EPUB was created
+        File[] epubFiles = outputDir.listFiles((dir, name) -> name.endsWith(".epub"));
+        assertNotNull(epubFiles, "Output directory should contain files");
+        assertTrue(epubFiles.length > 0, "At least one EPUB file should be generated");
+
+        File epubFile = epubFiles[0];
+        System.out.println("Generated Calibre Guide EPUB: " + epubFile.getAbsolutePath());
+        assertTrue(epubFile.exists(), "EPUB file should exist");
+        assertTrue(epubFile.length() > 0, "EPUB file should not be empty");
+
+        // Calibre Guide should be reasonably sized (14 chapters + cover)
+        assertTrue(epubFile.length() > 5000,
+            "Calibre Guide EPUB should be at least 5KB (has 14+ topics)");
+
+        // Validate the generated EPUB
+        EpubValidator validator = new EpubValidator();
+        EpubValidator.ValidationResult result = validator.validate(epubFile);
+
+        System.out.println("Calibre Guide validation result: " + result);
+        System.out.println("Errors: " + result.getErrorCount());
+        System.out.println("Warnings: " + result.getWarningCount());
+
+        if (!result.isValid()) {
+            System.err.println("EPUB validation errors:");
+            result.getErrors().forEach(error -> System.err.println("  - " + error));
+        }
+
+        // Allow some warnings for French content (encoding, etc.)
+        assertTrue(result.isValid() || result.getErrorCount() == 0,
+            "Generated EPUB should be valid or have only warnings");
+    }
+
+    @Test
     void testDitaOtAvailabilityMessage() {
         if (!isDitaOtAvailable()) {
             System.out.println("=".repeat(70));

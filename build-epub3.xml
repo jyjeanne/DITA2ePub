@@ -10,6 +10,15 @@
   <target name="epub3.init">
     <echo message="Initializing EPUB3 transformation"/>
 
+    <!-- Validate plugin directory exists -->
+    <fail message="Plugin directory not found: ${dita.plugin.io.github.jyjeanne.dita2epub.dir}">
+      <condition>
+        <not>
+          <available file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}" type="dir"/>
+        </not>
+      </condition>
+    </fail>
+
     <!-- Set default values for EPUB3 parameters -->
     <property name="epub.version" value="3.3"/>
     <property name="epub.topics.dir" value="content"/>
@@ -234,33 +243,52 @@
     <echo message="mimetype file created"/>
   </target>
 
-  <!-- Package EPUB -->
+  <!-- Package EPUB using custom Java task for EPUB-compliant ZIP creation -->
   <target name="epub3.package">
     <echo message="Packaging EPUB"/>
+
+    <!-- Validate epub-packager.jar exists -->
+    <fail message="epub-packager.jar not found at: ${dita.plugin.io.github.jyjeanne.dita2epub.dir}/lib/epub-packager.jar">
+      <condition>
+        <not>
+          <available file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/lib/epub-packager.jar"/>
+        </not>
+      </condition>
+    </fail>
 
     <property name="epub.output.filename" value="${dita.map.filename.root}.epub"/>
 
     <!-- Delete existing EPUB if present -->
     <delete file="${output.dir}/${epub.output.filename}" quiet="true"/>
 
-    <!-- Create EPUB ZIP file -->
-    <!-- Note: mimetype must be first and uncompressed -->
-    <zip destfile="${output.dir}/${epub.output.filename}" compress="false">
-      <fileset dir="${output.dir}" includes="mimetype"/>
-    </zip>
+    <!-- Validate mimetype file was created -->
+    <fail message="mimetype file not found in output directory: ${output.dir}/mimetype">
+      <condition>
+        <not>
+          <available file="${output.dir}/mimetype"/>
+        </not>
+      </condition>
+    </fail>
 
-    <!-- Add remaining files compressed -->
-    <zip destfile="${output.dir}/${epub.output.filename}" update="true" compress="true">
-      <fileset dir="${output.dir}">
-        <include name="META-INF/**"/>
-        <include name="${epub.topics.dir}/**"/>
-        <include name="${epub.images.dir}/**"/>
-        <include name="${epub.css.dir}/**"/>
-        <include name="${epub.fonts.dir}/**"/>
-        <exclude name="mimetype"/>
-        <exclude name="*.epub"/>
-      </fileset>
-    </zip>
+    <!--
+      EPUB requires:
+      1. mimetype must be FIRST file in archive
+      2. mimetype must be STORED (uncompressed)
+      3. mimetype must have no extra field in ZIP header
+
+      Using Java class embedded in Ant to create compliant EPUB package
+    -->
+    <java classname="io.github.jyjeanne.dita2epub.EpubPackager"
+          classpath="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/lib/epub-packager.jar"
+          fork="true"
+          failonerror="true">
+      <arg value="${output.dir}"/>
+      <arg value="${epub.output.filename}"/>
+      <arg value="${epub.topics.dir}"/>
+      <arg value="${epub.images.dir}"/>
+      <arg value="${epub.css.dir}"/>
+      <arg value="${epub.fonts.dir}"/>
+    </java>
 
     <echo message="EPUB packaged: ${epub.output.filename}"/>
   </target>

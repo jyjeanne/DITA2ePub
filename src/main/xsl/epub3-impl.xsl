@@ -40,22 +40,27 @@
 
         <!-- Manifest -->
         <manifest>
+          <!-- NCX for backwards compatibility (at root level) -->
+          <item id="ncx"
+                href="../toc.ncx"
+                media-type="application/x-dtbncx+xml"/>
+
           <!-- Navigation document -->
           <item id="nav"
                 href="nav.xhtml"
                 media-type="application/xhtml+xml"
                 properties="nav"/>
 
-          <!-- CSS -->
+          <!-- CSS - use relative path from content/ directory -->
           <item id="css-main"
-                href="{concat($epub.css.dir, '/', $args.css)}"
+                href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"
                 media-type="text/css"/>
 
-          <!-- Cover image (if specified) -->
+          <!-- Cover image (if specified) - use relative path from content/ directory -->
           <xsl:if test="$epub.cover.image != ''">
             <xsl:variable name="cover-filename" select="tokenize(replace($epub.cover.image, '\\', '/'), '/')[last()]"/>
             <item id="cover-image"
-                  href="{concat($epub.images.dir, '/', $cover-filename)}"
+                  href="{epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', $cover-filename))}"
                   media-type="{epub:get-media-type($cover-filename)}"
                   properties="cover-image"/>
           </xsl:if>
@@ -77,12 +82,12 @@
                   media-type="application/xhtml+xml"/>
           </xsl:for-each>
 
-          <!-- Add images referenced in topics -->
+          <!-- Add images referenced in topics - use relative path from content/ directory -->
           <xsl:variable name="all-images" select="$map//*[contains(@class, ' topic/image ')]/@href"/>
           <xsl:for-each select="distinct-values($all-images)">
             <xsl:variable name="image-filename" select="tokenize(., '/')[last()]"/>
             <xsl:variable name="image-id" select="concat('image-', replace($image-filename, '[\.\s]', '-'))"/>
-            <xsl:variable name="image-path" select="concat($epub.images.dir, '/', $image-filename)"/>
+            <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', $image-filename))"/>
 
             <item id="{$image-id}"
                   href="{$image-path}"
@@ -96,7 +101,7 @@
         </manifest>
 
         <!-- Spine -->
-        <spine>
+        <spine toc="ncx">
           <!-- Cover page first if generated -->
           <xsl:if test="epub:is-true($epub.generate.cover.page) and $epub.cover.image != ''">
             <itemref idref="cover" linear="yes"/>
@@ -142,12 +147,24 @@
             <xsl:text>Navigation - </xsl:text>
             <xsl:value-of select="epub:get-title($map)"/>
           </title>
-          <link rel="stylesheet" type="text/css" href="{concat($epub.css.dir, '/', $args.css)}"/>
+          <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
         </head>
         <body>
           <!-- Table of Contents -->
           <nav epub:type="toc" id="toc" role="doc-toc">
-            <h1>Table of Contents</h1>
+            <h1>
+              <xsl:choose>
+                <xsl:when test="starts-with(epub:get-language($map), 'fr')">Table des matières</xsl:when>
+                <xsl:when test="starts-with(epub:get-language($map), 'de')">Inhaltsverzeichnis</xsl:when>
+                <xsl:when test="starts-with(epub:get-language($map), 'es')">Tabla de contenidos</xsl:when>
+                <xsl:when test="starts-with(epub:get-language($map), 'it')">Indice</xsl:when>
+                <xsl:when test="starts-with(epub:get-language($map), 'pt')">Índice</xsl:when>
+                <xsl:when test="starts-with(epub:get-language($map), 'nl')">Inhoudsopgave</xsl:when>
+                <xsl:when test="starts-with(epub:get-language($map), 'ja')">目次</xsl:when>
+                <xsl:when test="starts-with(epub:get-language($map), 'zh')">目录</xsl:when>
+                <xsl:otherwise>Table of Contents</xsl:otherwise>
+              </xsl:choose>
+            </h1>
             <xsl:call-template name="generate-toc-list">
               <xsl:with-param name="topicrefs" select="$map/*[contains(@class, ' map/topicref ')]"/>
               <xsl:with-param name="depth" select="1"/>
@@ -156,15 +173,38 @@
 
           <!-- Landmarks navigation -->
           <xsl:if test="epub:is-true($epub.aria.landmarks)">
+            <xsl:variable name="lang" select="epub:get-language($map)"/>
+            <xsl:variable name="first-content-topic" select="($map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')])[1]"/>
             <nav epub:type="landmarks" id="landmarks" hidden="">
-              <h1>Landmarks</h1>
+              <h1>
+                <xsl:choose>
+                  <xsl:when test="starts-with($lang, 'fr')">Repères</xsl:when>
+                  <xsl:when test="starts-with($lang, 'de')">Orientierungspunkte</xsl:when>
+                  <xsl:when test="starts-with($lang, 'es')">Puntos de referencia</xsl:when>
+                  <xsl:otherwise>Landmarks</xsl:otherwise>
+                </xsl:choose>
+              </h1>
               <ol>
                 <li>
-                  <a epub:type="toc" href="#toc">Table of Contents</a>
+                  <a epub:type="toc" href="#toc">
+                    <xsl:choose>
+                      <xsl:when test="starts-with($lang, 'fr')">Table des matières</xsl:when>
+                      <xsl:when test="starts-with($lang, 'de')">Inhaltsverzeichnis</xsl:when>
+                      <xsl:when test="starts-with($lang, 'es')">Tabla de contenidos</xsl:when>
+                      <xsl:otherwise>Table of Contents</xsl:otherwise>
+                    </xsl:choose>
+                  </a>
                 </li>
-                <xsl:if test="$map/*[contains(@class, ' map/topicref ')][1]">
+                <xsl:if test="$first-content-topic">
                   <li>
-                    <a epub:type="bodymatter" href="{epub:get-topic-filename($map/*[contains(@class, ' map/topicref ')][1])}">Start of Content</a>
+                    <a epub:type="bodymatter" href="{epub:get-topic-filename($first-content-topic)}">
+                      <xsl:choose>
+                        <xsl:when test="starts-with($lang, 'fr')">Début du contenu</xsl:when>
+                        <xsl:when test="starts-with($lang, 'de')">Inhalt beginnt</xsl:when>
+                        <xsl:when test="starts-with($lang, 'es')">Inicio del contenido</xsl:when>
+                        <xsl:otherwise>Start of Content</xsl:otherwise>
+                      </xsl:choose>
+                    </a>
                   </li>
                 </xsl:if>
               </ol>
@@ -182,9 +222,20 @@
     <xsl:param name="topicrefs" as="element()*"/>
     <xsl:param name="depth" as="xs:integer"/>
 
-    <xsl:if test="$topicrefs and $depth &lt;= $epub.toc.depth">
+    <!-- Filter out booklists/frontmatter elements that don't have content -->
+    <xsl:variable name="valid-topicrefs" select="$topicrefs[
+      not(@processing-role = 'resource-only') and
+      not(contains(@class, ' bookmap/booklists ')) and
+      not(contains(@class, ' bookmap/toc ')) and
+      not(contains(@class, ' bookmap/figurelist ')) and
+      not(contains(@class, ' bookmap/tablelist ')) and
+      not(contains(@class, ' bookmap/indexlist ')) and
+      (@href or *[contains(@class, ' map/topicref ')][@href])
+    ]"/>
+
+    <xsl:if test="$valid-topicrefs and $depth &lt;= $epub.toc.depth">
       <ol>
-        <xsl:for-each select="$topicrefs[not(@processing-role = 'resource-only')]">
+        <xsl:for-each select="$valid-topicrefs">
           <li>
             <xsl:choose>
               <xsl:when test="@href">
@@ -256,7 +307,8 @@
     <xsl:result-document href="META-INF/container.xml"
                          method="xml"
                          encoding="UTF-8"
-                         indent="yes">
+                         indent="yes"
+                         standalone="omit">
       <container xmlns="urn:oasis:names:tc:opendocument:xmlns:container" version="1.0">
         <rootfiles>
           <rootfile full-path="{concat($epub.topics.dir, '/content.opf')}"
@@ -315,7 +367,7 @@
           <head>
             <meta charset="UTF-8"/>
             <title>Cover</title>
-            <link rel="stylesheet" type="text/css" href="{concat($epub.css.dir, '/', $args.css)}"/>
+            <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
             <style type="text/css">
               <xsl:choose>
                 <xsl:when test="$epub.cover.page.style = 'full-page'">
@@ -349,7 +401,7 @@
           </head>
           <body>
             <div class="cover">
-              <img src="{concat($epub.images.dir, '/', $cover-filename)}"
+              <img src="{epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', $cover-filename))}"
                    alt="Cover: {epub:get-title($map)}"
                    class="cover-image"/>
             </div>
@@ -358,6 +410,100 @@
       </xsl:result-document>
 
       <xsl:message>Cover page generated.</xsl:message>
+    </xsl:if>
+  </xsl:template>
+
+  <!-- Generate NCX table of contents for backwards compatibility -->
+  <xsl:template name="generate-ncx">
+    <xsl:param name="map" as="element()"/>
+
+    <xsl:message>Generating NCX table of contents...</xsl:message>
+
+    <!-- NCX must be at root level for compatibility with older readers like Calibre -->
+    <xsl:result-document href="toc.ncx"
+                         method="xml"
+                         encoding="UTF-8"
+                         indent="yes"
+                         omit-xml-declaration="no"
+                         doctype-public="-//NISO//DTD ncx 2005-1//EN"
+                         doctype-system="http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+      <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="{epub:get-language($map)}">
+        <head>
+          <meta name="dtb:uid" content="{epub:get-identifier($map)}"/>
+          <meta name="dtb:depth" content="{$epub.toc.depth}"/>
+          <meta name="dtb:generator" content="DITA2EPUB"/>
+          <meta name="dtb:totalPageCount" content="0"/>
+          <meta name="dtb:maxPageNumber" content="0"/>
+        </head>
+        <docTitle>
+          <text><xsl:value-of select="epub:get-title($map)"/></text>
+        </docTitle>
+        <navMap>
+          <xsl:call-template name="generate-ncx-navpoints">
+            <xsl:with-param name="topicrefs" select="$map/*[contains(@class, ' map/topicref ')]"/>
+            <xsl:with-param name="depth" select="1"/>
+            <xsl:with-param name="play-order" select="1"/>
+          </xsl:call-template>
+        </navMap>
+      </ncx>
+    </xsl:result-document>
+
+    <xsl:message>NCX table of contents generated.</xsl:message>
+  </xsl:template>
+
+  <!-- Generate NCX navPoints recursively -->
+  <xsl:template name="generate-ncx-navpoints">
+    <xsl:param name="topicrefs" as="element()*"/>
+    <xsl:param name="depth" as="xs:integer"/>
+    <xsl:param name="play-order" as="xs:integer"/>
+
+    <!-- Filter out booklists/frontmatter elements -->
+    <xsl:variable name="valid-topicrefs" select="$topicrefs[
+      not(@processing-role = 'resource-only') and
+      not(contains(@class, ' bookmap/booklists ')) and
+      not(contains(@class, ' bookmap/toc ')) and
+      not(contains(@class, ' bookmap/figurelist ')) and
+      not(contains(@class, ' bookmap/tablelist ')) and
+      not(contains(@class, ' bookmap/indexlist ')) and
+      (@href or *[contains(@class, ' map/topicref ')][@href])
+    ]"/>
+
+    <xsl:if test="$valid-topicrefs and $depth &lt;= $epub.toc.depth">
+      <xsl:for-each select="$valid-topicrefs">
+        <xsl:variable name="pos" select="position()"/>
+        <xsl:variable name="current-order" select="$play-order + $pos - 1"/>
+
+        <navPoint xmlns="http://www.daisy.org/z3986/2005/ncx/" id="navpoint-{generate-id(.)}" playOrder="{$current-order}">
+          <navLabel>
+            <text>
+              <xsl:call-template name="get-navtitle">
+                <xsl:with-param name="topicref" select="."/>
+              </xsl:call-template>
+            </text>
+          </navLabel>
+          <xsl:choose>
+            <xsl:when test="@href">
+              <content src="{concat($epub.topics.dir, '/', epub:get-topic-filename(.))}"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <!-- For container elements without href, link to first child -->
+              <xsl:variable name="first-child" select="(*[contains(@class, ' map/topicref ')][@href])[1]"/>
+              <xsl:if test="$first-child">
+                <content src="{concat($epub.topics.dir, '/', epub:get-topic-filename($first-child))}"/>
+              </xsl:if>
+            </xsl:otherwise>
+          </xsl:choose>
+
+          <!-- Process nested topicrefs -->
+          <xsl:if test="*[contains(@class, ' map/topicref ')]">
+            <xsl:call-template name="generate-ncx-navpoints">
+              <xsl:with-param name="topicrefs" select="*[contains(@class, ' map/topicref ')]"/>
+              <xsl:with-param name="depth" select="$depth + 1"/>
+              <xsl:with-param name="play-order" select="$current-order + 1"/>
+            </xsl:call-template>
+          </xsl:if>
+        </navPoint>
+      </xsl:for-each>
     </xsl:if>
   </xsl:template>
 

@@ -58,9 +58,15 @@
     <xsl:param name="root" as="element()"/>
     <xsl:variable name="lang">
       <xsl:choose>
+        <!-- Check for xml:lang on root element -->
+        <xsl:when test="$root/@xml:lang">
+          <xsl:value-of select="$root/@xml:lang"/>
+        </xsl:when>
+        <!-- Check on direct child (bookmap/map) -->
         <xsl:when test="$root/*/@xml:lang">
           <xsl:value-of select="$root/*/@xml:lang"/>
         </xsl:when>
+        <!-- Check epub.language parameter -->
         <xsl:when test="$epub.language != ''">
           <xsl:value-of select="$epub.language"/>
         </xsl:when>
