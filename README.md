@@ -3,7 +3,7 @@
 <div align="center">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![DITA-OT](https://img.shields.io/badge/DITA--OT-4.3.5-green.svg)](https://www.dita-ot.org/)
+[![DITA-OT](https://img.shields.io/badge/DITA--OT-4.4-green.svg)](https://www.dita-ot.org/)
 [![EPUB](https://img.shields.io/badge/EPUB-3.3-purple.svg)](https://www.w3.org/publishing/epub3/)
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://adoptium.net/)
 [![Tests](https://img.shields.io/badge/tests-44%20passing-success.svg)](#testing)
@@ -30,12 +30,15 @@
 - **🎨 Professional Output**: Custom cover pages, embedded fonts, and optimized images
 - **⚡ Production-Ready**: 44 comprehensive tests, CI/CD automation, and multi-platform support
 - **🔧 Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
-- **🚀 Modern Stack**: Built on DITA-OT 4.3.5, Java 17+, and latest web standards
+- **🚀 Modern Stack**: Built on DITA-OT 4.4, Java 17+, and latest web standards
 
 ### What's New in v1.0.1?
 
+- ✨ **Zero EPUBCheck Errors** - Both test EPUBs pass EPUBCheck 5.3.0 with 0 errors and 0 warnings
+- ✨ **DITA-OT 4.4** - Upgraded to the latest DITA Open Toolkit
 - ✨ **Cover Page Generation** - Automatic HTML cover pages with 3 customizable styles
 - ✨ **Font Embedding** - Embed custom fonts (TTF, OTF, WOFF, WOFF2) with proper manifest generation
+- ✨ **DITA Source Validation** - Built-in DITA validation and link checking via Gradle tasks
 - ✨ **Comprehensive Testing** - 44 tests across 6 test classes with 100% unit test pass rate
 - ✨ **GitHub Actions CI/CD** - Automated testing, releases, and documentation validation
 
@@ -45,7 +48,7 @@
 
 ### Core Capabilities
 - ✅ **EPUB 3.3 Standard**: Full compliance with latest EPUB specification
-- ✅ **DITA-OT 4.3.5 Integration**: Seamless plugin architecture
+- ✅ **DITA-OT 4.4 Integration**: Seamless plugin architecture
 - ✅ **XHTML5 Output**: Modern, semantic HTML content
 - ✅ **Accessibility Built-in**: WCAG 2.1 AA/AAA metadata and ARIA support
 - ✅ **Navigation**: Automatic TOC and landmarks generation
@@ -54,7 +57,8 @@
 - 🎨 **Cover Page Generation**: Automatic HTML cover pages with customizable styles
 - 🔤 **Font Embedding**: Embed custom fonts (TTF, OTF, WOFF, WOFF2)
 - 🖼️ **Image Support**: Automatic image copying and manifest generation
-- ✅ **EPUBCheck Integration**: Built-in validation support
+- ✅ **EPUBCheck 5.3.0 Integration**: Built-in validation with zero errors
+- ✅ **DITA Source Validation**: Structural validation and broken link checking
 - 🧪 **Comprehensive Testing**: 44 tests across 6 test classes
 
 ### Developer Experience
@@ -90,12 +94,12 @@
 
 | Component | Version | Notes |
 |-----------|---------|-------|
-| **DITA-OT** | 4.3.5+ | [Download](https://www.dita-ot.org/download) |
+| **DITA-OT** | 4.4+ | [Download](https://www.dita-ot.org/download) |
 | **Java** | 17+ | [Adoptium OpenJDK](https://adoptium.net/) recommended |
 | **Gradle** | 8.x+ | Wrapper included in project |
 
 ### Optional Tools
-- **EPUBCheck** 5.1.0+ for validation ([Download](https://github.com/w3c/epubcheck/releases))
+- **EPUBCheck** 5.3.0+ for validation ([Download](https://github.com/w3c/epubcheck/releases))
 - **Calibre** for EPUB viewing and testing
 
 ---
@@ -137,6 +141,29 @@ dita --input=mybook.ditamap --format=epub3 --output=output
 ```
 
 ✅ **Done!** Your EPUB will be in `output/mybook.epub`
+
+### Build Commands Reference
+
+```bash
+# Build and test
+./gradlew build                  # Compile + unit tests
+./gradlew test                   # Unit tests only (no DITA-OT needed)
+
+# EPUB generation (downloads DITA-OT 4.4 on first run)
+./gradlew buildSampleEpub        # Build + validate sample EPUB
+./gradlew buildCalibreGuide      # Build French Calibre Guide EPUB
+./gradlew buildAllEpubs          # Build all test datasets
+
+# Validation
+./gradlew validateEpub           # EPUBCheck on sample
+./gradlew validateCalibreEpub    # EPUBCheck on Calibre guide
+./gradlew validateAllEpubs       # EPUBCheck on all outputs
+./gradlew validateDita           # Validate DITA source structure
+./gradlew checkLinks             # Check for broken links in DITA sources
+
+# Full CI pipeline
+./gradlew ciCheck                # Compile, test, validate DITA, build EPUBs, EPUBCheck
+```
 
 ---
 
@@ -276,7 +303,7 @@ dita --input=mybook.ditamap \
 |-----------|------|---------|-------------|
 | `epub.validate` | boolean | `yes` | Run EPUBCheck validation (if available) |
 
-**📘 Complete Reference**: See [SPECIFICATION.md](SPECIFICATION.md) for all parameters
+**📘 Complete Reference**: See [SPECIFICATION.md](docs/SPECIFICATION.md) for all parameters
 
 ---
 
@@ -301,17 +328,22 @@ dita2epub/
 │   │       └── fonts/          # Font directory (empty template)
 │   └── test/
 │       ├── java/               # Test classes (44 tests)
-│       └── resources/          # Test DITA content
-├── lib/                        # EPUBCheck library
+│       └── resources/
+│           ├── dita/           # English sample bookmap
+│           └── dita-calibre/   # French Calibre Guide
 ├── plugin.xml                  # DITA-OT plugin descriptor
 ├── build-epub3.xml             # Ant build integration
 ├── build.gradle.kts            # Gradle build configuration
-└── docs/                       # Additional documentation
+└── docs/                       # Documentation
+    ├── CHANGELOG.md            # Version changelog
+    ├── CONTRIBUTING.md         # Contribution guidelines
+    ├── GITHUB_CHECKLIST.md     # GitHub procedures
+    ├── PROJECT_STATUS.md       # Project status and metrics
     ├── QUICKSTART.md           # Quick start guide
-    ├── SPECIFICATION.md        # Complete parameter reference
     ├── RELEASE_NOTES.md        # Version history
+    ├── SPECIFICATION.md        # Complete parameter reference
     ├── TEST_COVERAGE.md        # Test documentation
-    └── CONTRIBUTING.md         # Contribution guidelines
+    └── TEST_SUMMARY.md         # Executive test summary
 ```
 
 ---
@@ -345,10 +377,10 @@ open build/reports/tests/test/index.html
 | Font Embedding | 7 | ✅ Complete |
 | OPF Manifest | 8 | ✅ Complete |
 | EPUB Structure | 11 | ✅ Complete |
-| Validation | 8 | ✅ Complete |
+| Validation | 8 | ✅ Complete (0 EPUBCheck errors) |
 | Integration | 3 | ✅ Complete |
 
-**📊 Detailed Report**: See [TEST_COVERAGE.md](TEST_COVERAGE.md)
+**📊 Detailed Report**: See [TEST_COVERAGE.md](docs/TEST_COVERAGE.md)
 
 ---
 
@@ -358,29 +390,29 @@ open build/reports/tests/test/index.html
 
 | Document | Description | For |
 |----------|-------------|-----|
-| **[QUICKSTART.md](QUICKSTART.md)** | 5-minute setup and first EPUB | New users |
-| **[SPECIFICATION.md](SPECIFICATION.md)** | Complete parameter reference (2000+ lines) | All users |
-| **[PROJECT_STATUS.md](PROJECT_STATUS.md)** | Current status, roadmap, and metrics | Project overview |
+| **[QUICKSTART.md](docs/QUICKSTART.md)** | 5-minute setup and first EPUB | New users |
+| **[SPECIFICATION.md](docs/SPECIFICATION.md)** | Complete parameter reference (2000+ lines) | All users |
+| **[PROJECT_STATUS.md](docs/PROJECT_STATUS.md)** | Current status, roadmap, and metrics | Project overview |
 
 ### 📖 User Documentation
 
 | Document | Description | Details |
 |----------|-------------|---------|
 | **[Font Embedding Guide](src/main/resources/fonts/README.md)** | Font setup and configuration | 200+ lines with examples |
-| **[RELEASE_NOTES.md](RELEASE_NOTES.md)** | Version history and changelog | v1.0.1 release details |
+| **[RELEASE_NOTES.md](docs/RELEASE_NOTES.md)** | Version history and changelog | v1.0.1 release details |
 
 ### 🧪 Testing & Quality
 
 | Document | Description | Coverage |
 |----------|-------------|----------|
-| **[TEST_COVERAGE.md](TEST_COVERAGE.md)** | Detailed test documentation | 44 tests across 6 classes |
-| **[TEST_SUMMARY.md](TEST_SUMMARY.md)** | Executive test summary | 100% unit test pass rate |
+| **[TEST_COVERAGE.md](docs/TEST_COVERAGE.md)** | Detailed test documentation | 44 tests across 6 classes |
+| **[TEST_SUMMARY.md](docs/TEST_SUMMARY.md)** | Executive test summary | 100% unit test pass rate |
 
 ### 🔧 Development & CI/CD
 
 | Document | Description | Content |
 |----------|-------------|---------|
-| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines | 500+ lines with code examples |
+| **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** | Contribution guidelines | 500+ lines with code examples |
 | **[.github/README.md](.github/README.md)** | CI/CD documentation | Complete GitHub Actions guide |
 | **[.github/ACTIONS_SETUP.md](.github/ACTIONS_SETUP.md)** | CI/CD setup summary | Workflow descriptions |
 
@@ -434,20 +466,24 @@ dita --input=training.ditamap \
 ## 🔄 Current Status
 
 ### ✅ Completed Features (v1.0.1)
-- EPUB 3.3 generation from DITA bookmaps
-- Complete XHTML content generation
-- Navigation and metadata extraction
-- WCAG AA accessibility metadata
-- Cover page generation with styles
+- EPUB 3.3 generation from DITA bookmaps — **0 EPUBCheck errors**
+- DITA-OT 4.4 integration with dita-ot-gradle 2.8.5 build system
+- Complete XHTML5 content generation with proper namespace handling
+- OPF package document, NCX TOC, and EPUB3 navigation document
+- Dublin Core metadata extraction from DITA maps/bookmaps
+- WCAG AA accessibility metadata and ARIA landmarks
+- Cover page generation with customizable styles (full-page, centered, custom)
+- Title page with author, copyright, translator, and license info
 - Font embedding (TTF, OTF, WOFF, WOFF2)
 - Image copying and manifest generation
-- EPUBCheck integration
-- Comprehensive test suite (44 tests)
+- EPUBCheck 5.3.0 validation integration
+- DITA source validation and broken link checking
+- Two test datasets: English sample bookmap and French Calibre Guide
+- Comprehensive test suite (44 tests across 6 classes)
 
 ### ⚠️ Known Limitations
 - Font obfuscation not yet implemented (copying works)
 - Automatic font manifest generation (manual configuration available)
-- Limited to basic cover page styles (advanced customization planned)
 
 ### 🔮 Planned Features (v1.1+)
 - Font obfuscation (Adobe algorithm)
@@ -461,7 +497,7 @@ dita --input=training.ditamap \
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+We welcome contributions! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for:
 - Code of conduct
 - Development setup
 - Coding standards
@@ -500,7 +536,7 @@ You may obtain a copy of the License at
 ## 🙏 Acknowledgments
 
 ### Built With
-- [DITA Open Toolkit 4.3.5](https://www.dita-ot.org/)
+- [DITA Open Toolkit 4.4](https://www.dita-ot.org/)
 - [Saxon-HE 12.7](https://www.saxonica.com/html/documentation12/about/)
 - [Gradle 9.1](https://gradle.org/)
 - [JUnit 5](https://junit.org/junit5/)
@@ -527,7 +563,7 @@ You may obtain a copy of the License at
 ![Coverage](https://img.shields.io/badge/coverage-70%25-green)
 ![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
 
-**Last Updated**: October 29, 2025
+**Last Updated**: February 22, 2026
 **Version**: 1.0.1
 **Status**: ✅ Production Ready
 

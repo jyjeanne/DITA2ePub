@@ -1,13 +1,29 @@
 plugins {
-    id("io.github.jyjeanne.dita-ot-gradle") version "2.8.3"
+    id("io.github.jyjeanne.dita-ot-gradle") version "2.8.5"
     id("java")
 }
 
 // DITA-OT version configuration
-val ditaOtVersion = "4.3.5"
+val ditaOtVersion = "4.4"
+val ditaOtHome = layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion")
 
 group = "io.github.jyjeanne"
 version = "1.0.1"
+
+// =============================================================================
+// Shared EPUB properties (common to all EPUB builds)
+// =============================================================================
+val sharedEpubProperties = mapOf(
+    "epub.version" to "3.3",
+    "epub.topics.dir" to "content",
+    "epub.images.dir" to "images",
+    "epub.fonts.dir" to "fonts",
+    "epub.css.dir" to "styles",
+    "epub.accessibility" to "wcag-aa",
+    "epub.aria.landmarks" to "yes",
+    "args.css" to "epub-default.css",
+    "args.copycss" to "yes",
+)
 
 // =============================================================================
 // Test datasets configuration
@@ -56,7 +72,7 @@ java {
 
 dependencies {
     // EPUB validation
-    implementation("org.w3c:epubcheck:5.1.0")
+    implementation("org.w3c:epubcheck:5.3.0")
 
     // Utilities
     implementation("commons-io:commons-io:2.15.1")
@@ -80,6 +96,14 @@ tasks.test {
     }
 }
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+// =============================================================================
+// DITA-OT download and plugin installation
+// =============================================================================
+
 // Download DITA-OT automatically
 tasks.register<com.github.jyjeanne.DitaOtDownloadTask>("downloadDitaOt") {
     group = "dita"
@@ -87,238 +111,6 @@ tasks.register<com.github.jyjeanne.DitaOtDownloadTask>("downloadDitaOt") {
     version.set(ditaOtVersion)
     destinationDir.set(layout.buildDirectory.dir("dita-ot"))
     retries.set(3)
-}
-
-// DITA-OT Configuration
-tasks.named<com.github.jyjeanne.DitaOtTask>("dita") {
-    dependsOn("installLocalPlugin")
-    ditaOt(layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion"))
-
-    // Input and output configuration
-    input(file("src/test/resources/dita/sample-bookmap.ditamap"))
-    output("build/epub")
-    transtype("epub3")
-
-    // EPUB3 properties
-    properties {
-        // Core EPUB Parameters
-        "epub.version" to "3.3"
-        "epub.cover.image" to file("src/test/resources/dita/cover.svg").absolutePath
-
-        // Directory Structure
-        "epub.topics.dir" to "content"
-        "epub.images.dir" to "images"
-        "epub.fonts.dir" to "fonts"
-        "epub.css.dir" to "styles"
-
-        // Navigation
-        "epub.toc.depth" to "5"
-        "epub.nav.depth" to "5"
-        "epub.generate.lof" to "no"
-        "epub.generate.lot" to "no"
-
-        // Accessibility (WCAG 2.1)
-        "epub.accessibility" to "wcag-aa"
-        "epub.aria.landmarks" to "yes"
-        "epub.skip.nav" to "yes"
-
-        // CSS and Styling
-        "args.csspath" to "styles"
-        "args.css" to "epub-default.css"
-        "args.copycss" to "yes"
-
-        // Metadata
-        "epub.publisher" to "Dita2epub Project"
-        "epub.rights" to "Copyright 2026 All Rights Reserved"
-        "epub.identifier.scheme" to "UUID"
-
-        // Validation
-        "epub.validate" to "yes"
-
-        // Output
-        "args.output.base.name" to "sample-book"
-    }
-}
-
-// Custom validation task using EPUBCheck
-tasks.register<JavaExec>("validateEpub") {
-    group = "verification"
-    description = "Validate generated EPUB files using EPUBCheck"
-    dependsOn("dita")
-
-    mainClass.set("com.adobe.epubcheck.tool.Checker")
-    classpath = configurations.runtimeClasspath.get()
-
-    val epubDir = file("build/epub")
-
-    doFirst {
-        val epubFiles = fileTree(epubDir) {
-            include("**/*.epub")
-        }.files
-
-        if (epubFiles.isEmpty()) {
-            throw GradleException("No EPUB files found in build/epub")
-        }
-
-        val epubFile = epubFiles.first()
-        println("Validating EPUB: ${epubFile.name}")
-        args(epubFile.absolutePath)
-    }
-
-    // EPUBCheck has a known StackOverflowError bug but still reports results
-    // We ignore exit value and check the output manually
-    isIgnoreExitValue = true
-
-    doLast {
-        println("EPUB validation completed. Check output above for any errors.")
-    }
-}
-
-// Build cache configuration
-// Using default Gradle build cache settings
-
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
-
-// Custom tasks for EPUB workflow
-tasks.register("buildSampleEpub") {
-    group = "dita"
-    description = "Build sample EPUB from test DITA content"
-    dependsOn("dita")
-    finalizedBy("validateEpub")
-}
-
-// Build Calibre Guide EPUB from French DITA content
-tasks.register<com.github.jyjeanne.DitaOtTask>("buildCalibreGuide") {
-    group = "dita"
-    description = "Build Calibre Guide EPUB from French DITA content"
-    dependsOn("installLocalPlugin")
-    ditaOt(layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion"))
-
-    input(file("src/test/resources/dita-calibre/calibre-guide.ditamap"))
-    output("build/epub-calibre")
-    transtype("epub3")
-
-    properties {
-        "epub.version" to "3.3"
-        "epub.cover.image" to file("src/test/resources/dita-calibre/cover.jpg").absolutePath
-        "epub.topics.dir" to "content"
-        "epub.images.dir" to "images"
-        "epub.fonts.dir" to "fonts"
-        "epub.css.dir" to "styles"
-        "epub.toc.depth" to "3"
-        "epub.nav.depth" to "3"
-        "epub.accessibility" to "wcag-aa"
-        "epub.aria.landmarks" to "yes"
-        "args.css" to "epub-default.css"
-        "args.copycss" to "yes"
-    }
-}
-
-// Validate Calibre Guide EPUB
-tasks.register<JavaExec>("validateCalibreEpub") {
-    group = "verification"
-    description = "Validate Calibre Guide EPUB using EPUBCheck"
-    dependsOn("buildCalibreGuide")
-
-    mainClass.set("com.adobe.epubcheck.tool.Checker")
-    classpath = configurations.runtimeClasspath.get()
-
-    val epubDir = file("build/epub-calibre")
-
-    doFirst {
-        val epubFiles = fileTree(epubDir) {
-            include("**/*.epub")
-        }.files
-
-        if (epubFiles.isEmpty()) {
-            throw GradleException("No EPUB files found in build/epub-calibre")
-        }
-
-        val epubFile = epubFiles.first()
-        println("Validating EPUB: ${epubFile.name}")
-        args(epubFile.absolutePath)
-    }
-
-    isIgnoreExitValue = true
-
-    doLast {
-        println("EPUB validation completed. Check output above for any errors.")
-    }
-}
-
-tasks.register("cleanEpub") {
-    group = "dita"
-    description = "Clean EPUB output directory"
-    doLast {
-        delete("build/epub")
-        delete("build/epub-calibre")
-    }
-}
-
-// =============================================================================
-// Aggregate tasks for testing all DITA datasets
-// =============================================================================
-
-// Build all EPUB test datasets
-tasks.register("buildAllEpubs") {
-    group = "dita"
-    description = "Build EPUB from all test DITA datasets"
-    dependsOn("buildSampleEpub", "buildCalibreGuide")
-}
-
-// Validate all generated EPUBs
-tasks.register("validateAllEpubs") {
-    group = "verification"
-    description = "Validate all generated EPUB files"
-    dependsOn("validateEpub", "validateCalibreEpub")
-}
-
-// Full test pipeline: build and validate all datasets
-tasks.register("testAllEpubs") {
-    group = "verification"
-    description = "Build and validate all test EPUB datasets"
-    dependsOn("buildAllEpubs")
-    finalizedBy("validateAllEpubs")
-}
-
-// Integration test task that requires EPUB builds first
-tasks.register("integrationTest") {
-    group = "verification"
-    description = "Run integration tests with all DITA datasets"
-    dependsOn("testAllEpubs", "test")
-}
-
-// CI/CD task for continuous integration
-tasks.register("ciCheck") {
-    group = "verification"
-    description = "Full CI check: compile, test, build EPUBs, validate"
-    dependsOn("compileJava", "compileTestJava", "test", "testAllEpubs")
-}
-
-// List available test datasets
-tasks.register("listTestDatasets") {
-    group = "help"
-    description = "List all available test DITA datasets"
-    doLast {
-        println("\n" + "=".repeat(70))
-        println("Available Test Datasets")
-        println("=".repeat(70))
-        testDatasets.forEach { dataset ->
-            println("\n${dataset.name}:")
-            println("  Description: ${dataset.description}")
-            println("  DITA Map:    ${dataset.ditamap}")
-            println("  Output:      ${dataset.outputDir}")
-            println("  Language:    ${dataset.language}")
-            println("  TOC Depth:   ${dataset.tocDepth}")
-            dataset.coverImage?.let { println("  Cover:       $it") }
-        }
-        println("\n" + "=".repeat(70))
-        println("Run 'gradle buildAllEpubs' to build all datasets")
-        println("Run 'gradle testAllEpubs' to build and validate all datasets")
-        println("=".repeat(70) + "\n")
-    }
 }
 
 // Create epub-packager.jar for EPUB-compliant ZIP creation
@@ -358,26 +150,185 @@ val packagePlugin = tasks.register<Zip>("packagePlugin") {
     }
 }
 
-// Install local dita2epub plugin using DITA-OT CLI (workaround for DITA-OT 4.3.5 syntax)
-tasks.register<Exec>("installLocalPlugin") {
+// Install local dita2epub plugin to DITA-OT
+tasks.register<com.github.jyjeanne.DitaOtInstallPluginTask>("installLocalPlugin") {
     group = "dita"
     description = "Install the local dita2epub plugin to DITA-OT"
     dependsOn("downloadDitaOt", packagePlugin)
+    ditaOtDir.set(ditaOtHome)
+    plugins.set(listOf(layout.buildDirectory.file("plugin/io.github.jyjeanne.dita2epub.zip").get().asFile.absolutePath))
+    force.set(true)
+}
 
-    // Platform-independent executable path
-    val isWindows = System.getProperty("os.name").lowercase().contains("windows")
-    val ditaScript = if (isWindows) "dita.bat" else "dita"
-    val ditaExecutable = layout.buildDirectory.file("dita-ot/dita-ot-$ditaOtVersion/bin/$ditaScript").get().asFile
-    val pluginZip = layout.buildDirectory.file("plugin/io.github.jyjeanne.dita2epub.zip").get().asFile
+// =============================================================================
+// EPUB build tasks
+// =============================================================================
 
-    workingDir = layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion").get().asFile
-    commandLine(ditaExecutable.absolutePath, "install", pluginZip.absolutePath, "--force")
+// Build sample EPUB (default dita task)
+tasks.named<com.github.jyjeanne.DitaOtTask>("dita") {
+    dependsOn("installLocalPlugin")
+    ditaOt(ditaOtHome)
+    input(file("src/test/resources/dita/sample-bookmap.ditamap"))
+    output("build/epub")
+    transtype("epub3")
 
-    // DITA-OT install returns 0 for success, non-zero for failure
-    // --force flag ensures reinstallation works, so we can fail on errors
-    isIgnoreExitValue = false
+    ditaProperties.putAll(sharedEpubProperties)
+    ditaProperties.putAll(mapOf(
+        "epub.cover.image" to file("src/test/resources/dita/cover.svg").absolutePath,
+        "epub.toc.depth" to "5",
+        "epub.nav.depth" to "5",
+        "epub.generate.lof" to "no",
+        "epub.generate.lot" to "no",
+        "epub.skip.nav" to "yes",
+        "args.csspath" to "styles",
+        "epub.publisher" to "Dita2epub Project",
+        "epub.rights" to "Copyright 2026 All Rights Reserved",
+        "epub.identifier.scheme" to "UUID",
+        "epub.validate" to "yes",
+        "args.output.base.name" to "sample-book",
+    ))
+}
 
+// Build Calibre Guide EPUB from French DITA content
+tasks.register<com.github.jyjeanne.DitaOtTask>("buildCalibreGuide") {
+    group = "dita"
+    description = "Build Calibre Guide EPUB from French DITA content"
+    dependsOn("installLocalPlugin")
+    ditaOt(ditaOtHome)
+    input(file("src/test/resources/dita-calibre/calibre-guide.ditamap"))
+    output("build/epub-calibre")
+    transtype("epub3")
+
+    ditaProperties.putAll(sharedEpubProperties)
+    ditaProperties.putAll(mapOf(
+        "epub.cover.image" to file("src/test/resources/dita-calibre/cover.jpg").absolutePath,
+        "epub.toc.depth" to "3",
+        "epub.nav.depth" to "3",
+    ))
+}
+
+// =============================================================================
+// DITA source validation and link checking
+// =============================================================================
+
+// Validate DITA source files before transformation
+tasks.register<com.github.jyjeanne.DitaOtValidateTask>("validateDita") {
+    group = "verification"
+    description = "Validate DITA source files for structural correctness"
+    dependsOn("installLocalPlugin")
+    ditaOtDir.set(ditaOtHome)
+    input("src/test/resources/dita/sample-bookmap.ditamap")
+    strictMode.set(true)
+}
+
+// Check for broken links in DITA sources
+tasks.register<com.github.jyjeanne.DitaLinkCheckTask>("checkLinks") {
+    group = "verification"
+    description = "Check for broken links in DITA sources"
+    input("src/test/resources/dita/sample-bookmap.ditamap")
+    failOnBroken.set(true)
+    recursive.set(true)
+}
+
+// =============================================================================
+// EPUB validation (EPUBCheck)
+// =============================================================================
+
+fun registerEpubValidation(name: String, epubDir: String, dependsOnTask: String) =
+    tasks.register<JavaExec>(name) {
+        group = "verification"
+        description = "Validate EPUB files in $epubDir using EPUBCheck"
+        dependsOn(dependsOnTask)
+        mainClass.set("com.adobe.epubcheck.tool.Checker")
+        classpath = configurations.runtimeClasspath.get()
+        isIgnoreExitValue = true
+        doFirst {
+            val epubFiles = fileTree(file(epubDir)) { include("**/*.epub") }.files
+            if (epubFiles.isEmpty()) throw GradleException("No EPUB files found in $epubDir")
+            val epubFile = epubFiles.first()
+            println("Validating EPUB: ${epubFile.name}")
+            args(epubFile.absolutePath)
+        }
+    }
+
+registerEpubValidation("validateEpub", "build/epub", "dita")
+registerEpubValidation("validateCalibreEpub", "build/epub-calibre", "buildCalibreGuide")
+
+// =============================================================================
+// Workflow tasks
+// =============================================================================
+
+tasks.register("buildSampleEpub") {
+    group = "dita"
+    description = "Build sample EPUB from test DITA content"
+    dependsOn("dita")
+    finalizedBy("validateEpub")
+}
+
+tasks.register("cleanEpub") {
+    group = "dita"
+    description = "Clean EPUB output directory"
     doLast {
-        println("Plugin installed to DITA-OT")
+        delete("build/epub")
+        delete("build/epub-calibre")
+    }
+}
+
+// =============================================================================
+// Aggregate tasks
+// =============================================================================
+
+tasks.register("buildAllEpubs") {
+    group = "dita"
+    description = "Build EPUB from all test DITA datasets"
+    dependsOn("buildSampleEpub", "buildCalibreGuide")
+}
+
+tasks.register("validateAllEpubs") {
+    group = "verification"
+    description = "Validate all generated EPUB files"
+    dependsOn("validateEpub", "validateCalibreEpub")
+}
+
+tasks.register("testAllEpubs") {
+    group = "verification"
+    description = "Build and validate all test EPUB datasets"
+    dependsOn("buildAllEpubs")
+    finalizedBy("validateAllEpubs")
+}
+
+tasks.register("integrationTest") {
+    group = "verification"
+    description = "Run integration tests with all DITA datasets"
+    dependsOn("testAllEpubs", "test")
+}
+
+tasks.register("ciCheck") {
+    group = "verification"
+    description = "Full CI check: compile, test, build EPUBs, validate"
+    dependsOn("compileJava", "compileTestJava", "test", "validateDita", "checkLinks", "testAllEpubs")
+}
+
+// List available test datasets
+tasks.register("listTestDatasets") {
+    group = "help"
+    description = "List all available test DITA datasets"
+    doLast {
+        println("\n" + "=".repeat(70))
+        println("Available Test Datasets")
+        println("=".repeat(70))
+        testDatasets.forEach { dataset ->
+            println("\n${dataset.name}:")
+            println("  Description: ${dataset.description}")
+            println("  DITA Map:    ${dataset.ditamap}")
+            println("  Output:      ${dataset.outputDir}")
+            println("  Language:    ${dataset.language}")
+            println("  TOC Depth:   ${dataset.tocDepth}")
+            dataset.coverImage?.let { println("  Cover:       $it") }
+        }
+        println("\n" + "=".repeat(70))
+        println("Run 'gradle buildAllEpubs' to build all datasets")
+        println("Run 'gradle testAllEpubs' to build and validate all datasets")
+        println("=".repeat(70) + "\n")
     }
 }

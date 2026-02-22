@@ -25,9 +25,7 @@
     <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
 
     <xsl:result-document href="{concat($epub.topics.dir, '/content.opf')}"
-                         method="xml"
-                         encoding="UTF-8"
-                         indent="yes">
+                         format="xml-no-doctype">
       <package xmlns="http://www.idpf.org/2007/opf"
                version="3.0"
                unique-identifier="pub-id"
@@ -112,6 +110,9 @@
             <itemref idref="cover" linear="yes"/>
           </xsl:if>
 
+          <!-- Navigation document (non-linear, required for landmark references) -->
+          <itemref idref="nav" linear="no"/>
+
           <!-- Title page -->
           <itemref idref="titlepage"/>
 
@@ -194,7 +195,7 @@
               </h1>
               <ol>
                 <li>
-                  <a epub:type="toc" href="#toc">
+                  <a epub:type="toc" href="nav.xhtml#toc">
                     <xsl:choose>
                       <xsl:when test="starts-with($lang, 'fr')">Table des matières</xsl:when>
                       <xsl:when test="starts-with($lang, 'de')">Inhaltsverzeichnis</xsl:when>
@@ -242,19 +243,19 @@
     ]"/>
 
     <xsl:if test="$valid-topicrefs and $depth &lt;= $epub.toc.depth">
-      <ol>
+      <ol xmlns="http://www.w3.org/1999/xhtml">
         <xsl:for-each select="$valid-topicrefs">
-          <li>
+          <li xmlns="http://www.w3.org/1999/xhtml">
             <xsl:choose>
               <xsl:when test="@href">
-                <a href="{epub:get-topic-filename(.)}">
+                <a xmlns="http://www.w3.org/1999/xhtml" href="{epub:get-topic-filename(.)}">
                   <xsl:call-template name="get-navtitle">
                     <xsl:with-param name="topicref" select="."/>
                   </xsl:call-template>
                 </a>
               </xsl:when>
               <xsl:otherwise>
-                <span>
+                <span xmlns="http://www.w3.org/1999/xhtml">
                   <xsl:call-template name="get-navtitle">
                     <xsl:with-param name="topicref" select="."/>
                   </xsl:call-template>
@@ -313,10 +314,7 @@
     <xsl:message>Generating META-INF/container.xml...</xsl:message>
 
     <xsl:result-document href="META-INF/container.xml"
-                         method="xml"
-                         encoding="UTF-8"
-                         indent="yes"
-                         standalone="omit">
+                         format="xml-no-doctype">
       <container xmlns="urn:oasis:names:tc:opendocument:xmlns:container" version="1.0">
         <rootfiles>
           <rootfile full-path="{concat($epub.topics.dir, '/content.opf')}"
@@ -581,6 +579,19 @@
 
     <xsl:message>Generating NCX table of contents...</xsl:message>
 
+    <!-- Pre-compute flat list of all topicrefs WITH @href in document order for unique playOrder.
+         Only topicrefs with @href get their own playOrder number; containers without @href
+         share their first child's playOrder to avoid "different playOrder for same target" errors. -->
+    <xsl:variable name="all-valid-ncx-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][
+      not(@processing-role = 'resource-only') and
+      not(contains(@class, ' bookmap/booklists ')) and
+      not(contains(@class, ' bookmap/toc ')) and
+      not(contains(@class, ' bookmap/figurelist ')) and
+      not(contains(@class, ' bookmap/tablelist ')) and
+      not(contains(@class, ' bookmap/indexlist ')) and
+      @href
+    ]"/>
+
     <!-- NCX must be at root level for compatibility with older readers like Calibre -->
     <xsl:result-document href="toc.ncx"
                          method="xml"
@@ -604,7 +615,7 @@
           <xsl:call-template name="generate-ncx-navpoints">
             <xsl:with-param name="topicrefs" select="$map/*[contains(@class, ' map/topicref ')]"/>
             <xsl:with-param name="depth" select="1"/>
-            <xsl:with-param name="play-order" select="1"/>
+            <xsl:with-param name="all-valid" select="$all-valid-ncx-topicrefs"/>
           </xsl:call-template>
         </navMap>
       </ncx>
@@ -613,11 +624,11 @@
     <xsl:message>NCX table of contents generated.</xsl:message>
   </xsl:template>
 
-  <!-- Generate NCX navPoints recursively -->
+  <!-- Generate NCX navPoints recursively with unique playOrder values -->
   <xsl:template name="generate-ncx-navpoints">
     <xsl:param name="topicrefs" as="element()*"/>
     <xsl:param name="depth" as="xs:integer"/>
-    <xsl:param name="play-order" as="xs:integer"/>
+    <xsl:param name="all-valid" as="element()*"/>
 
     <!-- Filter out booklists/frontmatter elements -->
     <xsl:variable name="valid-topicrefs" select="$topicrefs[
@@ -632,10 +643,13 @@
 
     <xsl:if test="$valid-topicrefs and $depth &lt;= $epub.toc.depth">
       <xsl:for-each select="$valid-topicrefs">
-        <xsl:variable name="pos" select="position()"/>
-        <xsl:variable name="current-order" select="$play-order + $pos - 1"/>
+        <!-- Use position in the pre-computed flat list for unique playOrder.
+             When a container has no @href, use the same playOrder as its first child
+             to avoid "different playOrder values for same target" NCX errors. -->
+        <xsl:variable name="play-order-target" select="if (@href) then . else (*[contains(@class, ' map/topicref ')][@href])[1]"/>
+        <xsl:variable name="play-order" select="count($all-valid[. &lt;&lt; $play-order-target]) + 1"/>
 
-        <navPoint xmlns="http://www.daisy.org/z3986/2005/ncx/" id="navpoint-{generate-id(.)}" playOrder="{$current-order}">
+        <navPoint xmlns="http://www.daisy.org/z3986/2005/ncx/" id="navpoint-{generate-id(.)}" playOrder="{$play-order}">
           <navLabel>
             <text>
               <xsl:call-template name="get-navtitle">
@@ -661,7 +675,7 @@
             <xsl:call-template name="generate-ncx-navpoints">
               <xsl:with-param name="topicrefs" select="*[contains(@class, ' map/topicref ')]"/>
               <xsl:with-param name="depth" select="$depth + 1"/>
-              <xsl:with-param name="play-order" select="$current-order + 1"/>
+              <xsl:with-param name="all-valid" select="$all-valid"/>
             </xsl:call-template>
           </xsl:if>
         </navPoint>

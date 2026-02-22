@@ -12,10 +12,20 @@
     Common templates and functions used across EPUB3 transformation
   -->
 
-  <!-- Generate unique identifier -->
+  <!-- Generate unique identifier in RFC 4122 UUID v4 format -->
   <xsl:function name="epub:generate-uuid" as="xs:string">
-    <xsl:variable name="timestamp" select="string(current-dateTime())"/>
-    <xsl:sequence select="concat('urn:uuid:', format-dateTime(current-dateTime(), '[Y0001][M01][D01][H01][m01][s01][f001]'))"/>
+    <!-- Build a deterministic hex string from the current timestamp -->
+    <xsl:variable name="ts" select="format-dateTime(current-dateTime(), '[Y0001][M01][D01][H01][m01][s01][f001]')"/>
+    <!-- Pad to 32 hex chars: timestamp digits + static suffix -->
+    <xsl:variable name="raw" select="concat($ts, 'a1b2c3d4e5f60789')"/>
+    <xsl:variable name="hex" select="substring($raw, 1, 32)"/>
+    <!-- Format as 8-4-4-4-12 with UUID v4 version (4) and variant (8) bits -->
+    <xsl:sequence select="concat('urn:uuid:',
+      substring($hex, 1, 8), '-',
+      substring($hex, 9, 4), '-',
+      '4', substring($hex, 14, 3), '-',
+      'a', substring($hex, 18, 3), '-',
+      substring($hex, 21, 12))"/>
   </xsl:function>
 
   <!-- Get publication identifier -->

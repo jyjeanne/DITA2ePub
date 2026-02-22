@@ -4,13 +4,15 @@
                 xmlns:xhtml="http://www.w3.org/1999/xhtml"
                 xmlns:epub="http://www.idpf.org/2007/ops"
                 xmlns:dita-ot="http://dita-ot.sourceforge.net"
-                exclude-result-prefixes="xs xhtml epub dita-ot"
+                exclude-result-prefixes="xs xhtml dita-ot"
                 version="3.0">
 
   <!--
     EPUB3 Content Generation
 
-    Transforms DITA topics to XHTML5 content for EPUB3
+    Transforms DITA topics to XHTML5 content for EPUB3.
+    All literal HTML elements use xmlns="http://www.w3.org/1999/xhtml"
+    to ensure proper namespace serialization inside EPUB XHTML documents.
   -->
 
   <!-- Generate all content files from DITA map -->
@@ -127,7 +129,7 @@
       </xsl:choose>
     </xsl:variable>
 
-    <article epub:type="chapter">
+    <article xmlns="http://www.w3.org/1999/xhtml" epub:type="chapter">
       <xsl:choose>
         <xsl:when test="$topic">
           <!-- Process actual topic content -->
@@ -144,9 +146,15 @@
     </article>
   </xsl:template>
 
+  <!--
+    topic-content mode templates
+    Each top-level literal element declares xmlns="http://www.w3.org/1999/xhtml"
+    so the output is in the correct XHTML namespace.
+  -->
+
   <!-- Transform DITA topic title to HTML h1 -->
   <xsl:template match="*[contains(@class, ' topic/title ')] | title" mode="topic-content">
-    <h1>
+    <h1 xmlns="http://www.w3.org/1999/xhtml">
       <xsl:if test="parent::*/@id">
         <xsl:attribute name="id" select="parent::*/@id"/>
       </xsl:if>
@@ -156,7 +164,7 @@
 
   <!-- Transform DITA shortdesc to HTML p with class -->
   <xsl:template match="*[contains(@class, ' topic/shortdesc ')] | shortdesc" mode="topic-content">
-    <p class="shortdesc">
+    <p xmlns="http://www.w3.org/1999/xhtml" class="shortdesc">
       <xsl:apply-templates mode="topic-content"/>
     </p>
   </xsl:template>
@@ -168,7 +176,7 @@
 
   <!-- Transform DITA paragraph to HTML p -->
   <xsl:template match="*[contains(@class, ' topic/p ')] | p" mode="topic-content">
-    <p>
+    <p xmlns="http://www.w3.org/1999/xhtml">
       <xsl:if test="@id">
         <xsl:attribute name="id" select="@id"/>
       </xsl:if>
@@ -178,7 +186,7 @@
 
   <!-- Transform DITA section to HTML section -->
   <xsl:template match="*[contains(@class, ' topic/section ')] | section" mode="topic-content">
-    <section>
+    <section xmlns="http://www.w3.org/1999/xhtml">
       <xsl:if test="@id">
         <xsl:attribute name="id" select="@id"/>
       </xsl:if>
@@ -188,35 +196,35 @@
 
   <!-- Transform section title to h2 -->
   <xsl:template match="*[contains(@class, ' topic/section ')]/*[contains(@class, ' topic/title ')] | section/title" mode="topic-content" priority="10">
-    <h2>
+    <h2 xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates mode="topic-content"/>
     </h2>
   </xsl:template>
 
   <!-- Transform DITA ul to HTML ul -->
   <xsl:template match="*[contains(@class, ' topic/ul ')] | ul" mode="topic-content">
-    <ul>
+    <ul xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </ul>
   </xsl:template>
 
   <!-- Transform DITA ol to HTML ol -->
   <xsl:template match="*[contains(@class, ' topic/ol ')] | ol" mode="topic-content">
-    <ol>
+    <ol xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </ol>
   </xsl:template>
 
   <!-- Transform DITA li to HTML li -->
   <xsl:template match="*[contains(@class, ' topic/li ')] | li" mode="topic-content">
-    <li>
+    <li xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </li>
   </xsl:template>
 
   <!-- Transform DITA note to HTML aside with class -->
   <xsl:template match="*[contains(@class, ' topic/note ')] | note" mode="topic-content">
-    <aside class="note note-{(@type, 'note')[1]}" role="note">
+    <aside xmlns="http://www.w3.org/1999/xhtml" class="note note-{(@type, 'note')[1]}" role="note">
       <xsl:if test="@type">
         <strong class="note-label">
           <xsl:choose>
@@ -238,7 +246,7 @@
 
   <!-- Transform DITA xref to HTML a -->
   <xsl:template match="*[contains(@class, ' topic/xref ')] | xref" mode="topic-content">
-    <a>
+    <a xmlns="http://www.w3.org/1999/xhtml">
       <xsl:attribute name="href">
         <xsl:choose>
           <xsl:when test="@scope = 'external'">
@@ -272,7 +280,7 @@
   <xsl:template match="*[contains(@class, ' topic/image ')]" mode="topic-content">
     <xsl:variable name="image-path" select="concat($epub.images.dir, '/', tokenize(@href, '/')[last()])"/>
 
-    <figure>
+    <figure xmlns="http://www.w3.org/1999/xhtml">
       <img src="{$image-path}">
         <xsl:if test="@alt">
           <xsl:attribute name="alt" select="@alt"/>
@@ -296,7 +304,7 @@
 
   <!-- Transform DITA table to HTML table -->
   <xsl:template match="*[contains(@class, ' topic/table ')]" mode="topic-content">
-    <table>
+    <table xmlns="http://www.w3.org/1999/xhtml">
       <xsl:if test="*[contains(@class, ' topic/title ')]">
         <caption>
           <xsl:apply-templates select="*[contains(@class, ' topic/title ')]/node()" mode="topic-content"/>
@@ -314,21 +322,21 @@
 
   <!-- Transform DITA thead to HTML thead -->
   <xsl:template match="*[contains(@class, ' topic/thead ')]" mode="topic-content">
-    <thead>
+    <thead xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="*[contains(@class, ' topic/row ')]" mode="topic-content"/>
     </thead>
   </xsl:template>
 
   <!-- Transform DITA tbody to HTML tbody -->
   <xsl:template match="*[contains(@class, ' topic/tbody ')]" mode="topic-content">
-    <tbody>
+    <tbody xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="*[contains(@class, ' topic/row ')]" mode="topic-content"/>
     </tbody>
   </xsl:template>
 
   <!-- Transform DITA row to HTML tr -->
   <xsl:template match="*[contains(@class, ' topic/row ')]" mode="topic-content">
-    <tr>
+    <tr xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="*[contains(@class, ' topic/entry ')]" mode="topic-content"/>
     </tr>
   </xsl:template>
@@ -342,14 +350,14 @@
       </xsl:choose>
     </xsl:variable>
 
-    <xsl:element name="{$element-name}">
+    <xsl:element name="{$element-name}" namespace="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </xsl:element>
   </xsl:template>
 
   <!-- Transform DITA codeblock to HTML pre/code -->
   <xsl:template match="*[contains(@class, ' pr-d/codeblock ')]" mode="topic-content">
-    <pre>
+    <pre xmlns="http://www.w3.org/1999/xhtml">
       <code>
         <xsl:apply-templates select="node()" mode="topic-content"/>
       </code>
@@ -358,21 +366,21 @@
 
   <!-- Transform DITA codeph to HTML code -->
   <xsl:template match="*[contains(@class, ' pr-d/codeph ')]" mode="topic-content">
-    <code>
+    <code xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </code>
   </xsl:template>
 
   <!-- Transform DITA b to HTML strong -->
   <xsl:template match="*[contains(@class, ' hi-d/b ')]" mode="topic-content">
-    <strong>
+    <strong xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </strong>
   </xsl:template>
 
   <!-- Transform DITA i to HTML em -->
   <xsl:template match="*[contains(@class, ' hi-d/i ')]" mode="topic-content">
-    <em>
+    <em xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </em>
   </xsl:template>

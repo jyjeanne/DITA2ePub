@@ -2,7 +2,7 @@
 <plugin id="io.github.jyjeanne.dita2epub" version="1.0.1">
   <feature extension="package.version" value="1.0.1"/>
 
-  <!-- Require DITA-OT 4.3.5 or later -->
+  <!-- Require DITA-OT 4.4 or later -->
   <require plugin="org.dita.base"/>
   <require plugin="org.dita.html5"/>
 

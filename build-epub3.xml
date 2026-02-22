@@ -3,7 +3,7 @@
 
   <!--
     Ant build file for EPUB3 transformation
-    Integrates with DITA-OT 4.3.5 build pipeline
+    Integrates with DITA-OT 4.4 build pipeline
   -->
 
   <!-- Initialize EPUB3 transformation -->

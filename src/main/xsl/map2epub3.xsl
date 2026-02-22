@@ -10,7 +10,7 @@
                 version="3.0">
 
   <!--
-    Dita2epub - Modern EPUB3 Transformation Plugin for DITA-OT 4.3.5
+    Dita2epub - Modern EPUB3 Transformation Plugin for DITA-OT 4.4
 
     Main entry point for DITA to EPUB3 transformation
 
@@ -28,12 +28,18 @@
   <xsl:include href="epub3-content.xsl"/>
   <xsl:include href="epub3-impl.xsl"/>
 
-  <!-- Output method for XHTML5 -->
+  <!-- Output method for XHTML5 (no doctype-system to avoid OPF-073 errors) -->
   <xsl:output method="xhtml"
               encoding="UTF-8"
               indent="yes"
-              omit-xml-declaration="no"
-              doctype-system="about:legacy-compat"/>
+              omit-xml-declaration="no"/>
+
+  <!-- Named output for XML documents (OPF, container.xml) with no DOCTYPE -->
+  <xsl:output name="xml-no-doctype"
+              method="xml"
+              encoding="UTF-8"
+              indent="yes"
+              omit-xml-declaration="no"/>
 
   <!-- Root template -->
   <xsl:template match="/">
@@ -41,7 +47,7 @@
       <xsl:text>Dita2epub v1.0.0 - Starting EPUB3 transformation</xsl:text>
     </xsl:message>
     <xsl:message>
-      <xsl:text>DITA-OT Version: 4.3.5</xsl:text>
+      <xsl:text>DITA-OT Version: 4.4</xsl:text>
     </xsl:message>
     <xsl:message>
       <xsl:text>EPUB Version: </xsl:text>

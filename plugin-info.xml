@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin-info>
   <name>Dita2epub</name>
-  <description>Modern EPUB3 transformation plugin for DITA-OT 4.3.5 with cover pages and font embedding</description>
+  <description>Modern EPUB3 transformation plugin for DITA-OT 4.4 with cover pages and font embedding</description>
   <version>1.0.1</version>
   <author>J. Jeanne</author>
   <license>Apache License 2.0</license>
@@ -10,7 +10,7 @@
   <issues>https://github.com/jyjeanne/dita2epub/issues</issues>
 
   <compatibility>
-    <dita-ot-version>4.3.5</dita-ot-version>
+    <dita-ot-version>4.4</dita-ot-version>
     <java-version>17</java-version>
   </compatibility>
 
@@ -28,8 +28,8 @@
   </features>
 
   <dependencies>
-    <dependency plugin="org.dita.base" version="4.3.5"/>
-    <dependency plugin="org.dita.html5" version="4.3.5"/>
+    <dependency plugin="org.dita.base" version="4.4"/>
+    <dependency plugin="org.dita.html5" version="4.4"/>
   </dependencies>
 
   <release-notes>

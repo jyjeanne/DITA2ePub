@@ -29,9 +29,9 @@ jobs:
 
       - name: Download DITA-OT
         run: |
-          wget -q https://github.com/dita-ot/dita-ot/releases/download/4.3.5/dita-ot-4.3.5.zip
-          unzip -q dita-ot-4.3.5.zip
-          echo "DITA_HOME=${{ github.workspace }}/dita-ot-4.3.5" >> $GITHUB_ENV
+          wget -q https://github.com/dita-ot/dita-ot/releases/download/4.4/dita-ot-4.4.zip
+          unzip -q dita-ot-4.4.zip
+          echo "DITA_HOME=${{ github.workspace }}/dita-ot-4.4" >> $GITHUB_ENV
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -198,7 +198,7 @@ jobs:
           echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "1. Download the plugin ZIP from the release assets" >> $GITHUB_STEP_SUMMARY
-          echo "2. Test the plugin with DITA-OT 4.3.5" >> $GITHUB_STEP_SUMMARY
+          echo "2. Test the plugin with DITA-OT 4.4" >> $GITHUB_STEP_SUMMARY
           echo "3. Submit to DITA-OT plugin registry (if applicable)" >> $GITHUB_STEP_SUMMARY
           echo "4. Update project documentation with release information" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

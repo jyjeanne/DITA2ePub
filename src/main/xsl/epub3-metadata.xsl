@@ -18,7 +18,8 @@
   <xsl:template name="extract-metadata">
     <xsl:param name="root" as="element()"/>
 
-    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"
+    <metadata xmlns="http://www.idpf.org/2007/opf"
+              xmlns:dc="http://purl.org/dc/elements/1.1/"
               xmlns:dcterms="http://purl.org/dc/terms/">
 
       <!-- Publication Identifier -->
@@ -36,7 +37,7 @@
         <dc:title id="subtitle">
           <xsl:value-of select="normalize-space($root//*[contains(@class, ' bookmap/booktitle ')]/*[contains(@class, ' bookmap/booktitlealt ')][1])"/>
         </dc:title>
-        <meta refines="#subtitle" property="title-type">subtitle</meta>
+        <opf:meta refines="#subtitle" property="title-type">subtitle</opf:meta>
       </xsl:if>
 
       <!-- Language -->
@@ -67,9 +68,9 @@
       </dc:date>
 
       <!-- Last Modified (required by EPUB3) -->
-      <meta property="dcterms:modified">
+      <opf:meta property="dcterms:modified">
         <xsl:value-of select="format-dateTime(current-dateTime(), '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]Z')"/>
-      </meta>
+      </opf:meta>
 
       <!-- Rights/Copyright -->
       <xsl:call-template name="extract-rights">
@@ -91,7 +92,7 @@
 
       <!-- Cover Image -->
       <xsl:if test="$epub.cover.image != ''">
-        <meta name="cover" content="cover-image"/>
+        <opf:meta name="cover" content="cover-image"/>
       </xsl:if>
 
     </metadata>
@@ -119,24 +120,24 @@
         </xsl:choose>
       </dc:creator>
 
-      <meta refines="#{$author-id}" property="role" scheme="marc:relators">aut</meta>
+      <opf:meta refines="#{$author-id}" property="role" scheme="marc:relators">aut</opf:meta>
 
       <!-- File-as for sorting -->
       <xsl:if test="*[contains(@class, ' topic/data ')][@name='lastname']">
-        <meta refines="#{$author-id}" property="file-as">
+        <opf:meta refines="#{$author-id}" property="file-as">
           <xsl:value-of select="concat(
             normalize-space(*[contains(@class, ' topic/data ')][@name='lastname']),
             ', ',
             normalize-space(*[contains(@class, ' topic/data ')][@name='firstname'])
           )"/>
-        </meta>
+        </opf:meta>
       </xsl:if>
     </xsl:for-each>
 
     <!-- Fallback if no author in bookmeta -->
     <xsl:if test="not($root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/author ')])">
       <dc:creator id="creator">Unknown</dc:creator>
-      <meta refines="#creator" property="role" scheme="marc:relators">aut</meta>
+      <opf:meta refines="#creator" property="role" scheme="marc:relators">aut</opf:meta>
     </xsl:if>
   </xsl:template>
 
@@ -152,9 +153,9 @@
       </dc:contributor>
 
       <xsl:if test="@role">
-        <meta refines="#{$contrib-id}" property="role" scheme="marc:relators">
+        <opf:meta refines="#{$contrib-id}" property="role" scheme="marc:relators">
           <xsl:value-of select="@role"/>
-        </meta>
+        </opf:meta>
       </xsl:if>
     </xsl:for-each>
   </xsl:template>
@@ -269,34 +270,34 @@
     <xsl:variable name="wcag-level" select="upper-case($epub.accessibility)"/>
 
     <!-- Access modes -->
-    <meta property="schema:accessMode">textual</meta>
-    <meta property="schema:accessMode">visual</meta>
+    <opf:meta property="schema:accessMode">textual</opf:meta>
+    <opf:meta property="schema:accessMode">visual</opf:meta>
 
     <!-- Accessibility features -->
-    <meta property="schema:accessibilityFeature">structuralNavigation</meta>
-    <meta property="schema:accessibilityFeature">tableOfContents</meta>
-    <meta property="schema:accessibilityFeature">readingOrder</meta>
+    <opf:meta property="schema:accessibilityFeature">structuralNavigation</opf:meta>
+    <opf:meta property="schema:accessibilityFeature">tableOfContents</opf:meta>
+    <opf:meta property="schema:accessibilityFeature">readingOrder</opf:meta>
 
     <xsl:if test="epub:is-true($epub.aria.landmarks)">
-      <meta property="schema:accessibilityFeature">ARIA</meta>
+      <opf:meta property="schema:accessibilityFeature">ARIA</opf:meta>
     </xsl:if>
 
     <!-- Accessibility hazards -->
-    <meta property="schema:accessibilityHazard">none</meta>
+    <opf:meta property="schema:accessibilityHazard">none</opf:meta>
 
     <!-- Accessibility summary -->
-    <meta property="schema:accessibilitySummary">
+    <opf:meta property="schema:accessibilitySummary">
       <xsl:text>This publication conforms to </xsl:text>
       <xsl:value-of select="$wcag-level"/>
       <xsl:text> accessibility guidelines.</xsl:text>
-    </meta>
+    </opf:meta>
 
     <!-- Accessibility control -->
-    <meta property="schema:accessibilityControl">fullKeyboardControl</meta>
-    <meta property="schema:accessibilityControl">fullMouseControl</meta>
+    <opf:meta property="schema:accessibilityControl">fullKeyboardControl</opf:meta>
+    <opf:meta property="schema:accessibilityControl">fullMouseControl</opf:meta>
 
     <!-- Accessibility API -->
-    <meta property="schema:accessibilityAPI">ARIA</meta>
+    <opf:meta property="schema:accessibilityAPI">ARIA</opf:meta>
   </xsl:template>
 
 </xsl:stylesheet>
