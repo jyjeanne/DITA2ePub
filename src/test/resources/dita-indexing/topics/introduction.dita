@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="introduction" xml:lang="en-US">
+  <title>Introduction</title>
+  <body>
+    <p>This book is intended primarily for:</p>
+    <ul>
+      <li>Production editors</li>
+      <li>Authors</li>
+      <li>Project managers</li>
+      <li>Communications managers</li>
+      <li>Web site developers</li>
+    </ul>
+    <p>It will also be useful for anyone else who from time to time needs to commission an index from
+    a professional indexer.</p>
+
+    <p><indexterm>Index<indexterm>purpose of</indexterm></indexterm>
+    <indexterm>Index usability</indexterm>
+    For many, the art and science of indexing is opaque. Our goal, therefore, is to provide you with
+    basic information about what an index is and what it is not, how it serves its readers, and,
+    perhaps most importantly, how to evaluate and edit an index that has been submitted to you.</p>
+
+    <p>Because the specific contexts (business, content, and users) differ for each index, it is
+    difficult to provide answers that apply to all cases. But we can and have given you guidelines as
+    to best practices.</p>
+
+    <p>Framing all of our discussions is the importance of index usability. Readers and users of
+    indexes must be able to find the information they need easily and efficiently. If an index
+    doesn&#x2019;t fulfill that basic purpose, then its value as a significant information finding tool is
+    severely compromised.</p>
+  </body>
+</topic>

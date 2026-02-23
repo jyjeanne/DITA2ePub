@@ -79,6 +79,13 @@
       <val>centered</val>
       <val>custom</val>
     </param>
+    <param name="epub.generate.index"
+           desc="Generate back-of-book index from indexterm elements (auto/yes/no)"
+           type="enum">
+      <val default="true">auto</val>
+      <val>yes</val>
+      <val>no</val>
+    </param>
   </transtype>
 
   <!-- String resources for internationalization -->

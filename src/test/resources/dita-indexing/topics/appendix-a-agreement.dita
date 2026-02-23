@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="appendix-a-agreement" xml:lang="en-US">
+  <title>American Society of Indexers Recommended Indexing Agreement</title>
+  <body>
+    <p><indexterm>American Society of Indexers (ASI)<indexterm>sample indexing agreement</indexterm></indexterm>
+    <indexterm>ASI<index-see>American Society of Indexers (ASI)</index-see></indexterm>
+    <indexterm>Contracts<indexterm>formal vs. informal</indexterm></indexterm>
+    <indexterm>Contracts<indexterm>ASI recommended agreement</indexterm></indexterm>
+    This appendix presents the text of the American Society of Indexers Recommended Indexing
+    Agreement. This document is provided as a sample and may be adapted to suit the needs of
+    individual projects.</p>
+
+    <section>
+      <title>Disclaimer</title>
+      <p>This indexing agreement is provided by the American Society of Indexers, Inc. for the
+      information and use of indexers and publishers. The agreement is intended as a model and
+      should be reviewed by legal counsel before use.</p>
+    </section>
+
+    <section>
+      <title>Assignment of Rights</title>
+      <p><indexterm>Copyright assignment</indexterm>
+      <indexterm>Work made for hire</indexterm>
+      The agreement addresses whether the index is created as a work made for hire (in which case
+      the publisher owns the copyright) or whether the indexer retains copyright and licenses
+      specific rights to the publisher.</p>
+    </section>
+
+    <section>
+      <title>Author Credit and Editorial Approval</title>
+      <p><indexterm>Indexer credit</indexterm>
+      The agreement may specify whether the indexer will receive credit in the book&#x2019;s
+      acknowledgments or colophon. Editorial approval provisions establish who has final say
+      over the content of the index.</p>
+    </section>
+
+    <section>
+      <title>Payment and Delivery</title>
+      <p><indexterm>Payment terms</indexterm>
+      <indexterm>Delivery terms</indexterm>
+      Payment terms should be clearly specified, including the fee structure, when payment is due,
+      and how the completed index will be delivered to the publisher.</p>
+    </section>
+  </body>
+</topic>

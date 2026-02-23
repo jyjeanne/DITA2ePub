@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ch04-style-and-format" xml:lang="en-US">
+  <title>Index Style and Format</title>
+  <body>
+    <p><indexterm>Index style</indexterm>
+    <indexterm>Index format</indexterm>
+    Editors and authors are sometimes not sure where responsibilities lie when it comes to formatting
+    the index. The answer is really pretty simple: Whoever is responsible for the layout, composition,
+    and formatting of the book as a whole also needs to be responsible for formatting the index.</p>
+
+    <section>
+      <title>What to Expect When the Index Arrives: Style</title>
+      <p>When an index arrives from the indexer, the editor can expect certain aspects of the index
+      to already be in place. These include the choice of style (run-in or indented), capitalization,
+      and punctuation.</p>
+
+      <p><indexterm>Run-in style</indexterm>
+      <indexterm>Indented style</indexterm>
+      <indexterm>Entries<indexterm>run-in vs. indented</indexterm></indexterm>
+      The two most common index styles are <b>run-in</b> and <b>indented</b>. In run-in style,
+      subheadings follow the main heading on the same line, separated by semicolons. In indented
+      style, each subheading begins on a new line with an indent.</p>
+
+      <p><indexterm>Spelling conventions</indexterm>
+      <indexterm>Punctuation in indexes</indexterm>
+      Spelling and punctuation should follow the conventions established by the style guide in use.
+      Common style guides include the <i>Chicago Manual of Style</i> and <i>Hart&#x2019;s Rules</i>.</p>
+    </section>
+
+    <section>
+      <title>Capitalization</title>
+      <p><indexterm>Capitalization</indexterm>
+      Conventions for capitalization in indexes vary. Some house styles require capitalizing the first
+      word of every main heading, while others use lowercase throughout except for proper nouns. The
+      important thing is consistency.</p>
+    </section>
+
+    <section>
+      <title>Cross-Reference Style</title>
+      <p><indexterm>Cross-references<indexterm>style of</indexterm></indexterm>
+      Cross-references should be formatted according to house style. <i>See</i> and <i>See also</i>
+      are commonly italicized, and the referenced heading may be capitalized or not depending on
+      the convention used.</p>
+    </section>
+
+    <section>
+      <title>Abbreviation of Page Ranges</title>
+      <p><indexterm>Abbreviation of page ranges</indexterm>
+      <indexterm>Page ranges</indexterm>
+      <indexterm>Conflation of page numbers</indexterm>
+      <indexterm><i>Chicago Manual of Style</i> (University of Chicago Press)<index-sort-as>Chicago Manual of Style</index-sort-as></indexterm>
+      Page ranges may be expressed in full (132&#x2013;138) or abbreviated (132&#x2013;38 or 132&#x2013;8). The
+      <i>Chicago Manual of Style</i> provides detailed guidance on acceptable abbreviation patterns.
+      Conflation of page numbers (combining two references into a single range) should be done
+      carefully to avoid misrepresentation.</p>
+    </section>
+
+    <section>
+      <title>Diacriticals and Special Characters</title>
+      <p><indexterm>Accent marks (diacriticals)</indexterm>
+      Accent marks and other diacritical characters should be preserved in index entries. This is
+      particularly important for personal and place names from non-English languages.</p>
+    </section>
+
+    <section>
+      <title>Illustrative Material</title>
+      <p><indexterm>Art books</indexterm>
+      <indexterm>Illustrative material in indexes</indexterm>
+      References to figures, tables, maps, and other illustrative material are typically indicated
+      by special typography (such as italics or bold) in the index locators. Art books may require
+      specialized indexing approaches.</p>
+    </section>
+
+    <section>
+      <title>Index Evaluation Checklist</title>
+      <p><indexterm>Checklist for index evaluation</indexterm>
+      <indexterm>Communication<indexterm>importance of</indexterm></indexterm>
+      A comprehensive evaluation checklist helps editors verify that the index meets quality
+      standards. Communication between editor and indexer about style expectations before the
+      indexing begins can prevent many problems.</p>
+    </section>
+  </body>
+</topic>

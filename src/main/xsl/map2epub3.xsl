@@ -27,6 +27,7 @@
   <xsl:include href="epub3-metadata.xsl"/>
   <xsl:include href="epub3-content.xsl"/>
   <xsl:include href="epub3-impl.xsl"/>
+  <xsl:include href="epub3-index.xsl"/>
 
   <!-- Output method for XHTML5 (no doctype-system to avoid OPF-073 errors) -->
   <xsl:output method="xhtml"
@@ -92,6 +93,11 @@
 
     <!-- Generate content files -->
     <xsl:call-template name="generate-content">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
+    <!-- Generate back-of-book index if indexterms are present -->
+    <xsl:call-template name="generate-index">
       <xsl:with-param name="map" select="$map"/>
     </xsl:call-template>
 

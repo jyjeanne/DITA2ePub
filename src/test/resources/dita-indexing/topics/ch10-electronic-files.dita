@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ch10-electronic-files" xml:lang="en-US">
+  <title>Electronic Files</title>
+  <body>
+    <p><indexterm>Electronic files</indexterm>
+    An indexer&#x2019;s use of electronic files will depend on the preferences of both the indexer and
+    the publisher, as well as the nature of the particular job. Some indexers, and some publishers
+    as well, still prefer to work from hardcopy proofs. Few if any professional indexers today would
+    consider preparing an index without indexing software.</p>
+
+    <section>
+      <title>Indexing Software Capabilities</title>
+      <p><indexterm>Indexing software</indexterm>
+      <indexterm>Dedicated indexing software</indexterm>
+      <indexterm>CINDEX</indexterm>
+      <indexterm>MACREX</indexterm>
+      <indexterm>SKY Index</indexterm>
+      Three major dedicated indexing programs are widely used by professional indexers: CINDEX,
+      MACREX, and SKY Index Professional. Each provides features tailored to the indexing process,
+      including entry creation, editing, sorting, cross-reference management, and output
+      formatting.</p>
+
+      <p><indexterm>Embedded indexing<indexterm>software</indexterm></indexterm>
+      <indexterm>Computer-generated indexes</indexterm>
+      Embedded indexing uses software such as FrameMaker, QuarkXPress, or InDesign to insert
+      index tags directly into the document. This approach is valuable for publications that will
+      be reformatted or repaginated, as the index entries move with the text. However, computer-
+      generated indexes based purely on word frequency are no substitute for human analysis.</p>
+    </section>
+
+    <section>
+      <title>Document Formats</title>
+      <p><indexterm>PDF files</indexterm>
+      <indexterm>Document formats</indexterm>
+      Most indexers today work from PDF files, which preserve the exact appearance of the final
+      pages. Other formats may be used depending on the project requirements.</p>
+    </section>
+
+    <section>
+      <title>File Transfers</title>
+      <p><indexterm>File transfers</indexterm>
+      <indexterm>Communication<indexterm>electronic files and</indexterm></indexterm>
+      Files are typically exchanged via email or FTP. Large files may require specialized file
+      transfer services. Clear communication about file naming conventions and version control
+      helps prevent confusion.</p>
+    </section>
+  </body>
+</topic>

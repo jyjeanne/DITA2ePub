@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ch07-hiring-indexer" xml:lang="en-US">
+  <title>Hiring an Indexer</title>
+  <body>
+    <section>
+      <title>Using a Professional Indexer</title>
+      <p><indexterm>Professional indexers</indexterm>
+      <indexterm>Authors<indexterm>as indexers</indexterm></indexterm>
+      Some authors may be tempted to save money by employing a family member or a graduate student
+      to prepare the index. Others may even consider writing the index themselves. In both cases,
+      this is usually a bad idea. It is rare for anyone to have the native ability to create a good
+      index without training and experience.</p>
+
+      <p><indexterm>Indexing<indexterm>skills required</indexterm></indexterm>
+      Professional indexers have developed specific skills including the ability to identify
+      indexable concepts, select appropriate access points, create effective cross-reference
+      structures, and use dedicated indexing software efficiently.</p>
+    </section>
+
+    <section>
+      <title>Finding an Indexer</title>
+      <p><indexterm>Advertising to find indexers</indexterm>
+      <indexterm>American Society of Indexers (ASI)<indexterm>Index Locator and Jobs Hotline</indexterm></indexterm>
+      There are several ways to find a qualified indexer. Personal referrals from colleagues are
+      often the best approach. Internet searches can also be productive. The American Society of
+      Indexers (ASI) maintains an Index Locator directory where editors can search for indexers
+      by subject specialty and geographic location.</p>
+    </section>
+
+    <section>
+      <title>Indexer Qualities</title>
+      <p><indexterm>Indexer qualifications</indexterm>
+      <indexterm>Budget for indexes, indexer qualifications and</indexterm>
+      When evaluating potential indexers, consider their experience with similar types of material,
+      their familiarity with the subject area, their references, and their demonstrated ability to
+      meet deadlines. Budget considerations should not lead to selecting an unqualified indexer.</p>
+    </section>
+  </body>
+</topic>

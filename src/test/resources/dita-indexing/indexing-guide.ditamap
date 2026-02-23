@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bookmap PUBLIC "-//OASIS//DTD DITA BookMap//EN" "bookmap.dtd">
+<bookmap id="indexing-guide" xml:lang="en-US">
+  <booktitle>
+    <mainbooktitle>Indexing for Editors and Authors</mainbooktitle>
+    <booktitlealt>A Practical Guide to Understanding Indexes</booktitlealt>
+  </booktitle>
+
+  <bookmeta>
+    <authorinformation>
+      <personinfo>
+        <namedetails>
+          <personname>
+            <firstname>Fred</firstname>
+            <lastname>Leise</lastname>
+          </personname>
+        </namedetails>
+      </personinfo>
+    </authorinformation>
+    <authorinformation>
+      <personinfo>
+        <namedetails>
+          <personname>
+            <firstname>Kate</firstname>
+            <lastname>Mertes</lastname>
+          </personname>
+        </namedetails>
+      </personinfo>
+    </authorinformation>
+    <authorinformation>
+      <personinfo>
+        <namedetails>
+          <personname>
+            <firstname>Nan</firstname>
+            <lastname>Badgett</lastname>
+          </personname>
+        </namedetails>
+      </personinfo>
+    </authorinformation>
+    <publisherinformation>
+      <organization>Information Today, Inc.</organization>
+      <published>
+        <completed>
+          <year>2008</year>
+        </completed>
+      </published>
+    </publisherinformation>
+    <bookid>
+      <isbn>978-1-57387-829-6</isbn>
+    </bookid>
+    <bookrights>
+      <copyrfirst><year>2008</year></copyrfirst>
+      <bookowner>
+        <organization>American Society of Indexers, Inc.</organization>
+      </bookowner>
+    </bookrights>
+  </bookmeta>
+
+  <frontmatter>
+    <booklists>
+      <toc/>
+    </booklists>
+  </frontmatter>
+
+  <chapter href="topics/foreword.dita"/>
+  <chapter href="topics/introduction.dita"/>
+  <chapter href="topics/ch01-what-is-an-index.dita">
+    <topicref href="topics/ch01-index-structure.dita"/>
+  </chapter>
+  <chapter href="topics/ch02-types-of-indexes.dita"/>
+  <chapter href="topics/ch03-good-index.dita"/>
+  <chapter href="topics/ch04-style-and-format.dita"/>
+  <chapter href="topics/ch05-index-length.dita"/>
+  <chapter href="topics/ch06-relationships.dita"/>
+  <chapter href="topics/ch07-hiring-indexer.dita"/>
+  <chapter href="topics/ch08-editor-tells-indexer.dita"/>
+  <chapter href="topics/ch09-editing-index.dita"/>
+  <chapter href="topics/ch10-electronic-files.dita"/>
+
+  <chapter href="topics/author-bios.dita"/>
+
+  <appendices>
+    <appendix href="topics/appendix-a-agreement.dita"/>
+    <appendix href="topics/appendix-b-resources.dita"/>
+    <appendix href="topics/appendix-c-glossary.dita"/>
+  </appendices>
+
+  <backmatter>
+    <booklists>
+      <indexlist/>
+    </booklists>
+  </backmatter>
+
+</bookmap>

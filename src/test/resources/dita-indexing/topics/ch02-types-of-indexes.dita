@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ch02-types-of-indexes" xml:lang="en-US">
+  <title>Numbers and Types of Indexes</title>
+  <body>
+    <p>This chapter looks at two basic issues associated with indexes. First, we look at the pros
+    and cons of having more than one index associated with a specific text. Then we explore the
+    various types of indexes, which come in more flavors than just a typical name/subject index.</p>
+
+    <section>
+      <title>Numbers of Indexes</title>
+      <p><indexterm>Indexes<indexterm>single vs. multiple</indexterm></indexterm>
+      <indexterm>Multiple indexes</indexterm>
+      Most books have a single, comprehensive index. But depending on the needs of the project,
+      there may be two, three, or even more indexes associated with a particular text. Common
+      arrangements include separating name indexes from subject indexes or using separate indexes
+      for specialized content types such as legal cases or scientific names.</p>
+
+      <p><indexterm>Multiple indexes<indexterm>problems with</indexterm></indexterm>
+      The problem with multiple indexes is that users may not know which index to consult for a
+      particular query. Multiple indexes also increase the chance that some items will be missed
+      or duplicated.</p>
+    </section>
+
+    <section>
+      <title>Types of Indexes</title>
+      <p><indexterm>Indexes<indexterm>types of</indexterm></indexterm>
+      <indexterm>Name indexes</indexterm>
+      <indexterm>Subject indexes</indexterm>
+      Indexes come in many varieties. Name indexes list the names of persons, organizations, or
+      other named entities mentioned in the text. Subject indexes organize concepts by topic. These
+      are the two most common types, but many others exist.</p>
+
+      <p><indexterm>Chemical indexes</indexterm>
+      <indexterm>Alphabetization<indexterm>of chemical indexes</indexterm></indexterm>
+      <indexterm>Scientific name indexes</indexterm>
+      Chemical indexes present special challenges because chemical names do not always alphabetize
+      in a straightforward manner. Scientific name indexes similarly require knowledge of naming
+      conventions and taxonomic hierarchies.</p>
+
+      <p><indexterm>Citation indexes</indexterm>
+      <indexterm><i>Science Citation Index</i><index-sort-as>Science Citation Index</index-sort-as></indexterm>
+      <indexterm>First-line indexes</indexterm>
+      <indexterm>Alphabetization<indexterm>of first-line indexes</indexterm></indexterm>
+      <indexterm>Geographic indexes</indexterm>
+      <indexterm>Author indexes</indexterm>
+      <indexterm>Legal case indexes</indexterm>
+      Other specialized types include citation indexes (such as the <i>Science Citation Index</i>),
+      first-line indexes used for poetry, geographic indexes, author indexes, and legal case
+      indexes. Each type has its own conventions for organization and presentation.</p>
+
+      <p><indexterm>Biographies, qualifiers in indexes of</indexterm>
+      In indexes of biographical works, qualifiers are often needed to distinguish between
+      individuals with the same name.</p>
+    </section>
+  </body>
+</topic>

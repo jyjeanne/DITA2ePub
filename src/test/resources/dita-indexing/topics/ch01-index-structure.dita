@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ch01-index-structure" xml:lang="en-US">
+  <title>Index Structure</title>
+  <body>
+    <p><indexterm>Entries<index-see-also>Headings</index-see-also></indexterm>
+    Indexes comprise two main parts: the index headnote and the entries themselves.</p>
+
+    <section>
+      <title>Headnotes</title>
+      <p><indexterm>Headnotes</indexterm>
+      Headnotes are used to alert readers to any unusual or nonstandard practices in the index.
+      Headnotes may cover such items as use of special typography (&#x201C;Page numbers in italics refer
+      to illustrations&#x201D;), abbreviations, or locator formatting. Headnotes may also indicate special
+      issues of coverage (&#x201C;Names of fictional characters have not been indexed&#x201D;).</p>
+    </section>
+
+    <section>
+      <title>Index Entries</title>
+      <p><indexterm>Entries<indexterm>components of</indexterm></indexterm>
+      Index entries consist of three parts: headings, subheadings, and locators.</p>
+
+      <p><indexterm>Headings</indexterm>
+      <indexterm>Entries<indexterm>headings</indexterm></indexterm>
+      Headings are the terms that lead users to information. Headings typically consist of nouns or
+      noun phrases; adjectives or adverbs rarely make useful headings. Headings should also express
+      complete concepts and should provide access both to high-level topics as well as to more
+      specific details.</p>
+
+      <p><indexterm>Subheadings</indexterm>
+      <indexterm>Entries<indexterm>subheadings</indexterm></indexterm>
+      Subheadings (also called subentries) provide a second level of access to information. There
+      is no strict rule about when subheadings should be used, but a general guideline is that any
+      main heading with five or more undifferentiated locators should probably have subheadings
+      created for it.</p>
+
+      <p><indexterm>Locators</indexterm>
+      <indexterm>Entries<indexterm>locators</indexterm></indexterm>
+      <indexterm>Complex locators</indexterm>
+      Locators tell the reader where to find the specific information indicated by the heading and/or
+      subheading. Locators are most often page numbers but can include section numbers, paragraph
+      numbers, or other pointers to a specific location in the text.</p>
+    </section>
+
+    <section>
+      <title>Cross-References</title>
+      <p><indexterm>Cross-references<indexterm>types of</indexterm></indexterm>
+      <indexterm>Cross-references<indexterm>see references</indexterm></indexterm>
+      <indexterm>Cross-references<indexterm>see also references</indexterm></indexterm>
+      Cross-references are signposts in the index. They direct users from one place in the index to
+      another. There are two types: <i>See</i> references and <i>See also</i> references.</p>
+
+      <p>A <i>See</i> reference directs the reader from a term that is not used in the index to
+      the term that is used. For example: &#x201C;Dogs. <i>See</i> Canines.&#x201D;</p>
+
+      <p>A <i>See also</i> reference directs the reader from one term to a related term where
+      additional information can be found. For example: &#x201C;Dogs. <i>See also</i> Wolves.&#x201D;</p>
+
+      <p><indexterm>Blind cross-references</indexterm>
+      <indexterm>Cross-references<indexterm>blind</indexterm></indexterm>
+      <indexterm>Circular cross-references</indexterm>
+      <indexterm>Cross-references<indexterm>circular</indexterm></indexterm>
+      <indexterm>Generic cross-references</indexterm>
+      <indexterm>Cross-references<indexterm>generic</indexterm></indexterm>
+      Blind cross-references are those that lead nowhere&#x2014;references to headings that do not
+      exist in the index. Circular cross-references create an endless loop. Generic cross-references
+      suggest types of entries to look for rather than pointing to a specific heading.</p>
+
+      <p><indexterm>Double-posting</indexterm>
+      <indexterm>Double-posting<index-see-also>Cross-references</index-see-also></indexterm>
+      The alternative to a cross-reference is double-posting, where the same locators are placed
+      under two or more headings. Double-posting is generally preferred when the number of locators
+      is small.</p>
+    </section>
+  </body>
+</topic>

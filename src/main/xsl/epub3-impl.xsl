@@ -24,6 +24,13 @@
     <!-- Collect all topicrefs for manifest and spine -->
     <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
 
+    <!-- Determine if index should be generated -->
+    <xsl:variable name="has-indexlist" select="exists($map//*[contains(@class, ' bookmap/indexlist ')])"/>
+    <xsl:variable name="generate-index" select="
+      epub:is-true($epub.generate.index) or
+      ($epub.generate.index = 'auto' and $has-indexlist)
+    "/>
+
     <xsl:result-document href="{concat($epub.topics.dir, '/content.opf')}"
                          format="xml-no-doctype">
       <package xmlns="http://www.idpf.org/2007/opf"
@@ -85,6 +92,13 @@
                   media-type="application/xhtml+xml"/>
           </xsl:for-each>
 
+          <!-- Index page (if generated) -->
+          <xsl:if test="$generate-index">
+            <item id="index"
+                  href="index.xhtml"
+                  media-type="application/xhtml+xml"/>
+          </xsl:if>
+
           <!-- Add images referenced in topics - use relative path from content/ directory -->
           <xsl:variable name="all-images" select="$map//*[contains(@class, ' topic/image ')]/@href"/>
           <xsl:for-each select="distinct-values($all-images)">
@@ -122,6 +136,11 @@
             <xsl:variable name="topic-id" select="replace($filename, '\.xhtml$', '')"/>
             <itemref idref="{$topic-id}"/>
           </xsl:for-each>
+
+          <!-- Index (if generated) -->
+          <xsl:if test="$generate-index">
+            <itemref idref="index"/>
+          </xsl:if>
         </spine>
 
         <!-- Guide (optional for backward compatibility) -->
@@ -143,13 +162,21 @@
 
     <xsl:message>Generating EPUB3 navigation document...</xsl:message>
 
+    <!-- Determine if index should be generated (shared by TOC and landmarks) -->
+    <xsl:variable name="nav-has-indexlist" select="exists($map//*[contains(@class, ' bookmap/indexlist ')])"/>
+    <xsl:variable name="nav-generate-index" select="
+      epub:is-true($epub.generate.index) or
+      ($epub.generate.index = 'auto' and $nav-has-indexlist)
+    "/>
+
     <xsl:result-document href="{concat($epub.topics.dir, '/nav.xhtml')}"
                          method="xhtml"
                          encoding="UTF-8"
                          indent="yes">
       <html xmlns="http://www.w3.org/1999/xhtml"
-            xmlns:epub="http://www.idpf.org/2007/ops"
             xml:lang="{epub:get-language($map)}">
+        <!-- Force epub namespace on root html element per EPUB 3.3 Section 7.2 -->
+        <xsl:namespace name="epub">http://www.idpf.org/2007/ops</xsl:namespace>
         <head>
           <meta charset="UTF-8"/>
           <title>
@@ -174,9 +201,17 @@
                 <xsl:otherwise>Table of Contents</xsl:otherwise>
               </xsl:choose>
             </h1>
+            <!-- Flatten frontmatter/backmatter containers: promote their children to the top level -->
             <xsl:call-template name="generate-toc-list">
-              <xsl:with-param name="topicrefs" select="$map/*[contains(@class, ' map/topicref ')]"/>
+              <xsl:with-param name="topicrefs" select="
+                $map/*[contains(@class, ' map/topicref ')]
+                  [not(contains(@class, ' bookmap/frontmatter ') or contains(@class, ' bookmap/backmatter '))]
+                | $map/*[contains(@class, ' bookmap/frontmatter ') or contains(@class, ' bookmap/backmatter ')]
+                  /*[contains(@class, ' map/topicref ')]
+              "/>
               <xsl:with-param name="depth" select="1"/>
+              <xsl:with-param name="append-index" select="$nav-generate-index"/>
+              <xsl:with-param name="map" select="$map"/>
             </xsl:call-template>
           </nav>
 
@@ -216,6 +251,18 @@
                     </a>
                   </li>
                 </xsl:if>
+                <xsl:if test="$nav-generate-index">
+                  <li>
+                    <a epub:type="index" href="index.xhtml">
+                      <xsl:choose>
+                        <xsl:when test="starts-with($lang, 'fr')">Index</xsl:when>
+                        <xsl:when test="starts-with($lang, 'de')">Stichwortverzeichnis</xsl:when>
+                        <xsl:when test="starts-with($lang, 'es')">Índice</xsl:when>
+                        <xsl:otherwise>Index</xsl:otherwise>
+                      </xsl:choose>
+                    </a>
+                  </li>
+                </xsl:if>
               </ol>
             </nav>
           </xsl:if>
@@ -230,6 +277,8 @@
   <xsl:template name="generate-toc-list">
     <xsl:param name="topicrefs" as="element()*"/>
     <xsl:param name="depth" as="xs:integer"/>
+    <xsl:param name="append-index" as="xs:boolean" select="false()"/>
+    <xsl:param name="map" as="element()?"/>
 
     <!-- Filter out booklists/frontmatter elements that don't have content -->
     <xsl:variable name="valid-topicrefs" select="$topicrefs[
@@ -242,7 +291,7 @@
       (@href or *[contains(@class, ' map/topicref ')][@href])
     ]"/>
 
-    <xsl:if test="$valid-topicrefs and $depth &lt;= $epub.toc.depth">
+    <xsl:if test="($valid-topicrefs or $append-index) and $depth &lt;= $epub.toc.depth">
       <ol xmlns="http://www.w3.org/1999/xhtml">
         <xsl:for-each select="$valid-topicrefs">
           <li xmlns="http://www.w3.org/1999/xhtml">
@@ -272,6 +321,19 @@
             </xsl:if>
           </li>
         </xsl:for-each>
+        <!-- Append Index entry at end of top-level TOC list -->
+        <xsl:if test="$append-index">
+          <li xmlns="http://www.w3.org/1999/xhtml">
+            <a xmlns="http://www.w3.org/1999/xhtml" href="index.xhtml">
+              <xsl:choose>
+                <xsl:when test="$map and starts-with(epub:get-language($map), 'fr')">Index</xsl:when>
+                <xsl:when test="$map and starts-with(epub:get-language($map), 'de')">Stichwortverzeichnis</xsl:when>
+                <xsl:when test="$map and starts-with(epub:get-language($map), 'es')">Índice alfabético</xsl:when>
+                <xsl:otherwise>Index</xsl:otherwise>
+              </xsl:choose>
+            </a>
+          </li>
+        </xsl:if>
       </ol>
     </xsl:if>
   </xsl:template>
@@ -289,6 +351,22 @@
       </xsl:when>
       <xsl:when test="$topicref/@href">
         <xsl:value-of select="tokenize($topicref/@href, '/')[last()]"/>
+      </xsl:when>
+      <!-- Localized labels for bookmap structural containers -->
+      <xsl:when test="contains($topicref/@class, ' bookmap/appendices ')">
+        <xsl:variable name="lang" select="epub:get-language(root($topicref)/*)"/>
+        <xsl:choose>
+          <xsl:when test="starts-with($lang, 'fr')">Annexes</xsl:when>
+          <xsl:when test="starts-with($lang, 'de')">Anhang</xsl:when>
+          <xsl:when test="starts-with($lang, 'es')">Apéndices</xsl:when>
+          <xsl:otherwise>Appendices</xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:when test="contains($topicref/@class, ' bookmap/frontmatter ')">
+        <xsl:text>Front Matter</xsl:text>
+      </xsl:when>
+      <xsl:when test="contains($topicref/@class, ' bookmap/backmatter ')">
+        <xsl:text>Back Matter</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>Untitled</xsl:text>
@@ -612,8 +690,14 @@
           <text><xsl:value-of select="epub:get-title($map)"/></text>
         </docTitle>
         <navMap>
+          <!-- Flatten frontmatter/backmatter containers: promote their children to the top level -->
           <xsl:call-template name="generate-ncx-navpoints">
-            <xsl:with-param name="topicrefs" select="$map/*[contains(@class, ' map/topicref ')]"/>
+            <xsl:with-param name="topicrefs" select="
+              $map/*[contains(@class, ' map/topicref ')]
+                [not(contains(@class, ' bookmap/frontmatter ') or contains(@class, ' bookmap/backmatter '))]
+              | $map/*[contains(@class, ' bookmap/frontmatter ') or contains(@class, ' bookmap/backmatter ')]
+                /*[contains(@class, ' map/topicref ')]
+            "/>
             <xsl:with-param name="depth" select="1"/>
             <xsl:with-param name="all-valid" select="$all-valid-ncx-topicrefs"/>
           </xsl:call-template>

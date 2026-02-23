@@ -129,7 +129,22 @@
       </xsl:choose>
     </xsl:variable>
 
-    <article xmlns="http://www.w3.org/1999/xhtml" epub:type="chapter">
+    <article xmlns="http://www.w3.org/1999/xhtml">
+      <!-- Determine epub:type from bookmap context (SSV vocabulary) -->
+      <xsl:attribute name="epub:type">
+        <xsl:choose>
+          <xsl:when test="contains($topicref/@class, ' bookmap/preface ')">preface</xsl:when>
+          <xsl:when test="$topicref/ancestor-or-self::*[contains(@class, ' bookmap/frontmatter ')]
+                          and not(contains($topicref/@class, ' bookmap/preface '))">foreword</xsl:when>
+          <xsl:when test="contains($topicref/@class, ' bookmap/appendix ')">appendix</xsl:when>
+          <xsl:when test="$topicref/ancestor-or-self::*[contains(@class, ' bookmap/appendix ')]">appendix</xsl:when>
+          <xsl:when test="contains($topicref/@class, ' bookmap/glossarylist ')
+                          or contains($topicref/@class, ' glossentry/glossentry ')">glossary</xsl:when>
+          <xsl:when test="contains($topicref/@class, ' bookmap/chapter ')">chapter</xsl:when>
+          <xsl:when test="$topicref/ancestor::*[contains(@class, ' bookmap/chapter ')]">chapter</xsl:when>
+          <xsl:otherwise>chapter</xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
       <xsl:choose>
         <xsl:when test="$topic">
           <!-- Process actual topic content -->
@@ -388,6 +403,17 @@
   <!-- Copy text nodes -->
   <xsl:template match="text()" mode="topic-content">
     <xsl:value-of select="."/>
+  </xsl:template>
+
+  <!-- Insert index anchor spans for indexterm elements (linked from back-of-book index) -->
+  <xsl:template match="indexterm | *[contains(@class, ' topic/indexterm ')]" mode="topic-content">
+    <!-- Compute deterministic anchor ID matching epub3-index.xsl collection -->
+    <xsl:variable name="all-indexterms" select="root()//*[self::indexterm or contains(@class, ' topic/indexterm ')]"/>
+    <xsl:variable name="pos" select="count($all-indexterms[. &lt;&lt; current()]) + 1"/>
+    <xsl:variable name="topic-id" select="(root()//*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference])[1]/@id"/>
+    <span xmlns="http://www.w3.org/1999/xhtml" id="ixa-{$topic-id}-{$pos}"/>
+    <!-- Process nested indexterms to generate their anchors too -->
+    <xsl:apply-templates select="*[self::indexterm or contains(@class, ' topic/indexterm ')]" mode="topic-content"/>
   </xsl:template>
 
   <!-- Default template - ignore unknown elements but process children -->

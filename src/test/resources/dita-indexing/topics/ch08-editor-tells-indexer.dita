@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ch08-editor-tells-indexer" xml:lang="en-US">
+  <title>What the Editor Needs to Tell the Indexer</title>
+  <body>
+    <p><indexterm>Scope of work</indexterm>
+    Once the editor chooses a shortlist of potential indexers, negotiations can begin. First, the
+    indexer&#x2019;s availability and suitability need to be determined. Then fees and deadlines need to
+    be set.</p>
+
+    <section>
+      <title>Scope of Work</title>
+      <p><indexterm>Text density</indexterm>
+      The editor should provide the indexer with as much information as possible about the project:
+      the subject matter, its complexity, the intended audience, the length of the text, and any
+      special requirements such as multiple indexes or embedded indexing.</p>
+    </section>
+
+    <section>
+      <title>Style Guidelines</title>
+      <p><indexterm>Style guidelines</indexterm>
+      Any specific style requirements should be communicated to the indexer before work begins.
+      This includes the preferred style guide, any deviations from standard practice, and any
+      publisher-specific conventions.</p>
+    </section>
+
+    <section>
+      <title>Negotiating the Fee</title>
+      <p><indexterm>Fee arrangements</indexterm>
+      <indexterm>Per-page rates</indexterm>
+      <indexterm>Per-entry rates</indexterm>
+      <indexterm>Per-hour rates</indexterm>
+      <indexterm>Flat fee arrangements</indexterm>
+      Indexing fees are typically structured in one of four ways: per-page, per-entry, per-hour,
+      or flat fee. Per-page rates are the most common. The appropriate rate depends on the
+      complexity of the material, the required turnaround time, and the indexer&#x2019;s experience.</p>
+
+      <p><indexterm>Cancellation fees</indexterm>
+      <indexterm>Rush fees</indexterm>
+      <indexterm>Special costs</indexterm>
+      Special circumstances may warrant additional fees. Rush jobs typically incur a surcharge.
+      Cancellation fees compensate the indexer for time reserved for the project. Other special
+      costs may include shipping or software licensing.</p>
+    </section>
+
+    <section>
+      <title>Setting Deadlines</title>
+      <p><indexterm>Deadlines</indexterm>
+      <indexterm>Production schedule</indexterm>
+      Deadlines should be realistic and take into account the complexity and length of the text.
+      A common rule of thumb is that an indexer can complete 10&#x2013;15 pages per hour for
+      straightforward material. Complex or technical texts may require more time.</p>
+    </section>
+
+    <section>
+      <title>Embedded Indexing</title>
+      <p><indexterm>Embedded indexing<indexterm>considerations</indexterm></indexterm>
+      If the publisher requires embedded indexing (where tags are inserted directly into the source
+      files), this affects both the choice of indexer and the fee, as not all indexers have experience
+      with embedded indexing software.</p>
+    </section>
+  </body>
+</topic>

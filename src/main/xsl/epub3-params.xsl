@@ -53,6 +53,9 @@
   <xsl:param name="epub.generate.lot" as="xs:string" select="'no'"/>
   <xsl:param name="epub.include.toc.page" as="xs:string" select="'no'"/>
 
+  <!-- Index Generation -->
+  <xsl:param name="epub.generate.index" as="xs:string" select="'auto'"/>
+
   <!-- Validation -->
   <xsl:param name="epub.validate" as="xs:string" select="'yes'"/>
   <xsl:param name="epub.validation.level" as="xs:string" select="'error'"/>

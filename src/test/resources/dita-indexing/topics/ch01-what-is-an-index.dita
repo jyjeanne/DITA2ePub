@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ch01-what-is-an-index" xml:lang="en-US">
+  <title>What Is an Index?</title>
+  <body>
+    <section>
+      <title>A Brief History</title>
+      <p><indexterm>Indexes<indexterm>history of</indexterm></indexterm>
+      <indexterm>Alexandrian Library</indexterm>
+      Indexes have been around for nearly as long as the written word. As soon as a store of knowledge
+      became too great to hold in one&#x2019;s brain, then an index, or &#x201C;pointer&#x201D; to the information, was
+      needed. The great Greek Alexandrian Library contained more than 400,000 written scrolls. Imagine
+      the time it would take to unroll each scroll in turn to find the information you needed.</p>
+
+      <p>Later, when the codex, or book form, developed, guides to a book&#x2019;s contents, called either
+      an &#x201C;index&#x201D; or a &#x201C;table,&#x201D; were created. After the invention of printing, when it was possible
+      to create multiple identical copies of a text, indexes came into their own.</p>
+    </section>
+
+    <section>
+      <title>Purposes: What Do Indexes Do?</title>
+      <p><indexterm>Collocation</indexterm>
+      <indexterm>Indexes<indexterm>purposes of</indexterm></indexterm>
+      Indexes provide access to information. They do this by collecting together in one place similar
+      concepts from disparate sections of the text (a process called &#x201C;collocation&#x201D;). The terms
+      representing the various collected concepts are then presented to the user in a known or stated
+      searchable order.</p>
+
+      <p>It is important to note that the purpose of the index is not to repeat information in the
+      text, but merely to point the user to it.</p>
+    </section>
+
+    <section>
+      <title>Business Context</title>
+      <p><indexterm>Business context for indexes</indexterm>
+      <indexterm><i>Cambridge Dictionary of American Biography</i><index-sort-as>Cambridge Dictionary of American Biography</index-sort-as></indexterm>
+      <indexterm><i>Oxford Dictionary of Quotations</i><index-sort-as>Oxford Dictionary of Quotations</index-sort-as></indexterm>
+      Why is this index being created? What purpose will it serve? Is it a marketing tool? One
+      reference book, <i>Cambridge Dictionary of American Biography</i> (1995), boasts of its indexes
+      on the back cover. In the <i>Oxford Dictionary of Quotations</i> (1999), the index comprises 27
+      percent of the total length of the book, demonstrating its importance for users.</p>
+
+      <p><indexterm><i>Reader&#x2019;s Guide to Periodical Literature</i><index-sort-as>Readers Guide to Periodical Literature</index-sort-as></indexterm>
+      Serving as an index may be the sole purpose of a publication. Think of the <i>Reader&#x2019;s Guide
+      to Periodical Literature</i>, for example. The index <i>is</i> the book, whose sole <i>raison
+      d&#x2019;&#x00EA;tre</i> is to direct readers to primary source material.</p>
+    </section>
+
+    <section>
+      <title>Index Users</title>
+      <p><indexterm>Users<indexterm>types of</indexterm></indexterm>
+      <indexterm>Known-item finding</indexterm>
+      Generally, there are two types of users that indexers must keep in mind:</p>
+      <ol>
+        <li>People who have not read the book, but are perusing the index before they buy it to find
+        out what kinds of information it contains</li>
+        <li>Those who have previously read the book and are consulting the index to find something
+        they know they had seen in the text (called &#x201C;known-item finding&#x201D;)</li>
+      </ol>
+
+      <p><indexterm>Concordances</indexterm>
+      There are occasions when each word in a text is indexed; such word listings are known as
+      concordances. The Bible and Shakespeare&#x2019;s works have often had concordances prepared for them.
+      A concordance, however, is not a subject index; it is merely a list of terms like nouns,
+      adjectives, and verbs.</p>
+    </section>
+
+    <section>
+      <title>Content</title>
+      <p><indexterm>Content<indexterm>as context for index</indexterm></indexterm>
+      <indexterm>Content<index-see-also>Texts</index-see-also></indexterm>
+      What is the nature of the specific material being indexed? Is it a short guidebook or a
+      thousand-page graduate textbook? A software manual with a limited shelf life? Reference
+      material? Fiction? (Yes, fiction is sometimes indexed.) A multivolume encyclopedia?</p>
+
+      <p><indexterm>Controlled vocabulary</indexterm>
+      If millions of documents are being retrospectively indexed for inclusion in an enterprise-wide
+      content management system, then you may need to develop a controlled vocabulary for use with an
+      automatic indexing tool.</p>
+    </section>
+  </body>
+</topic>

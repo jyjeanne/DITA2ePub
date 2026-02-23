@@ -31,8 +31,6 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
   font-size: 2em;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 0.3em;
 }
 
 h2 {
@@ -190,20 +188,17 @@ nav li li {
   margin-left: 1.5em;
 }
 
-/* Accessibility */
+/* Accessibility — visually hidden but accessible to screen readers */
 .skip-nav {
   position: absolute;
-  top: -40px;
-  left: 0;
-  background: #000;
-  color: #fff;
-  padding: 8px;
-  text-decoration: none;
-  z-index: 100;
-}
-
-.skip-nav:focus {
-  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
 }
 
 /* Print styles */

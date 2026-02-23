@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ch05-index-length" xml:lang="en-US">
+  <title>Index Length and Index Space</title>
+  <body>
+    <p><indexterm>Index length</indexterm>
+    <indexterm>Index space</indexterm>
+    This chapter discusses two of the most important questions when dealing with indexes: knowing how
+    long the index should be and reducing the size of an index (either by employing typographic means
+    or actually reducing the length of the index) to fit the space available.</p>
+
+    <section>
+      <title>Average/Appropriate Index Lengths</title>
+      <p><indexterm>Index length<indexterm>by material type</indexterm></indexterm>
+      <indexterm>Trade books</indexterm>
+      <indexterm>Reference books</indexterm>
+      Index length varies dramatically based on the type of material being indexed. Mass market and
+      trade books typically have indexes that run 2&#x2013;5% of the text length. General reference books
+      average 7&#x2013;8%. Technical documentation may require 10% or more, and specialized material such
+      as legal texts can require indexes of 15% or even higher.</p>
+    </section>
+
+    <section>
+      <title>Reducing the Index Space</title>
+      <p><indexterm>Space reduction techniques</indexterm>
+      When the index exceeds the allotted space, several options exist. Typographic changes such as
+      reducing the font size, adjusting leading, or switching from indented to run-in style can save
+      space without cutting content.</p>
+
+      <p><indexterm>Columns, numbers of</indexterm>
+      <indexterm>Typography in indexes</indexterm>
+      The number of columns affects the total space required for the index. Switching from two to
+      three columns, while reducing the width of each entry, can sometimes save a page or more.</p>
+    </section>
+  </body>
+</topic>

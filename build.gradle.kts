@@ -57,6 +57,15 @@ val testDatasets = listOf(
         language = "fr",
         tocDepth = 3,
         description = "French Calibre Guide with nested chapters"
+    ),
+    TestDataset(
+        name = "indexing-guide",
+        ditamap = "src/test/resources/dita-indexing/indexing-guide.ditamap",
+        outputDir = "build/epub-indexing",
+        coverImage = null,
+        language = "en",
+        tocDepth = 3,
+        description = "English indexing guide with back-of-book index"
     )
 )
 
@@ -207,6 +216,24 @@ tasks.register<com.github.jyjeanne.DitaOtTask>("buildCalibreGuide") {
     ))
 }
 
+// Build Indexing Guide EPUB with back-of-book index
+tasks.register<com.github.jyjeanne.DitaOtTask>("buildIndexingGuide") {
+    group = "dita"
+    description = "Build Indexing Guide EPUB with back-of-book index"
+    dependsOn("installLocalPlugin")
+    ditaOt(ditaOtHome)
+    input(file("src/test/resources/dita-indexing/indexing-guide.ditamap"))
+    output("build/epub-indexing")
+    transtype("epub3")
+
+    ditaProperties.putAll(sharedEpubProperties)
+    ditaProperties.putAll(mapOf(
+        "epub.toc.depth" to "3",
+        "epub.nav.depth" to "3",
+        "epub.generate.index" to "yes",
+    ))
+}
+
 // =============================================================================
 // DITA source validation and link checking
 // =============================================================================
@@ -253,6 +280,7 @@ fun registerEpubValidation(name: String, epubDir: String, dependsOnTask: String)
 
 registerEpubValidation("validateEpub", "build/epub", "dita")
 registerEpubValidation("validateCalibreEpub", "build/epub-calibre", "buildCalibreGuide")
+registerEpubValidation("validateIndexingEpub", "build/epub-indexing", "buildIndexingGuide")
 
 // =============================================================================
 // Workflow tasks
@@ -271,6 +299,7 @@ tasks.register("cleanEpub") {
     doLast {
         delete("build/epub")
         delete("build/epub-calibre")
+        delete("build/epub-indexing")
     }
 }
 
@@ -281,13 +310,13 @@ tasks.register("cleanEpub") {
 tasks.register("buildAllEpubs") {
     group = "dita"
     description = "Build EPUB from all test DITA datasets"
-    dependsOn("buildSampleEpub", "buildCalibreGuide")
+    dependsOn("buildSampleEpub", "buildCalibreGuide", "buildIndexingGuide")
 }
 
 tasks.register("validateAllEpubs") {
     group = "verification"
     description = "Validate all generated EPUB files"
-    dependsOn("validateEpub", "validateCalibreEpub")
+    dependsOn("validateEpub", "validateCalibreEpub", "validateIndexingEpub")
 }
 
 tasks.register("testAllEpubs") {
