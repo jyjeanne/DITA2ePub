@@ -4,7 +4,7 @@
 
 **Project Name:** Dita2epub
 **Plugin ID:** io.github.jyjeanne.dita2epub
-**Version:** 1.0.1
+**Version:** 1.1.0
 **Target DITA-OT Version:** 4.4+
 **License:** Apache License 2.0
 **Author:** J. Jeanne
@@ -12,17 +12,18 @@
 
 ### Description
 
-Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 that converts DITA XML content and maps into publication-ready EPUB 3.3 publications. It extends the DITA-OT HTML5 base transformation with XSLT 3.0 modules for OPF, navigation, metadata, and content generation, backed by Java utilities for EPUB-compliant ZIP packaging and validation.
+Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 that converts DITA XML content and maps into publication-ready EPUB 3.3 publications. It extends the DITA-OT HTML5 base transformation with 7 XSLT 3.0 modules for OPF, navigation, metadata, content generation, and back-of-book index generation, backed by Java utilities for EPUB-compliant ZIP packaging and validation. The plugin produces EPUB 3.3 output with full Structural Semantics Vocabulary (SSV) compliance.
 
 ### Key Differentiators
 
 - **Modern DITA-OT 4.4** — Built for the latest DITA-OT release
-- **Gradle Build System** — Kotlin DSL with `dita-ot-gradle` 2.8.4 plugin
+- **Gradle Build System** — Kotlin DSL with `dita-ot-gradle` 2.8.5 plugin
 - **Java 17+** — Leverages modern Java features
-- **EPUB3-First** — Prioritizes EPUB 3.3 specification
-- **Cover Page Generation** — Automatic HTML cover pages with customizable styles (v1.0.1)
-- **Font Embedding** — TTF, OTF, WOFF, WOFF2 font formats (v1.0.1)
-- **Comprehensive Testing** — 6 test classes with JUnit 5 + XMLUnit + AssertJ
+- **EPUB 3.3 + SSV Compliance** — Full Structural Semantics Vocabulary with dynamic `epub:type` annotations
+- **Back-of-Book Index** — Automatic index generation from `<indexterm>` elements with precise anchor links
+- **Cover Page Generation** — Automatic HTML cover pages with customizable styles
+- **Font Embedding** — TTF, OTF, WOFF, WOFF2 font formats
+- **Comprehensive Testing** — 6 test classes, 3 test datasets, 0 EPUBCheck errors
 
 ---
 
@@ -35,7 +36,7 @@ Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 tha
 | DITA-OT | 4.4 | Document processing framework |
 | Java | 17+ (LTS) | Runtime environment |
 | Gradle | 8.x / 9.x | Build system (Kotlin DSL) |
-| dita-ot-gradle | 2.8.4 | Gradle plugin for DITA-OT tasks |
+| dita-ot-gradle | 2.8.5 | Gradle plugin for DITA-OT tasks |
 | XSLT | 3.0 (Saxon 12.7) | Primary transformation language |
 | EPUB | 3.3 (primary) / 2.0.1 (legacy) | Target output format |
 | XHTML | 5.0 | Content markup |
@@ -49,13 +50,15 @@ Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 tha
 - Processing modes for template specialization
 - Strong typing (`xs:string`, `xs:boolean`, `xs:integer`)
 - Higher-order functions (`epub:is-true()`, `epub:get-boolean()`)
+- Grouping (`xsl:for-each-group`) for index alphabetical grouping and deduplication
+- `document()` function for cross-topic indexterm collection
 
 ### Dependencies
 
 ```kotlin
 dependencies {
     // EPUB validation
-    implementation("org.w3c:epubcheck:5.1.0")
+    implementation("org.w3c:epubcheck:5.3.0")
 
     // Utilities
     implementation("commons-io:commons-io:2.15.1")
@@ -80,7 +83,7 @@ dependencies {
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Gradle Build Task                         │
-│              (dita-ot-gradle plugin 2.8.4)                  │
+│              (dita-ot-gradle plugin 2.8.5)                  │
 └──────────────────────┬──────────────────────────────────────┘
                        │
                        ▼
@@ -105,18 +108,19 @@ dependencies {
               │   base + modules   │
               └────────┬───────────┘
                        │
-        ┌──────────────┼──────────────┬──────────────┐
-        │              │              │              │
-        ▼              ▼              ▼              ▼
-┌──────────────┐ ┌──────────┐ ┌───────────┐ ┌──────────────┐
-│epub3-content │ │epub3-impl│ │epub3-meta │ │epub3-common  │
-│• XHTML5 gen  │ │• OPF gen │ │• Dublin   │ │• UUID gen    │
-│• Topic files │ │• Nav doc │ │  Core     │ │• Utilities   │
-│              │ │• NCX     │ │• Authors  │ │• Title/lang  │
-│              │ │• Spine   │ │• Rights   │ │  extraction  │
-└──────┬───────┘ └────┬─────┘ └─────┬─────┘ └──────────────┘
-       │              │              │
-       └──────────────┴──────────────┘
+        ┌──────────┼──────────┬──────────┬──────────┐
+        │          │          │          │          │
+        ▼          ▼          ▼          ▼          ▼
+┌────────────┐ ┌────────┐ ┌─────────┐ ┌────────┐ ┌────────────┐
+│epub3-      │ │epub3-  │ │epub3-   │ │epub3-  │ │epub3-      │
+│content     │ │impl    │ │metadata │ │common  │ │index       │
+│• XHTML5    │ │• OPF   │ │• Dublin │ │• UUID  │ │• Indexterm  │
+│• Topics    │ │• Nav   │ │  Core   │ │• Utils │ │  collection│
+│• Anchors   │ │• NCX   │ │• Rights │ │• Lang  │ │• Grouping  │
+│            │ │• Spine │ │         │ │        │ │• Locators  │
+└─────┬──────┘ └───┬────┘ └────┬────┘ └────────┘ └─────┬──────┘
+      │            │           │                        │
+      └────────────┴───────────┴────────────────────────┘
                       │
                       ▼
          ┌─────────────────────────┐
@@ -138,7 +142,7 @@ dependencies {
                       ▼
          ┌─────────────────────────┐
          │   EpubValidator.java    │
-         │   (EPUBCheck 5.1.0)     │
+         │   (EPUBCheck 5.3.0)     │
          └────────────┬────────────┘
                       │
                       ▼
@@ -175,7 +179,7 @@ dita2epub/
 ├── plugin.xml                          # DITA-OT plugin descriptor (transtype epub3)
 ├── plugin-info.xml                     # Plugin metadata and compatibility
 ├── build-epub3.xml                     # Ant pipeline (XSLT, copy, package, validate)
-├── build.gradle.kts                    # Gradle build (Kotlin DSL, dita-ot-gradle 2.8.4)
+├── build.gradle.kts                    # Gradle build (Kotlin DSL, dita-ot-gradle 2.8.5)
 ├── settings.gradle.kts                 # Gradle settings
 ├── gradle.properties                   # Gradle JVM and cache settings
 ├── README.md                           # Project documentation
@@ -194,7 +198,8 @@ dita2epub/
 │   │   │   ├── epub3-common.xsl        # Utility functions (UUID, title, language)
 │   │   │   ├── epub3-metadata.xsl      # Dublin Core metadata extraction
 │   │   │   ├── epub3-content.xsl       # DITA topic → XHTML5 generation
-│   │   │   └── epub3-impl.xsl          # OPF, navigation, NCX generation
+│   │   │   ├── epub3-impl.xsl          # OPF, navigation, NCX generation
+│   │   │   └── epub3-index.xsl         # Back-of-book index generation
 │   │   │
 │   │   └── resources/
 │   │       ├── css/
@@ -217,9 +222,13 @@ dita2epub/
 │           │   ├── sample-bookmap.ditamap
 │           │   ├── cover.svg
 │           │   └── topics/
-│           └── dita-calibre/           # French Calibre Guide
-│               ├── calibre-guide.ditamap
-│               └── cover.jpg
+│           ├── dita-calibre/           # French Calibre Guide
+│           │   ├── calibre-guide.ditamap
+│           │   └── cover.jpg
+│           ├── dita-indexing/          # Indexing Guide (with back-of-book index)
+│           │   ├── indexing-guide.ditamap
+│           │   └── topics/
+│           └── epub/                   # Reference EPUB for validation
 │
 ├── strings/                            # Internationalization
 │   ├── strings.xml                     # String registry
@@ -227,6 +236,7 @@ dita2epub/
 │
 ├── docs/                               # Documentation
 │   ├── SPECIFICATION.md                # This file
+│   ├── ANATOMY_EPUB_THREE.md          # EPUB 3 file structure and SSV reference
 │   ├── QUICKSTART.md                   # 5-minute setup guide
 │   ├── CONTRIBUTING.md                 # Contribution guidelines
 │   ├── CHANGELOG.md                    # Version history
@@ -234,8 +244,7 @@ dita2epub/
 │   ├── PROJECT_STATUS.md              # Status and roadmap
 │   ├── TEST_COVERAGE.md               # Test documentation
 │   ├── TEST_SUMMARY.md                # Executive test summary
-│   ├── GITHUB_CHECKLIST.md            # GitHub procedures
-│   └── PLUGIN_INSTALL_TASK_FIX.md     # Bug fix spec for dita-ot-gradle
+│   └── GITHUB_CHECKLIST.md            # GitHub procedures
 │
 └── .github/
     └── workflows/
@@ -253,15 +262,16 @@ dita2epub/
 
 **File:** `src/main/xsl/map2epub3.xsl`
 
-Imports the DITA-OT HTML5 base transformation and includes all plugin modules. The root template triggers `epub3-generate` mode which orchestrates:
+Imports the DITA-OT HTML5 base transformation and includes all 7 plugin modules. The root template triggers `epub3-generate` mode which orchestrates:
 
 1. OPF package document generation
 2. EPUB3 navigation document
 3. NCX table of contents (backward compatibility)
 4. Cover page generation
 5. Title page
-6. Content files (XHTML per topic)
-7. container.xml
+6. Content files (XHTML per topic, with index anchors)
+7. Back-of-book index (when enabled)
+8. container.xml
 
 ### 2. epub3-params.xsl — Configuration Parameters
 
@@ -294,18 +304,46 @@ Extracts Dublin Core metadata from DITA bookmaps:
 
 **File:** `src/main/xsl/epub3-content.xsl`
 
-Transforms DITA topics to XHTML5 content files. Processes topicrefs from the map and generates separate XHTML files per topic with EPUB naming conventions.
+Transforms DITA topics to XHTML5 content files. Processes topicrefs from the map and generates separate XHTML files per topic with EPUB naming conventions. Key features:
+- Dynamic `epub:type` assignment based on bookmap context (chapter, appendix, foreword, preface, glossary)
+- Index anchor injection: `<span id="ixa-{topic-id}-{pos}"/>` elements at each `<indexterm>` location for precise index linking
+- Skip navigation links for accessibility
+- Proper XHTML5 semantic structure with `<article>`, `<section>`, `<main>`
 
 ### 6. epub3-impl.xsl — OPF and Navigation
 
 **File:** `src/main/xsl/epub3-impl.xsl`
 
 Generates the core EPUB structure:
-- **OPF package document** (content.opf) — manifest, spine, metadata
-- **EPUB3 navigation document** (nav.xhtml) — TOC, landmarks
+- **OPF package document** (content.opf) — manifest, spine, metadata (with conditional index.xhtml entry)
+- **EPUB3 navigation document** (nav.xhtml) — TOC, landmarks (with index landmark when index is generated)
 - **NCX table of contents** — backward compatibility with EPUB2 readers
 - **Cover page** — HTML cover with configurable styles
 - **container.xml** — OCF container
+- **Bookmap navigation flattening** — promotes frontmatter/backmatter children to top level with localized labels
+
+### 7. epub3-index.xsl — Back-of-Book Index Generation
+
+**File:** `src/main/xsl/epub3-index.xsl`
+
+Generates a back-of-book `index.xhtml` file with EPUB 3.3 Structural Semantics Vocabulary markup. Triggered when `epub.generate.index` is `yes` or when set to `auto` and a `<indexlist/>` element exists in the bookmap.
+
+**Index generation pipeline:**
+1. Collects all `<indexterm>` elements from all topic files via `document()` calls
+2. Computes deterministic anchor IDs matching the anchors injected by `epub3-content.xsl`
+3. Groups entries by uppercase first letter of sort key → alphabetical sections
+4. Within each letter group, merges duplicate entries → multiple locators
+5. Within each primary entry, groups sub-entries by sub-term
+6. Generates XHTML with full SSV markup: `epub:type="index"`, `"index-group"`, `"index-entry"`, `"index-entry-list"`, `"index-term"`, `"index-locator"`, `"index-locator-list"`, `"index-xref-preferred"`, `"index-xref-related"`
+
+**Supported DITA index features:**
+- Simple entries: `<indexterm>Term</indexterm>`
+- Nested entries: `<indexterm>Primary<indexterm>Secondary</indexterm></indexterm>`
+- See references: `<indexterm>Term<index-see>Target</index-see></indexterm>`
+- See also references: `<indexterm>Term<index-see-also>Target</index-see-also></indexterm>`
+- Sort keys: `<indexterm>Term<index-sort-as>SortKey</index-sort-as></indexterm>`
+
+**Locator format:** Chapter.section numbering (e.g., "6.2" = chapter 6, section 2), with appendices as letters ("B.3").
 
 ### 7. EpubPackager.java — EPUB ZIP Creation
 
@@ -321,7 +359,7 @@ Creates EPUB-compliant ZIP archives enforcing:
 
 **File:** `src/main/java/.../EpubValidator.java`
 
-Wraps EPUBCheck 5.1.0 to validate generated EPUB files. Returns `ValidationResult` with validity status, errors, warnings, and EPUB version. Performs:
+Wraps EPUBCheck 5.3.0 to validate generated EPUB files. Returns `ValidationResult` with validity status, errors, warnings, and EPUB version. Performs:
 - File existence and type checking
 - File size validation (warns if >100MB)
 - EPUB extension verification
@@ -348,7 +386,7 @@ Ant build file that integrates with the DITA-OT pipeline. Targets:
 
 ```kotlin
 plugins {
-    id("io.github.jyjeanne.dita-ot-gradle") version "2.8.4"
+    id("io.github.jyjeanne.dita-ot-gradle") version "2.8.5"
     id("java")
 }
 
@@ -375,13 +413,15 @@ val sharedEpubProperties = mapOf(
 | `downloadDitaOt` | DitaOtDownloadTask | Download DITA-OT 4.4 from GitHub releases |
 | `epubPackagerJar` | Jar | Build epub-packager.jar |
 | `packagePlugin` | Zip | Package plugin as ZIP for DITA-OT |
-| `installLocalPlugin` | Exec | Install plugin into DITA-OT (uses `dita install <file> --force`) |
+| `installLocalPlugin` | DitaOtInstallPluginTask | Install plugin into DITA-OT |
 | `dita` | DitaOtTask | Build sample EPUB (English bookmap) |
 | `buildCalibreGuide` | DitaOtTask | Build Calibre Guide EPUB (French) |
+| `buildIndexingGuide` | DitaOtTask | Build Indexing Guide EPUB (with back-of-book index) |
 | `buildSampleEpub` | Task | Build + validate sample EPUB |
-| `buildAllEpubs` | Task | Build all test datasets |
+| `buildAllEpubs` | Task | Build all 3 test datasets |
 | `validateEpub` | JavaExec | EPUBCheck on sample EPUB |
 | `validateCalibreEpub` | JavaExec | EPUBCheck on Calibre Guide |
+| `validateIndexingEpub` | JavaExec | EPUBCheck on Indexing Guide |
 | `validateAllEpubs` | Task | Validate all generated EPUBs |
 | `testAllEpubs` | Task | Build and validate all datasets |
 | `integrationTest` | Task | Full integration tests + unit tests |
@@ -450,6 +490,17 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 | `epub.generate.lot` | enum | `no` | Generate list of tables: `yes`, `no` |
 | `epub.include.toc.page` | enum | `no` | Include standalone TOC page |
 | `epub.generate.ncx` | enum | `no` | Generate NCX for EPUB2 readers |
+
+### Index Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.generate.index` | enum | `auto` | Generate back-of-book index from indexterm elements: `auto`, `yes`, `no` |
+
+**Values:**
+- `auto` — detect from bookmap: generates index when `<indexlist/>` is present
+- `yes` — always generate index from all `<indexterm>` elements in topics
+- `no` — disable index generation
 
 ### Directory Structure Parameters
 
@@ -529,10 +580,11 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 
 ### Test Datasets
 
-| Dataset | Language | Map | Output | TOC Depth |
-|---------|----------|-----|--------|-----------|
-| sample | English | `src/test/resources/dita/sample-bookmap.ditamap` | `build/epub` | 5 |
-| calibre-guide | French | `src/test/resources/dita-calibre/calibre-guide.ditamap` | `build/epub-calibre` | 3 |
+| Dataset | Language | Map | Output | Features |
+|---------|----------|-----|--------|----------|
+| sample | English | `src/test/resources/dita/sample-bookmap.ditamap` | `build/epub` | Cover, frontmatter/backmatter |
+| calibre-guide | French | `src/test/resources/dita-calibre/calibre-guide.ditamap` | `build/epub-calibre` | Nested chapters, French locale |
+| indexing-guide | English | `src/test/resources/dita-indexing/indexing-guide.ditamap` | `build/epub-indexing` | Back-of-book index, appendices |
 
 ### Running Tests
 
@@ -568,7 +620,7 @@ The project uses Gradle for build management while retaining Ant (`build-epub3.x
 Aligned with DITA-OT 4.4 minimum requirements. LTS support until 2029.
 
 ### Modular XSLT Design
-Six focused modules rather than a monolithic stylesheet. Each module handles a single concern (params, common, metadata, content, impl) plus the orchestrating entry point.
+Seven focused modules rather than a monolithic stylesheet. Each module handles a single concern (params, common, metadata, content, impl, index) plus the orchestrating entry point.
 
 ### EPUB ZIP Compliance
 The `EpubPackager.java` class exists because standard ZIP utilities don't guarantee `mimetype` as the first uncompressed entry — a hard requirement of the EPUB/OCF specification.
@@ -580,24 +632,27 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - Font obfuscation not yet implemented (font copying works)
 - Automatic font manifest generation requires manual CSS `@font-face` declarations
 - Cover page limited to 3 styles (full-page, centered, custom)
-- Single language (English) in strings — additional locales require manual addition
+- Localized navigation labels for frontmatter/backmatter/appendices (English, French, German, Spanish supported)
 
 ---
 
 ## Roadmap
 
-### v1.0.1 (Current)
+### v1.1.0 (Current)
 - [x] Cover page generation with multiple styles
 - [x] Font embedding (TTF, OTF, WOFF, WOFF2)
-- [x] Comprehensive test suite
+- [x] Back-of-book index generation with EPUB 3.3 SSV markup
+- [x] Full EPUB 3.3 Structural Semantics Vocabulary compliance
+- [x] Dynamic `epub:type` per bookmap context (chapter, appendix, foreword, preface, glossary)
+- [x] Bookmap navigation flattening (frontmatter/backmatter)
+- [x] Three test datasets with 0 EPUBCheck errors
 - [x] GitHub Actions CI/CD
 - [x] Windows path handling
 
-### v1.1 (Planned)
+### v1.2 (Planned)
 - [ ] Font obfuscation (Adobe algorithm)
 - [ ] Image optimization
-- [ ] Additional language support (fr, de, ja)
-- [ ] Dark mode CSS support
+- [ ] Additional language support (ja, zh)
 
 ### v2.0 (Future)
 - [ ] DITA 2.0 full support
@@ -612,6 +667,6 @@ Apache License 2.0 — Copyright 2025 J. Jeanne
 
 ---
 
-**Document Version:** 1.0.1
-**Last Updated:** 2026-02-19
+**Document Version:** 1.1.0
+**Last Updated:** 2026-02-23
 **Status:** Current Release

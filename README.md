@@ -6,7 +6,7 @@
 [![DITA-OT](https://img.shields.io/badge/DITA--OT-4.4-green.svg)](https://www.dita-ot.org/)
 [![EPUB](https://img.shields.io/badge/EPUB-3.3-purple.svg)](https://www.w3.org/publishing/epub3/)
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://adoptium.net/)
-[![Tests](https://img.shields.io/badge/tests-44%20passing-success.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-41%20passing-success.svg)](#testing)
 
 [![CI Build](https://github.com/jyjeanne/dita2epub/actions/workflows/ci.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/ci.yml)
 [![Nightly Tests](https://github.com/jyjeanne/dita2epub/actions/workflows/nightly-tests.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/nightly-tests.yml)
@@ -28,44 +28,46 @@
 
 - **📚 Standards-Compliant**: Full EPUB 3.3 specification compliance with WCAG 2.1 accessibility
 - **🎨 Professional Output**: Custom cover pages, embedded fonts, and optimized images
-- **⚡ Production-Ready**: 44 comprehensive tests, CI/CD automation, and multi-platform support
+- **⚡ Production-Ready**: 41 comprehensive tests, CI/CD automation, and multi-platform support
 - **🔧 Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
 - **🚀 Modern Stack**: Built on DITA-OT 4.4, Java 17+, and latest web standards
 
-### What's New in v1.0.1?
+### What's New in v1.1.0?
 
-- ✨ **Zero EPUBCheck Errors** - Both test EPUBs pass EPUBCheck 5.3.0 with 0 errors and 0 warnings
-- ✨ **DITA-OT 4.4** - Upgraded to the latest DITA Open Toolkit
-- ✨ **Cover Page Generation** - Automatic HTML cover pages with 3 customizable styles
-- ✨ **Font Embedding** - Embed custom fonts (TTF, OTF, WOFF, WOFF2) with proper manifest generation
-- ✨ **DITA Source Validation** - Built-in DITA validation and link checking via Gradle tasks
-- ✨ **Comprehensive Testing** - 44 tests across 6 test classes with 100% unit test pass rate
-- ✨ **GitHub Actions CI/CD** - Automated testing, releases, and documentation validation
+- **Back-of-Book Index** - Automatic index generation from DITA `<indexterm>` elements with precise anchor links
+- **EPUB 3.3 SSV Compliance** - Full Structural Semantics Vocabulary: `epub:type` for chapters, appendices, forewords, glossaries, index markup
+- **Three Test Datasets** - English sample, French Calibre Guide, and Indexing Guide with back-of-book index
+- **Zero EPUBCheck Errors** - All 3 test EPUBs pass EPUBCheck 5.3.0 with 0 errors and 0 warnings
+- **DITA-OT 4.4** - Built for the latest DITA Open Toolkit
+- **Cover Page Generation** - Automatic HTML cover pages with 3 customizable styles
+- **Font Embedding** - Embed custom fonts (TTF, OTF, WOFF, WOFF2) with proper manifest generation
+- **Comprehensive Testing** - 41 tests across 6 test classes with 100% unit test pass rate
+- **GitHub Actions CI/CD** - Automated testing, releases, and documentation validation
 
 ---
 
 ## 🌟 Key Features
 
 ### Core Capabilities
-- ✅ **EPUB 3.3 Standard**: Full compliance with latest EPUB specification
-- ✅ **DITA-OT 4.4 Integration**: Seamless plugin architecture
-- ✅ **XHTML5 Output**: Modern, semantic HTML content
-- ✅ **Accessibility Built-in**: WCAG 2.1 AA/AAA metadata and ARIA support
-- ✅ **Navigation**: Automatic TOC and landmarks generation
+- **EPUB 3.3 Standard**: Full compliance with latest EPUB specification and Structural Semantics Vocabulary (SSV)
+- **DITA-OT 4.4 Integration**: Seamless plugin architecture
+- **XHTML5 Output**: Modern, semantic HTML content with proper `epub:type` annotations
+- **Accessibility Built-in**: WCAG 2.1 AA/AAA metadata and ARIA support
+- **Navigation**: Automatic TOC, landmarks, and NCX generation
 
-### Advanced Features ⭐ NEW in v1.0.1
-- 🎨 **Cover Page Generation**: Automatic HTML cover pages with customizable styles
-- 🔤 **Font Embedding**: Embed custom fonts (TTF, OTF, WOFF, WOFF2)
-- 🖼️ **Image Support**: Automatic image copying and manifest generation
-- ✅ **EPUBCheck 5.3.0 Integration**: Built-in validation with zero errors
-- ✅ **DITA Source Validation**: Structural validation and broken link checking
-- 🧪 **Comprehensive Testing**: 44 tests across 6 test classes
+### Advanced Features
+- **Back-of-Book Index**: Automatic index generation from `<indexterm>` elements with alphabetical grouping, nested entries, cross-references (`See`/`See also`), and precise anchor links
+- **Cover Page Generation**: Automatic HTML cover pages with customizable styles
+- **Font Embedding**: Embed custom fonts (TTF, OTF, WOFF, WOFF2)
+- **Image Support**: Automatic image copying and manifest generation
+- **EPUBCheck 5.3.0 Integration**: Built-in validation with zero errors on all test EPUBs
+- **Comprehensive Testing**: 41 tests across 6 test classes
 
 ### Developer Experience
-- 🏗️ **Gradle Build System**: Modern build configuration with Kotlin DSL
-- 🔧 **Extensible Architecture**: XSLT 3.0 modular design
-- 📚 **Complete Documentation**: Guides, examples, and API docs
-- 🚀 **CI/CD Ready**: GitHub Actions workflow templates
+- **Gradle Build System**: Modern build configuration with Kotlin DSL
+- **Extensible Architecture**: 7 XSLT 3.0 modules with clear separation of concerns
+- **Complete Documentation**: Guides, EPUB 3 anatomy reference, and API docs
+- **CI/CD Ready**: GitHub Actions workflow templates
 
 ---
 
@@ -131,7 +133,7 @@ bin/dita install
 dita --plugins | grep epub
 
 # Expected output:
-# io.github.jyjeanne.dita2epub@1.0.1
+# io.github.jyjeanne.dita2epub@1.1.0
 ```
 
 ### 3. Generate Your First EPUB
@@ -150,19 +152,19 @@ dita --input=mybook.ditamap --format=epub3 --output=output
 ./gradlew test                   # Unit tests only (no DITA-OT needed)
 
 # EPUB generation (downloads DITA-OT 4.4 on first run)
-./gradlew buildSampleEpub        # Build + validate sample EPUB
-./gradlew buildCalibreGuide      # Build French Calibre Guide EPUB
-./gradlew buildAllEpubs          # Build all test datasets
+./gradlew buildSampleEpub        # Build + validate sample EPUB (English)
+./gradlew buildCalibreGuide      # Build Calibre Guide EPUB (French)
+./gradlew buildIndexingGuide     # Build Indexing Guide EPUB (with back-of-book index)
+./gradlew buildAllEpubs          # Build all 3 test datasets
 
 # Validation
 ./gradlew validateEpub           # EPUBCheck on sample
 ./gradlew validateCalibreEpub    # EPUBCheck on Calibre guide
+./gradlew validateIndexingEpub   # EPUBCheck on Indexing guide
 ./gradlew validateAllEpubs       # EPUBCheck on all outputs
-./gradlew validateDita           # Validate DITA source structure
-./gradlew checkLinks             # Check for broken links in DITA sources
 
 # Full CI pipeline
-./gradlew ciCheck                # Compile, test, validate DITA, build EPUBs, EPUBCheck
+./gradlew ciCheck                # Compile, test, build EPUBs, EPUBCheck
 ```
 
 ---
@@ -241,6 +243,27 @@ fonts/
 }
 ```
 
+### Back-of-Book Index
+
+Generate an index from `<indexterm>` elements in your DITA topics:
+
+```bash
+dita --input=mybook.ditamap \
+     --format=epub3 \
+     --output=output \
+     --epub.generate.index=yes
+```
+
+The index generator supports:
+- Simple and nested index entries
+- `<index-see>` ("See") cross-references
+- `<index-see-also>` ("See also") cross-references
+- `<index-sort-as>` for custom sort ordering
+- Alphabetical grouping with chapter.section locators
+- Precise anchor links to the exact location in the content
+
+When set to `auto` (default), the index is generated automatically when a `<indexlist/>` element is present in the bookmap.
+
 ### Advanced Configuration
 
 Complete example with all major features:
@@ -254,6 +277,7 @@ dita --input=mybook.ditamap \
      --epub.generate.cover.page=yes \
      --epub.cover.page.style=full-page \
      --epub.embed.fonts=fonts/ \
+     --epub.generate.index=auto \
      --epub.toc.depth=4 \
      --epub.nav.depth=4 \
      --epub.accessibility=wcag-aa \
@@ -273,7 +297,7 @@ dita --input=mybook.ditamap \
 | `epub.toc.depth` | integer | `5` | Maximum table of contents depth |
 | `epub.nav.depth` | integer | `5` | Maximum navigation document depth |
 
-### Cover Page Parameters ⭐ NEW
+### Cover Page Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -281,7 +305,15 @@ dita --input=mybook.ditamap \
 | `epub.generate.cover.page` | boolean | `yes` | Generate HTML cover page from image |
 | `epub.cover.page.style` | enum | `full-page` | Cover page style (full-page, centered, custom) |
 
-### Font Parameters ⭐ NEW
+### Index Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.generate.index` | enum | `auto` | Generate back-of-book index: `auto` (detect from bookmap), `yes`, `no` |
+
+When set to `auto`, index generation triggers automatically when a `<indexlist/>` element is present in the bookmap. The index collects all `<indexterm>` elements from topics, groups them alphabetically, and generates an `index.xhtml` file with EPUB 3.3 Structural Semantics Vocabulary markup.
+
+### Font Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -313,35 +345,39 @@ dita --input=mybook.ditamap \
 dita2epub/
 ├── src/
 │   ├── main/
-│   │   ├── java/               # Java validation code
-│   │   ├── xsl/                # XSLT transformation modules
+│   │   ├── java/               # Java utilities (packaging, validation)
+│   │   ├── xsl/                # XSLT 3.0 transformation modules
 │   │   │   ├── map2epub3.xsl          # Main entry point
 │   │   │   ├── epub3-params.xsl       # Parameter definitions
 │   │   │   ├── epub3-common.xsl       # Common functions
 │   │   │   ├── epub3-metadata.xsl     # Metadata extraction
 │   │   │   ├── epub3-content.xsl      # Content generation
-│   │   │   └── epub3-impl.xsl         # OPF/navigation
+│   │   │   ├── epub3-impl.xsl         # OPF/navigation
+│   │   │   └── epub3-index.xsl        # Back-of-book index generation
 │   │   └── resources/
 │   │       ├── css/            # Stylesheets
 │   │       │   ├── epub-default.css   # Default styles
 │   │       │   └── epub-fonts.css     # Font declarations
 │   │       └── fonts/          # Font directory (empty template)
 │   └── test/
-│       ├── java/               # Test classes (44 tests)
+│       ├── java/               # Test classes (41 tests)
 │       └── resources/
 │           ├── dita/           # English sample bookmap
-│           └── dita-calibre/   # French Calibre Guide
+│           ├── dita-calibre/   # French Calibre Guide
+│           ├── dita-indexing/  # Indexing Guide (with back-of-book index)
+│           └── epub/           # Reference EPUB for validation
 ├── plugin.xml                  # DITA-OT plugin descriptor
 ├── build-epub3.xml             # Ant build integration
 ├── build.gradle.kts            # Gradle build configuration
 └── docs/                       # Documentation
+    ├── ANATOMY_EPUB_THREE.md   # EPUB 3 file structure reference
     ├── CHANGELOG.md            # Version changelog
     ├── CONTRIBUTING.md         # Contribution guidelines
     ├── GITHUB_CHECKLIST.md     # GitHub procedures
     ├── PROJECT_STATUS.md       # Project status and metrics
     ├── QUICKSTART.md           # Quick start guide
     ├── RELEASE_NOTES.md        # Version history
-    ├── SPECIFICATION.md        # Complete parameter reference
+    ├── SPECIFICATION.md        # Complete technical specification
     ├── TEST_COVERAGE.md        # Test documentation
     └── TEST_SUMMARY.md         # Executive test summary
 ```
@@ -352,9 +388,10 @@ dita2epub/
 
 ### Test Suite Overview
 
-- **44 test methods** across 6 test classes
+- **41 test methods** across 6 test classes
 - **100% unit test pass rate**
-- Comprehensive coverage of all features
+- **3 test datasets**: English sample, French Calibre Guide, Indexing Guide
+- **0 EPUBCheck errors** on all 3 generated EPUBs
 
 ### Running Tests
 
@@ -373,12 +410,12 @@ open build/reports/tests/test/index.html
 
 | Feature | Tests | Status |
 |---------|-------|--------|
-| Cover Page Generation | 8 | ✅ Complete |
-| Font Embedding | 7 | ✅ Complete |
-| OPF Manifest | 8 | ✅ Complete |
-| EPUB Structure | 11 | ✅ Complete |
-| Validation | 8 | ✅ Complete (0 EPUBCheck errors) |
-| Integration | 3 | ✅ Complete |
+| Cover Page Generation | 5 | Complete |
+| Font Embedding | 6 | Complete |
+| OPF Manifest | 8 | Complete |
+| EPUB Structure | 10 | Complete |
+| Validation | 8 | Complete (0 EPUBCheck errors) |
+| Integration | 4 | Complete |
 
 **📊 Detailed Report**: See [TEST_COVERAGE.md](docs/TEST_COVERAGE.md)
 
@@ -391,7 +428,8 @@ open build/reports/tests/test/index.html
 | Document | Description | For |
 |----------|-------------|-----|
 | **[QUICKSTART.md](docs/QUICKSTART.md)** | 5-minute setup and first EPUB | New users |
-| **[SPECIFICATION.md](docs/SPECIFICATION.md)** | Complete parameter reference (2000+ lines) | All users |
+| **[SPECIFICATION.md](docs/SPECIFICATION.md)** | Complete technical specification | All users |
+| **[ANATOMY_EPUB_THREE.md](docs/ANATOMY_EPUB_THREE.md)** | EPUB 3 file structure and SSV reference | Developers |
 | **[PROJECT_STATUS.md](docs/PROJECT_STATUS.md)** | Current status, roadmap, and metrics | Project overview |
 
 ### 📖 User Documentation
@@ -405,7 +443,7 @@ open build/reports/tests/test/index.html
 
 | Document | Description | Coverage |
 |----------|-------------|----------|
-| **[TEST_COVERAGE.md](docs/TEST_COVERAGE.md)** | Detailed test documentation | 44 tests across 6 classes |
+| **[TEST_COVERAGE.md](docs/TEST_COVERAGE.md)** | Detailed test documentation | 41 tests across 6 classes |
 | **[TEST_SUMMARY.md](docs/TEST_SUMMARY.md)** | Executive test summary | 100% unit test pass rate |
 
 ### 🔧 Development & CI/CD
@@ -465,8 +503,11 @@ dita --input=training.ditamap \
 
 ## 🔄 Current Status
 
-### ✅ Completed Features (v1.0.1)
-- EPUB 3.3 generation from DITA bookmaps — **0 EPUBCheck errors**
+### Completed Features (v1.1.0)
+- EPUB 3.3 generation from DITA bookmaps — **0 EPUBCheck errors** on all 3 test EPUBs
+- Full EPUB 3.3 Structural Semantics Vocabulary (SSV) compliance
+- Back-of-book index generation from `<indexterm>` elements with precise anchor links
+- Dynamic `epub:type` annotations (chapter, appendix, foreword, preface, glossary, index)
 - DITA-OT 4.4 integration with dita-ot-gradle 2.8.5 build system
 - Complete XHTML5 content generation with proper namespace handling
 - OPF package document, NCX TOC, and EPUB3 navigation document
@@ -477,21 +518,19 @@ dita --input=training.ditamap \
 - Font embedding (TTF, OTF, WOFF, WOFF2)
 - Image copying and manifest generation
 - EPUBCheck 5.3.0 validation integration
-- DITA source validation and broken link checking
-- Two test datasets: English sample bookmap and French Calibre Guide
-- Comprehensive test suite (44 tests across 6 classes)
+- Three test datasets: English sample, French Calibre Guide, Indexing Guide
+- Comprehensive test suite (41 tests across 6 classes)
 
-### ⚠️ Known Limitations
+### Known Limitations
 - Font obfuscation not yet implemented (copying works)
 - Automatic font manifest generation (manual configuration available)
 
-### 🔮 Planned Features (v1.1+)
+### Planned Features
 - Font obfuscation (Adobe algorithm)
-- Multiple output format support (MOBI, KF8)
-- Advanced cover page templates
-- Automatic image optimization
-- CSS preprocessor support
-- Custom JavaScript inclusion
+- DITA 2.0 full support
+- Fixed Layout EPUB
+- Additional language support (de, ja)
+- Custom theme system
 
 ---
 
@@ -537,9 +576,10 @@ You may obtain a copy of the License at
 
 ### Built With
 - [DITA Open Toolkit 4.4](https://www.dita-ot.org/)
-- [Saxon-HE 12.7](https://www.saxonica.com/html/documentation12/about/)
-- [Gradle 9.1](https://gradle.org/)
-- [JUnit 5](https://junit.org/junit5/)
+- [Saxon-HE 12.7](https://www.saxonica.com/html/documentation12/about/) (XSLT 3.0)
+- [EPUBCheck 5.3.0](https://github.com/w3c/epubcheck)
+- [Gradle 9.x](https://gradle.org/) with [dita-ot-gradle 2.8.5](https://github.com/jyjeanne/dita-ot-gradle)
+- [JUnit 5](https://junit.org/junit5/) + [XMLUnit](https://github.com/xmlunit/xmlunit) + [AssertJ](https://assertj.github.io/doc/)
 
 ### Inspired By
 - [DITA4Publishers](https://github.com/dita4publishers/dita4publishers) by Eliot Kimber
@@ -558,13 +598,13 @@ You may obtain a copy of the License at
 
 ## 🎖️ Project Status
 
-![Version](https://img.shields.io/badge/version-1.0.1-blue)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![Build](https://img.shields.io/badge/build-passing-success)
 ![Coverage](https://img.shields.io/badge/coverage-70%25-green)
 ![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
 
-**Last Updated**: February 22, 2026
-**Version**: 1.0.1
+**Last Updated**: February 23, 2026
+**Version**: 1.1.0
 **Status**: ✅ Production Ready
 
 ---
