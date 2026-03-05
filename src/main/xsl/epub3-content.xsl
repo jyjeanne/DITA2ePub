@@ -456,7 +456,6 @@
         </xsl:choose>
       </xsl:attribute>
       <xsl:if test="@scope = 'external'">
-        <xsl:attribute name="target">_blank</xsl:attribute>
         <xsl:attribute name="rel">noopener noreferrer</xsl:attribute>
       </xsl:if>
       <xsl:choose>

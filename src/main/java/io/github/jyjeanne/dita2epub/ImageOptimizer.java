@@ -48,16 +48,15 @@ public class ImageOptimizer {
         String imagesDir = args[0];
         float jpegQuality = 0.8f;
         int maxWidth = 0;
-        boolean stripMetadata = true;
-
         // Parse optional arguments
         for (int i = 1; i < args.length; i++) {
             if (args[i].startsWith("--jpeg-quality=")) {
                 jpegQuality = Float.parseFloat(args[i].substring("--jpeg-quality=".length()));
+                if (jpegQuality < 0.0f || jpegQuality > 1.0f) {
+                    throw new IllegalArgumentException("JPEG quality must be between 0.0 and 1.0, got: " + jpegQuality);
+                }
             } else if (args[i].startsWith("--max-width=")) {
                 maxWidth = Integer.parseInt(args[i].substring("--max-width=".length()));
-            } else if ("--strip-metadata".equals(args[i])) {
-                stripMetadata = true;
             } else if ("--verbose".equals(args[i])) {
                 verbose = true;
             }
@@ -72,8 +71,8 @@ public class ImageOptimizer {
         int optimizedCount = 0;
         long totalSaved = 0;
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(imagesPath)) {
-            for (Path entry : stream) {
+        try (java.util.stream.Stream<Path> stream = Files.walk(imagesPath)) {
+            for (Path entry : (Iterable<Path>) stream::iterator) {
                 if (Files.isDirectory(entry)) continue;
 
                 String filename = entry.getFileName().toString().toLowerCase();
@@ -86,17 +85,21 @@ public class ImageOptimizer {
                 }
 
                 long newSize = originalSize;
+                boolean processed = false;
                 if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
                     newSize = optimizeJpeg(entry, jpegQuality, maxWidth);
-                    optimizedCount++;
+                    processed = true;
                 } else if (filename.endsWith(".png")) {
-                    newSize = optimizePng(entry, stripMetadata, maxWidth);
-                    optimizedCount++;
+                    newSize = optimizePng(entry, maxWidth);
+                    processed = true;
                 } else {
                     log("Skipping (unsupported format): " + entry.getFileName());
                     continue;
                 }
 
+                if (processed && newSize != originalSize) {
+                    optimizedCount++;
+                }
                 long saved = originalSize - newSize;
                 totalSaved += Math.max(0, saved);
                 log(String.format("Optimized: %s (%d -> %d bytes, saved %d bytes)",
@@ -119,6 +122,15 @@ public class ImageOptimizer {
         }
 
         image = resizeIfNeeded(image, maxWidth);
+
+        // Convert to RGB (no alpha) since JPEG does not support transparency
+        if (image.getType() != BufferedImage.TYPE_INT_RGB && image.getType() != BufferedImage.TYPE_3BYTE_BGR) {
+            BufferedImage rgbImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = rgbImage.createGraphics();
+            g.drawImage(image, 0, 0, null);
+            g.dispose();
+            image = rgbImage;
+        }
 
         // Write JPEG with specified quality
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpeg");
@@ -160,7 +172,7 @@ public class ImageOptimizer {
     /**
      * Re-encode PNG to strip metadata, optionally resizing.
      */
-    private static long optimizePng(Path file, boolean stripMetadata, int maxWidth) throws IOException {
+    private static long optimizePng(Path file, int maxWidth) throws IOException {
         BufferedImage image = ImageIO.read(file.toFile());
         if (image == null) {
             log("Warning: Could not read image: " + file.getFileName());

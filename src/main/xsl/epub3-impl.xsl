@@ -29,7 +29,15 @@
     </xsl:if>
 
     <!-- Collect all topicrefs for manifest and spine (exclude glossarylist descendants when glossary is consolidated) -->
-    <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')][not(ancestor::*[contains(@class, ' bookmap/glossarylist ')])]"/>
+    <!-- Exclude glossarylist descendants only when glossary is being consolidated -->
+    <xsl:variable name="glossary-topicrefs-exist" select="exists($map//*[contains(@class, ' bookmap/glossarylist ')]//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')])"/>
+    <xsl:variable name="consolidate-glossary" select="
+      $glossary-topicrefs-exist and (
+        epub:is-true($epub.generate.glossary) or
+        $epub.generate.glossary = 'auto'
+      )
+    "/>
+    <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')][not($consolidate-glossary and ancestor::*[contains(@class, ' bookmap/glossarylist ')])]"/>
 
     <!-- Determine if index should be generated -->
     <xsl:variable name="has-indexlist" select="exists($map//*[contains(@class, ' bookmap/indexlist ')])"/>
@@ -916,8 +924,8 @@
         <xsl:otherwise/>
       </xsl:choose>
     </xsl:variable>
-    <xsl:variable name="copyright-first" select="($map//*[contains(@class, ' bookmap/copyrfirst ')]/*[contains(@class, ' bookmap/year ')])[1]"/>
-    <xsl:variable name="copyright-last" select="($map//*[contains(@class, ' bookmap/copyrlast ')]/*[contains(@class, ' bookmap/year ')])[1]"/>
+    <xsl:variable name="copyright-first" select="($map//*[contains(@class, ' bookmap/copyrfirst ')]/*[contains(@class, ' topic/year ')])[1]"/>
+    <xsl:variable name="copyright-last" select="($map//*[contains(@class, ' bookmap/copyrlast ')]/*[contains(@class, ' topic/year ')])[1]"/>
     <xsl:variable name="translator" select="($map//*[contains(@class, ' topic/data ')][@name='translator'])[1]"/>
     <xsl:variable name="translator-url" select="($map//*[contains(@class, ' topic/data ')][@name='translator-url'])[1]"/>
     <xsl:variable name="license" select="($map//*[contains(@class, ' topic/data ')][@name='license'])[1]"/>
@@ -971,7 +979,10 @@
         </head>
         <body>
           <div class="titlepage">
-            <h1><xsl:value-of select="if ($subtitle and string-length(normalize-space($subtitle)) > 0) then normalize-space($subtitle) else $main-title"/></h1>
+            <h1><xsl:value-of select="$main-title"/></h1>
+            <xsl:if test="$subtitle and string-length(normalize-space($subtitle)) > 0">
+              <h2 class="subtitle"><xsl:value-of select="normalize-space($subtitle)"/></h2>
+            </xsl:if>
 
             <xsl:if test="$edition and string-length(normalize-space($edition)) > 0">
               <h2><xsl:value-of select="normalize-space($edition)"/></h2>

@@ -139,7 +139,7 @@ public class FontObfuscator {
             xml.append("  <enc:EncryptedData>\n");
             xml.append("    <enc:EncryptionMethod Algorithm=\"").append(OBFUSCATION_ALGORITHM).append("\"/>\n");
             xml.append("    <enc:CipherData>\n");
-            xml.append("      <enc:CipherReference URI=\"").append(fontPath).append("\"/>\n");
+            xml.append("      <enc:CipherReference URI=\"").append(escapeXml(fontPath)).append("\"/>\n");
             xml.append("    </enc:CipherData>\n");
             xml.append("  </enc:EncryptedData>\n");
         }
@@ -149,6 +149,10 @@ public class FontObfuscator {
         Path encryptionFile = metaInfDir.resolve("encryption.xml");
         Files.write(encryptionFile, xml.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
         log("Generated: " + encryptionFile);
+    }
+
+    private static String escapeXml(String value) {
+        return value.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;");
     }
 
     private static void log(String message) {

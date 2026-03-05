@@ -123,7 +123,9 @@
       </xsl:call-template>
 
       <!-- Accessibility Metadata -->
-      <xsl:call-template name="generate-accessibility-metadata"/>
+      <xsl:call-template name="generate-accessibility-metadata">
+        <xsl:with-param name="root" select="$root"/>
+      </xsl:call-template>
 
       <!-- Cover Image -->
       <xsl:if test="$epub.cover.image != ''">
@@ -257,8 +259,8 @@
         <xsl:variable name="day" select="$root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' topic/day ')][1]"/>
 
         <xsl:value-of select="concat($year,
-          if ($month) then concat('-', format-number($month, '00')) else '',
-          if ($day) then concat('-', format-number($day, '00')) else ''
+          if ($month) then concat('-', format-number(number(normalize-space($month)), '00')) else '',
+          if ($day) then concat('-', format-number(number(normalize-space($day)), '00')) else ''
         )"/>
       </xsl:when>
       <xsl:when test="$root//*[contains(@class, ' topic/created ')]/@date">
@@ -344,6 +346,7 @@
 
   <!-- Generate accessibility metadata -->
   <xsl:template name="generate-accessibility-metadata">
+    <xsl:param name="root" as="element()"/>
     <xsl:variable name="wcag-level" select="upper-case($epub.accessibility)"/>
 
     <!-- Access modes -->
@@ -363,13 +366,13 @@
     <opf:meta property="schema:accessibilityFeature">dpubAria</opf:meta>
 
     <!-- List of Illustrations (conditional on LOF generation) -->
-    <xsl:variable name="lof-figurelist" select="exists(root()//*[contains(@class, ' bookmap/figurelist ')])"/>
+    <xsl:variable name="lof-figurelist" select="exists($root//*[contains(@class, ' bookmap/figurelist ')])"/>
     <xsl:if test="epub:is-true($epub.generate.lof) or ($epub.generate.lof = 'auto' and $lof-figurelist)">
       <opf:meta property="schema:accessibilityFeature">listOfIllustrations</opf:meta>
     </xsl:if>
 
     <!-- List of Tables (conditional on LOT generation) -->
-    <xsl:variable name="lot-tablelist" select="exists(root()//*[contains(@class, ' bookmap/tablelist ')])"/>
+    <xsl:variable name="lot-tablelist" select="exists($root//*[contains(@class, ' bookmap/tablelist ')])"/>
     <xsl:if test="epub:is-true($epub.generate.lot) or ($epub.generate.lot = 'auto' and $lot-tablelist)">
       <opf:meta property="schema:accessibilityFeature">listOfTables</opf:meta>
     </xsl:if>

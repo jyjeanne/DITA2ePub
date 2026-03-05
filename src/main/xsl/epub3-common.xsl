@@ -106,8 +106,8 @@
         <xsl:when test="$root//*[contains(@class, ' bookmap/booktitle ')]/*[contains(@class, ' bookmap/mainbooktitle ')]">
           <xsl:value-of select="normalize-space($root//*[contains(@class, ' bookmap/booktitle ')]/*[contains(@class, ' bookmap/mainbooktitle ')][1])"/>
         </xsl:when>
-        <xsl:when test="$root/*[contains(@class, ' map/map ')]/@title">
-          <xsl:value-of select="normalize-space($root/*[contains(@class, ' map/map ')]/@title)"/>
+        <xsl:when test="$root/@title">
+          <xsl:value-of select="normalize-space($root/@title)"/>
         </xsl:when>
         <xsl:when test="$root//*[contains(@class, ' topic/title ')][1]">
           <xsl:value-of select="normalize-space($root//*[contains(@class, ' topic/title ')][1])"/>
@@ -290,9 +290,9 @@
     <xsl:variable name="href" select="$topicref/@href"/>
     <xsl:choose>
       <xsl:when test="$href">
-        <!-- Use the href filename without path and .dita extension -->
+        <!-- Use the href filename without path and extension -->
         <xsl:variable name="filename" select="tokenize(replace(string($href), '\\', '/'), '/')[last()]"/>
-        <xsl:sequence select="concat(replace($filename, '\.dita$', ''), '.xhtml')"/>
+        <xsl:sequence select="concat(replace($filename, '\.[^.]+$', ''), '.xhtml')"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:sequence select="concat('topic-', generate-id($topicref), '.xhtml')"/>
