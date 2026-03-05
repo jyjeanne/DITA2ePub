@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="colophon" xml:lang="en">
+  <title>Colophon</title>
+  <body>
+    <p>This book was produced using DITA-OT 4.4 with the dita2epub plugin.</p>
+    <p>Body text is set in the default system serif font. Code samples use the default monospace font.</p>
+    <p>The EPUB was generated to comply with EPUB 3.3 specification and validated with EPUBCheck.</p>
+  </body>
+</topic>

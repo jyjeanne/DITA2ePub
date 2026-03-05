@@ -4,7 +4,7 @@
 
 **Project Name:** Dita2epub
 **Plugin ID:** io.github.jyjeanne.dita2epub
-**Version:** 1.1.0
+**Version:** 1.4.0
 **Target DITA-OT Version:** 4.4+
 **License:** Apache License 2.0
 **Author:** J. Jeanne
@@ -12,7 +12,7 @@
 
 ### Description
 
-Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 that converts DITA XML content and maps into publication-ready EPUB 3.3 publications. It extends the DITA-OT HTML5 base transformation with 7 XSLT 3.0 modules for OPF, navigation, metadata, content generation, and back-of-book index generation, backed by Java utilities for EPUB-compliant ZIP packaging and validation. The plugin produces EPUB 3.3 output with full Structural Semantics Vocabulary (SSV) compliance.
+Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 that converts DITA XML content and maps into publication-ready EPUB 3.3 publications. It extends the DITA-OT HTML5 base transformation with 8 XSLT 3.0 modules for OPF, navigation, metadata, content generation, back-of-book index, and consolidated glossary generation, backed by Java utilities for EPUB-compliant ZIP packaging, font obfuscation, image optimization, and validation. The plugin produces EPUB 3.3 output with full Structural Semantics Vocabulary (SSV) compliance, professional typography features, and retail distribution metadata (ISBN, series, BISAC, MARC relator codes) suitable for Amazon KDP, Apple Books, and Kobo ingestion.
 
 ### Key Differentiators
 
@@ -21,8 +21,14 @@ Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 tha
 - **Java 17+** — Leverages modern Java features
 - **EPUB 3.3 + SSV Compliance** — Full Structural Semantics Vocabulary with dynamic `epub:type` annotations
 - **Back-of-Book Index** — Automatic index generation from `<indexterm>` elements with precise anchor links
+- **Consolidated Glossary** — Automatic glossary from `<glossentry>` topics
 - **Cover Page Generation** — Automatic HTML cover pages with customizable styles
-- **Font Embedding** — TTF, OTF, WOFF, WOFF2 font formats
+- **Font Embedding** — TTF, OTF, WOFF, WOFF2 with auto `@font-face` CSS and obfuscation
+- **Image Optimization** — JPEG quality, PNG metadata stripping, resize
+- **Professional Typography** — Footnotes, figure/table numbering, drop caps, pull quotes, sidebars
+- **Retail Distribution Metadata** — ISBN/ASIN identifiers, series metadata, MARC relator codes, BISAC subjects
+- **Book Structure** — Copyright page, dedication, colophon, acknowledgments, extended landmarks
+- **10-Language i18n** — en, fr, de, es, it, pt, nl, ja, zh + fallback
 - **Comprehensive Testing** — 6 test classes, 3 test datasets, 0 EPUBCheck errors
 
 ---
@@ -190,7 +196,9 @@ dita2epub/
 │   ├── main/
 │   │   ├── java/io/github/jyjeanne/dita2epub/
 │   │   │   ├── EpubPackager.java       # EPUB-compliant ZIP creation
-│   │   │   └── EpubValidator.java      # EPUBCheck validation wrapper
+│   │   │   ├── EpubValidator.java      # EPUBCheck validation wrapper
+│   │   │   ├── FontObfuscator.java     # Adobe/IDPF font obfuscation
+│   │   │   └── ImageOptimizer.java     # JPEG/PNG image optimization
 │   │   │
 │   │   ├── xsl/                        # XSLT 3.0 transformation modules
 │   │   │   ├── map2epub3.xsl           # Main entry point (imports HTML5 base)
@@ -198,8 +206,9 @@ dita2epub/
 │   │   │   ├── epub3-common.xsl        # Utility functions (UUID, title, language)
 │   │   │   ├── epub3-metadata.xsl      # Dublin Core metadata extraction
 │   │   │   ├── epub3-content.xsl       # DITA topic → XHTML5 generation
-│   │   │   ├── epub3-impl.xsl          # OPF, navigation, NCX generation
-│   │   │   └── epub3-index.xsl         # Back-of-book index generation
+│   │   │   ├── epub3-impl.xsl          # OPF, navigation, NCX, font CSS generation
+│   │   │   ├── epub3-index.xsl         # Back-of-book index generation
+│   │   │   └── epub3-glossary.xsl      # Consolidated glossary generation
 │   │   │
 │   │   └── resources/
 │   │       ├── css/
@@ -262,16 +271,18 @@ dita2epub/
 
 **File:** `src/main/xsl/map2epub3.xsl`
 
-Imports the DITA-OT HTML5 base transformation and includes all 7 plugin modules. The root template triggers `epub3-generate` mode which orchestrates:
+Imports the DITA-OT HTML5 base transformation and includes all 8 plugin modules. The root template triggers `epub3-generate` mode which orchestrates:
 
 1. OPF package document generation
 2. EPUB3 navigation document
 3. NCX table of contents (backward compatibility)
 4. Cover page generation
 5. Title page
-6. Content files (XHTML per topic, with index anchors)
-7. Back-of-book index (when enabled)
-8. container.xml
+6. Content files (XHTML per topic, with index anchors and footnotes)
+7. Consolidated glossary (when enabled)
+8. Back-of-book index (when enabled)
+9. `@font-face` CSS generation (when fonts are embedded)
+10. container.xml
 
 ### 2. epub3-params.xsl — Configuration Parameters
 
@@ -286,18 +297,27 @@ Defines all XSLT parameters with typed defaults. Also provides utility functions
 **File:** `src/main/xsl/epub3-common.xsl`
 
 - `epub:generate-uuid()` — UUID generation for EPUB identifiers
-- `epub:get-identifier()` — Extract publication identifier
+- `epub:get-identifier()` — Extract publication identifier (ISBN from param/bookmap, fallback to UUID)
+- `epub:marc-relator()` — MARC relator code lookup (author→aut, editor→edt, translator→trl, etc.)
 - `epub:get-title()` — Extract map title with fallbacks
 - `epub:get-language()` — Detect language from map metadata
+- `epub:get-media-type()` / `epub:get-font-media-type()` — MIME type detection
+- `epub:get-font-family()` — Font family name from filename (e.g., `Roboto-BoldItalic.woff2` → `Roboto`)
+- `epub:get-font-weight()` — Font weight detection (100-900)
+- `epub:get-font-style()` — Font style detection (normal, italic, oblique)
+- `epub:get-font-format()` — CSS font format from extension (woff2, truetype, etc.)
 
 ### 4. epub3-metadata.xsl — Metadata Extraction
 
 **File:** `src/main/xsl/epub3-metadata.xsl`
 
-Extracts Dublin Core metadata from DITA bookmaps:
-- Publication identifier, titles, subtitles
-- Authors, contributors, publisher
-- Publication date, last modified date (required by EPUB3)
+Extracts Dublin Core and EPUB3 metadata from DITA bookmaps:
+- Publication identifier with ISBN/ASIN detection and ONIX codelist5 refinement
+- Titles, subtitles
+- Authors, contributors with MARC relator codes (editor, translator, illustrator, etc.)
+- Series metadata (`belongs-to-collection` with `collection-type` and `group-position`)
+- BISAC/ONIX subject classifications from parameter and bookmap `<data>` elements
+- Publisher, publication date, last modified date (required by EPUB3)
 - Rights/copyright, description/abstract
 
 ### 5. epub3-content.xsl — Content Generation
@@ -305,8 +325,17 @@ Extracts Dublin Core metadata from DITA bookmaps:
 **File:** `src/main/xsl/epub3-content.xsl`
 
 Transforms DITA topics to XHTML5 content files. Processes topicrefs from the map and generates separate XHTML files per topic with EPUB naming conventions. Key features:
-- Dynamic `epub:type` assignment based on bookmap context (chapter, appendix, foreword, preface, glossary)
+- Dynamic `epub:type` assignment based on bookmap context (chapter, appendix, foreword, preface, glossary, dedication, colophon, copyright-page, errata, acknowledgments, halftitlepage, introduction, epilogue)
+- `@type` attribute override on topicrefs for explicit epub:type mapping
 - Index anchor injection: `<span id="ixa-{topic-id}-{pos}"/>` elements at each `<indexterm>` location for precise index linking
+- Footnotes with EPUB 3 `epub:type="footnote"` / `noteref` semantics and backlinks
+- Figure auto-numbering with i18n labels and `<figure>` / `<figcaption>` markup
+- Table enhancements: colspan, rowspan, alignment from colspec, zebra striping
+- Code block language class from `@outputclass` and optional line numbers
+- Drop caps on first paragraph of chapter topics
+- Pull quotes (`<lq>` → `<blockquote class="pull-quote">`) with attribution
+- Sidebars (`<section outputclass="sidebar">` → `<aside class="sidebar">`)
+- Language-aware note labels (tip, warning, important, caution, danger) across 10 languages
 - Skip navigation links for accessibility
 - Proper XHTML5 semantic structure with `<article>`, `<section>`, `<main>`
 
@@ -315,10 +344,13 @@ Transforms DITA topics to XHTML5 content files. Processes topicrefs from the map
 **File:** `src/main/xsl/epub3-impl.xsl`
 
 Generates the core EPUB structure:
-- **OPF package document** (content.opf) — manifest, spine, metadata (with conditional index.xhtml entry)
-- **EPUB3 navigation document** (nav.xhtml) — TOC, landmarks (with index landmark when index is generated)
+- **OPF package document** (content.opf) — manifest, spine, metadata (with conditional index/glossary entries, font CSS, custom CSS)
+- **EPUB3 navigation document** (nav.xhtml) — TOC, landmarks (with index/glossary/preface/dedication/appendix/colophon/copyright-page landmarks when generated)
 - **NCX table of contents** — backward compatibility with EPUB2 readers
 - **Cover page** — HTML cover with configurable styles
+- **Title page** — with author, copyright, translator, license (i18n)
+- **Copyright page** — auto-generated from bookmap metadata (title, copyright notice, publisher, license, ISBN)
+- **`@font-face` CSS generation** — auto-generates `epub-fonts.css` from embedded font files
 - **container.xml** — OCF container
 - **Bookmap navigation flattening** — promotes frontmatter/backmatter children to top level with localized labels
 
@@ -526,7 +558,8 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 |-----------|------|---------|-------------|
 | `epub.embed.fonts` | path | `(none)` | Directory or comma-separated font files to embed |
 | `epub.embedded.fonts` | path | `(none)` | Alias for `epub.embed.fonts` |
-| `epub.obfuscate.fonts` | enum | `no` | Font obfuscation (not yet implemented) |
+| `epub.obfuscate.fonts` | enum | `no` | Adobe/IDPF font obfuscation with `encryption.xml` |
+| `epub.generate.font.css` | enum | `yes` | Auto-generate `@font-face` CSS from embedded fonts |
 
 **Supported font formats:** TTF, OTF, WOFF, WOFF2
 
@@ -538,6 +571,11 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 | `epub.rights` | string | `(from DITA)` | Copyright statement |
 | `epub.identifier.scheme` | enum | `UUID` | Identifier scheme: `UUID`, `DOI`, `ISBN`, `URI` |
 | `epub.language` | string | `en` | Primary language code |
+| `epub.isbn` | string | `(none)` | ISBN override (extracts from bookmap `<bookid><isbn>` if empty) |
+| `epub.series.name` | string | `(none)` | Series/collection name (`belongs-to-collection`) |
+| `epub.series.position` | string | `(none)` | Volume position in series (`group-position`) |
+| `epub.bisac.codes` | string | `(none)` | Comma-separated BISAC subject codes |
+| `epub.copyright.page` | enum | `auto` | Generate copyright page: `auto`, `yes`, `no` |
 
 ### Styling Parameters
 
@@ -547,6 +585,32 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 | `args.csspath` | path | `styles` | Path to CSS directory |
 | `args.copycss` | enum | `yes` | Copy CSS to output: `yes`, `no` |
 | `args.output.base.name` | string | `output` | Output file base name |
+
+### Typography & Content Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.custom.css` | path | `(none)` | Path to custom CSS file to include in EPUB |
+| `epub.figure.numbering` | enum | `global` | Figure numbering mode: `global` (sequential), `none` |
+| `epub.table.numbering` | enum | `global` | Table numbering mode: `global` (sequential), `none` |
+| `epub.table.zebra` | enum | `yes` | Zebra striping on table body rows: `yes`, `no` |
+| `epub.code.line.numbers` | enum | `no` | Line numbers in code blocks: `yes`, `no` |
+| `epub.code.syntax.classes` | enum | `yes` | Add `language-{outputclass}` CSS class to code blocks: `yes`, `no` |
+| `epub.drop.caps` | enum | `no` | Drop caps on first paragraph of chapter topics: `yes`, `no` |
+
+### Image Optimization Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.optimize.images` | enum | `no` | Optimize images for EPUB: `yes`, `no` |
+| `epub.image.jpeg.quality` | string | `0.8` | JPEG compression quality (0.0-1.0) |
+| `epub.image.max.width` | string | `0` | Max image width in pixels (0 = no limit) |
+
+### Glossary Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.generate.glossary` | enum | `auto` | Generate consolidated glossary: `auto`, `yes`, `no` |
 
 ### Validation Parameters
 
@@ -629,16 +693,24 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 
 ## Known Limitations
 
-- Font obfuscation not yet implemented (font copying works)
-- Automatic font manifest generation requires manual CSS `@font-face` declarations
+- Figure/table numbering is per-topic (not truly global across book) due to `document()` scoping of `preceding::` axis
+- Column alignment fallback does not account for rowspan from previous rows
 - Cover page limited to 3 styles (full-page, centered, custom)
-- Localized navigation labels for frontmatter/backmatter/appendices (English, French, German, Spanish supported)
+- No RTL language support (Arabic, Hebrew)
+- No Fixed Layout EPUB support
+- No List of Figures / List of Tables generation
 
 ---
 
 ## Roadmap
 
-### v1.1.0 (Current)
+### v1.0.0 (Released 2025-12-01)
+- [x] EPUB3 transformation support with DITA-OT 4.4
+- [x] Accessibility built-in (WCAG 2.1 AA)
+- [x] Gradle build integration
+- [x] Modern Java 17 support
+
+### v1.1.0 (Released 2026-02-20)
 - [x] Cover page generation with multiple styles
 - [x] Font embedding (TTF, OTF, WOFF, WOFF2)
 - [x] Back-of-book index generation with EPUB 3.3 SSV markup
@@ -649,15 +721,57 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] GitHub Actions CI/CD
 - [x] Windows path handling
 
-### v1.2 (Planned)
-- [ ] Font obfuscation (Adobe algorithm)
-- [ ] Image optimization
-- [ ] Additional language support (ja, zh)
+### v1.2.0 (Released 2026-03-05)
+- [x] Font obfuscation (Adobe/IDPF algorithm with encryption.xml)
+- [x] Font manifest generation from actual font files (replaces placeholder)
+- [x] Image optimization (JPEG quality, PNG metadata stripping, resize)
+- [x] Additional language support (it, pt, nl, ja, zh) across all navigation labels
+- [x] DITA-OT plugin registry support
 
-### v2.0 (Future)
-- [ ] DITA 2.0 full support
-- [ ] EPUB3 Fixed Layout
-- [ ] Custom theme system
+### v1.3.0 (Released 2026-03-05)
+*Goal: Close the visual gap between dita2epub output and commercial publishers.*
+
+- [x] **Auto `@font-face` CSS generation** from embedded font files with font family/weight/style detection
+- [x] **Custom CSS injection** — `epub.custom.css` parameter for publisher-specific stylesheets
+- [x] **Footnotes/endnotes** with EPUB 3 `epub:type="footnote"` / `noteref` and backlinks
+- [x] **Figure auto-numbering** with i18n labels (10 languages) and `<figure>` / `<figcaption>` markup
+- [x] **Table auto-numbering** with i18n labels and `<caption>` markup
+- [x] **Table enhancements** — colspan (`@namest`/`@nameend`), rowspan (`@morerows`), alignment from colspec, zebra striping
+- [x] **Code block enhancements** — language CSS class from `@outputclass`, optional line numbers
+- [x] **Drop caps** (`::first-letter` styling) for chapter opening paragraphs
+- [x] **Pull quotes** — `<lq>` → `<blockquote class="pull-quote">` with attribution
+- [x] **Sidebars** — `<section outputclass="sidebar">` → `<aside class="sidebar">`
+- [x] **i18n note labels** — language-aware labels for tip, warning, important, caution, danger, note
+
+### v1.4.0 (Current — Released 2026-03-05)
+*Goal: Produce EPUBs that pass Amazon KDP, Apple Books, and Kobo ingestion validation.*
+
+- [x] **ISBN/ASIN identifier support** — Extract from bookmap `<bookid><isbn>` or override via `epub.isbn` parameter; ONIX codelist5 identifier-type refinement (ISBN-13, ISBN-10, ASIN)
+- [x] **Series metadata** — `belongs-to-collection` with `collection-type` and `group-position`; from parameters or bookmap `<data name="series">`
+- [x] **Multiple contributor roles** — `epub:marc-relator()` function maps 10 roles to MARC codes; extracts translators and editors from bookmeta `<data>` elements
+- [x] **BISAC/ONIX subject classifications** — Comma-separated BISAC codes via `epub.bisac.codes` parameter and bookmap `<data name="bisac">`
+- [x] **Frontmatter/backmatter epub:type expansion** — dedication, colophon, copyright-page, errata, acknowledgments, halftitlepage, introduction, epilogue; `@type` attribute override on topicrefs
+- [x] **Extended landmarks navigation** — Conditional entries for preface, dedication, appendix, colophon, copyright page; all labels i18n-aware (10 languages)
+- [x] **Auto-generated copyright page** — `copyright.xhtml` from bookmap metadata with title, copyright notice, "All rights reserved" (i18n), publisher, license, ISBN
+
+### v1.5.0 — Accessibility & Internationalization
+*Goal: Meet EU Accessibility Act 2025 and US ADA requirements; support global markets.*
+
+- [ ] **Full ARIA `doc-*` roles** — `doc-footnote`, `doc-noteref`, `doc-pagebreak`, `doc-bibliography`, `doc-colophon`
+- [ ] **RTL language support** — Arabic and Hebrew with proper text direction, CSS logical properties, and bidirectional reflow
+- [ ] **Hyphenation per language** — `hyphens: auto` with proper `lang` attributes on content elements
+- [ ] **List of Figures / List of Tables** generation from `<fig>` and `<table>` captions
+- [ ] **Extended image descriptions** — long descriptions beyond `alt` text (WCAG AAA)
+- [ ] **Language-specific typography** — CJK line-breaking rules, locale-aware quotation marks
+
+### v2.0.0 — Theme System & Platform Variants
+*Goal: Enable publishers to produce branded, series-consistent output across multiple retail channels.*
+
+- [ ] **Theme system** — built-in themes (academic, fiction, technical, training) with CSS custom properties and theme inheritance
+- [ ] **Build profiles** — retailer-specific output variants (Amazon KDP, Apple Books, Kobo) handling each platform's validation quirks
+- [ ] **Fixed Layout EPUB** — for children's books, cookbooks, comics, and image-heavy publications
+- [ ] **DITA 2.0 support** — full compatibility with DITA 2.0 specializations and processing
+- [ ] **MathML / equation rendering** — for STEM publishing with proper fallback images
 
 ---
 
@@ -667,6 +781,6 @@ Apache License 2.0 — Copyright 2025 J. Jeanne
 
 ---
 
-**Document Version:** 1.1.0
-**Last Updated:** 2026-02-23
+**Document Version:** 1.4.0
+**Last Updated:** 2026-03-05
 **Status:** Current Release

@@ -3,11 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags like v1.0.1
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., 1.0.1)'
+        description: 'Release version (e.g., 1.2.0)'
         required: true
         type: string
 
@@ -27,45 +27,39 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Download DITA-OT
-        run: |
-          wget -q https://github.com/dita-ot/dita-ot/releases/download/4.4/dita-ot-4.4.zip
-          unzip -q dita-ot-4.4.zip
-          echo "DITA_HOME=${{ github.workspace }}/dita-ot-4.4" >> $GITHUB_ENV
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build and test
+      - name: Build, test, and package
+        run: ./gradlew clean compileJava test distChecksum --no-daemon
+
+      - name: Install plugin in DITA-OT and test
         run: |
-          ./gradlew clean build test --no-daemon
+          wget -q https://github.com/dita-ot/dita-ot/releases/download/4.4/dita-ot-4.4.zip
+          unzip -q dita-ot-4.4.zip
 
-      - name: Install plugin and validate
-        run: |
-          # Create plugin directory
-          mkdir -p "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub"
+          # Find the actual dist ZIP produced by Gradle (avoids version mismatch with git tag)
+          DIST_ZIP=$(ls build/dist/io.github.jyjeanne.dita2epub-*.zip | head -1)
+          if [ -z "$DIST_ZIP" ]; then
+            echo "No distribution ZIP found in build/dist/"
+            exit 1
+          fi
+          echo "Installing plugin from: $DIST_ZIP"
 
-          # Copy only necessary plugin files to DITA-OT
-          cp plugin.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
-          cp plugin-info.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
-          cp build-epub3.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
-          cp -r src "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
-          [ -d strings ] && cp -r strings "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/" || true
-
-          cd "$DITA_HOME"
-          ./bin/dita install
+          # Install plugin from the distribution ZIP
+          ./dita-ot-4.4/bin/dita install "$DIST_ZIP"
 
           # Test EPUB generation
-          ./bin/dita --input="${{ github.workspace }}/src/test/resources/dita/sample-bookmap.ditamap" \
-                     --format=epub3 \
-                     --output="${{ github.workspace }}/build/release-test"
+          ./dita-ot-4.4/bin/dita \
+            --input="src/test/resources/dita/sample-bookmap.ditamap" \
+            --format=epub3 \
+            --output="build/release-test"
 
-      - name: Verify EPUB
-        run: |
+          # Verify EPUB was generated
           if ls build/release-test/*.epub 1> /dev/null 2>&1; then
-            echo "✅ Release validation successful"
+            echo "Release validation successful"
           else
-            echo "❌ Release validation failed"
+            echo "Release validation failed — no EPUB generated"
             exit 1
           fi
 
@@ -85,48 +79,30 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Get version
-        id: get_version
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-          else
-            echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-          fi
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build release
-        run: ./gradlew clean build -x test --no-daemon
+      - name: Build distribution ZIP with checksum
+        run: ./gradlew clean distChecksum --no-daemon
 
-      - name: Create plugin ZIP
+      - name: Detect version from built artifact
+        id: get_version
         run: |
-          mkdir -p dist
-          zip -r "dist/dita2epub-${{ steps.get_version.outputs.VERSION }}.zip" \
-            plugin.xml \
-            build-epub3.xml \
-            src/main/xsl \
-            src/main/resources \
-            src/main/java \
-            README.md \
-            SPECIFICATION.md \
-            QUICKSTART.md \
-            RELEASE_NOTES.md \
-            CONTRIBUTING.md \
-            LICENSE
+          DIST_ZIP=$(ls build/dist/io.github.jyjeanne.dita2epub-*.zip | grep -v '.SHA-256' | head -1)
+          FILENAME=$(basename "$DIST_ZIP")
+          # Extract version: io.github.jyjeanne.dita2epub-1.2.0.zip -> 1.2.0
+          VERSION=$(echo "$FILENAME" | sed 's/io.github.jyjeanne.dita2epub-//' | sed 's/.zip//')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected version: $VERSION"
 
-      - name: Generate checksums
-        run: |
-          cd dist
-          sha256sum *.zip > checksums.txt
-          cat checksums.txt
+      - name: Display checksum
+        run: cat build/dist/*.SHA-256
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
           name: release-artifacts-${{ steps.get_version.outputs.VERSION }}
-          path: dist/
+          path: build/dist/io.github.jyjeanne.dita2epub-*
           retention-days: 90
 
   create-release:
@@ -151,55 +127,54 @@ jobs:
           name: release-artifacts-${{ steps.get_version.outputs.VERSION }}
           path: dist/
 
-      - name: Extract release notes
+      - name: Extract release notes from CHANGELOG
         id: release_notes
         run: |
-          # Extract version section from RELEASE_NOTES.md
-          sed -n '/## Version ${{ steps.get_version.outputs.VERSION }}/,/## Version/p' RELEASE_NOTES.md | head -n -1 > release_body.md
+          # Extract version section from CHANGELOG.md
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          sed -n "/## \[${VERSION}\]/,/## \[/p" docs/CHANGELOG.md | head -n -1 > release_body.md
 
-          # If empty, use a default message
           if [ ! -s release_body.md ]; then
-            echo "Release ${{ steps.get_version.outputs.VERSION }}" > release_body.md
+            echo "Release v${VERSION}" > release_body.md
           fi
 
+          # Append install instructions
+          echo "" >> release_body.md
+          echo "## Installation" >> release_body.md
+          echo "" >> release_body.md
+          echo "Install via DITA-OT (once published to registry):" >> release_body.md
+          echo '```bash' >> release_body.md
+          echo "dita install io.github.jyjeanne.dita2epub" >> release_body.md
+          echo '```' >> release_body.md
+          echo "" >> release_body.md
+          echo "Or install directly from this release:" >> release_body.md
+          echo '```bash' >> release_body.md
+          echo "dita install https://github.com/jyjeanne/dita2epub/releases/download/v${VERSION}/io.github.jyjeanne.dita2epub-${VERSION}.zip" >> release_body.md
+          echo '```' >> release_body.md
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: Release v${{ steps.get_version.outputs.VERSION }}
           body_path: release_body.md
           files: |
-            dist/*.zip
-            dist/checksums.txt
+            dist/io.github.jyjeanne.dita2epub-${{ steps.get_version.outputs.VERSION }}.zip
+            dist/io.github.jyjeanne.dita2epub-${{ steps.get_version.outputs.VERSION }}.zip.SHA-256
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  publish-plugin:
-    name: Publish to DITA-OT Registry
-    runs-on: ubuntu-latest
-    needs: create-release
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Get version
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-      - name: Notify about manual publication
+      - name: Registry submission reminder
         run: |
-          echo "## 📦 Plugin Ready for Publication" >> $GITHUB_STEP_SUMMARY
+          echo "## Plugin Released" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** ${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "### Next: Submit to DITA-OT Registry" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "1. Download the plugin ZIP from the release assets" >> $GITHUB_STEP_SUMMARY
-          echo "2. Test the plugin with DITA-OT 4.4" >> $GITHUB_STEP_SUMMARY
-          echo "3. Submit to DITA-OT plugin registry (if applicable)" >> $GITHUB_STEP_SUMMARY
-          echo "4. Update project documentation with release information" >> $GITHUB_STEP_SUMMARY
+          echo "1. Update \`cksum\` in \`io.github.jyjeanne.dita2epub.json\` with the SHA-256 from the release" >> $GITHUB_STEP_SUMMARY
+          echo "2. Fork [dita-ot/registry](https://github.com/dita-ot/registry)" >> $GITHUB_STEP_SUMMARY
+          echo "3. Copy the JSON file and submit a signed-off PR" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Release URL:** ${{ github.server_url }}/${{ github.repository }}/releases/tag/v${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "See \`docs/REGISTRY.md\` for detailed instructions." >> $GITHUB_STEP_SUMMARY

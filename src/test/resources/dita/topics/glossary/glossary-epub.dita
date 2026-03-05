@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-epub">
+  <glossterm>EPUB</glossterm>
+  <glossdef>Electronic Publication — an open standard for digital books maintained by the W3C.</glossdef>
+  <glossBody>
+    <glossUsage>Used when referring to the EPUB file format (.epub) or the EPUB specification.</glossUsage>
+  </glossBody>
+</glossentry>

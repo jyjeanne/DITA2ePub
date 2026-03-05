@@ -32,12 +32,69 @@
   <xsl:function name="epub:get-identifier" as="xs:string">
     <xsl:param name="root" as="element()"/>
     <xsl:choose>
-      <xsl:when test="$epub.identifier.scheme = 'UUID'">
-        <xsl:sequence select="epub:generate-uuid()"/>
+      <!-- 1. Explicit epub.isbn parameter -->
+      <xsl:when test="normalize-space($epub.isbn) != ''">
+        <xsl:sequence select="normalize-space($epub.isbn)"/>
       </xsl:when>
+      <!-- 2. ISBN from bookmap bookid/isbn -->
+      <xsl:when test="$root//*[contains(@class, ' bookmap/bookid ')]/*[contains(@class, ' bookmap/isbn ')]
+                       [normalize-space(.) != '']">
+        <xsl:sequence select="normalize-space($root//*[contains(@class, ' bookmap/bookid ')]/*[contains(@class, ' bookmap/isbn ')][1])"/>
+      </xsl:when>
+      <!-- 3. Fallback to UUID -->
       <xsl:otherwise>
         <xsl:sequence select="epub:generate-uuid()"/>
       </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+  <!-- MARC relator code lookup -->
+  <xsl:function name="epub:marc-relator" as="xs:string">
+    <xsl:param name="role" as="xs:string"/>
+    <xsl:variable name="lower" select="lower-case($role)"/>
+    <xsl:choose>
+      <xsl:when test="$lower = 'author'">aut</xsl:when>
+      <xsl:when test="$lower = 'editor'">edt</xsl:when>
+      <xsl:when test="$lower = 'translator'">trl</xsl:when>
+      <xsl:when test="$lower = 'illustrator'">ill</xsl:when>
+      <xsl:when test="$lower = 'reviewer'">rev</xsl:when>
+      <xsl:when test="$lower = 'narrator'">nrt</xsl:when>
+      <xsl:when test="$lower = 'photographer'">pht</xsl:when>
+      <xsl:when test="$lower = 'designer'">bkd</xsl:when>
+      <xsl:when test="$lower = 'foreword'">aui</xsl:when>
+      <xsl:when test="$lower = 'afterword'">aft</xsl:when>
+      <!-- If already a 3-letter MARC code, pass through -->
+      <xsl:when test="string-length($lower) = 3"><xsl:value-of select="$lower"/></xsl:when>
+      <xsl:otherwise>oth</xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+  <!-- Check if a language is right-to-left -->
+  <xsl:function name="epub:is-rtl" as="xs:boolean">
+    <xsl:param name="lang" as="xs:string"/>
+    <xsl:sequence select="starts-with($lang, 'ar') or starts-with($lang, 'he')
+      or starts-with($lang, 'fa') or starts-with($lang, 'ur')"/>
+  </xsl:function>
+
+  <!-- Get text direction for a language -->
+  <xsl:function name="epub:get-dir" as="xs:string">
+    <xsl:param name="lang" as="xs:string"/>
+    <xsl:sequence select="if (epub:is-rtl($lang)) then 'rtl' else 'ltr'"/>
+  </xsl:function>
+
+  <!-- Get locale-aware quotation marks (open, close) -->
+  <xsl:function name="epub:get-quotes" as="xs:string+">
+    <xsl:param name="lang" as="xs:string"/>
+    <xsl:choose>
+      <xsl:when test="starts-with($lang, 'fr')"><xsl:sequence select="('&#xAB;&#xA0;', '&#xA0;&#xBB;')"/></xsl:when>
+      <xsl:when test="starts-with($lang, 'de')"><xsl:sequence select="('&#x201E;', '&#x201C;')"/></xsl:when>
+      <xsl:when test="starts-with($lang, 'ja')"><xsl:sequence select="('&#x300C;', '&#x300D;')"/></xsl:when>
+      <xsl:when test="starts-with($lang, 'zh')"><xsl:sequence select="('&#x201C;', '&#x201D;')"/></xsl:when>
+      <xsl:when test="starts-with($lang, 'ar') or starts-with($lang, 'he')"><xsl:sequence select="('&#xAB;', '&#xBB;')"/></xsl:when>
+      <xsl:when test="starts-with($lang, 'es')"><xsl:sequence select="('&#xAB;', '&#xBB;')"/></xsl:when>
+      <xsl:when test="starts-with($lang, 'it')"><xsl:sequence select="('&#xAB;', '&#xBB;')"/></xsl:when>
+      <xsl:when test="starts-with($lang, 'pt')"><xsl:sequence select="('&#x201C;', '&#x201D;')"/></xsl:when>
+      <xsl:otherwise><xsl:sequence select="('&#x201C;', '&#x201D;')"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
 
@@ -149,6 +206,80 @@
       <xsl:when test="$ext = 'ttf'">font/ttf</xsl:when>
       <xsl:when test="$ext = 'otf'">font/otf</xsl:when>
       <xsl:otherwise>application/octet-stream</xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+  <!-- Get font media type from file extension -->
+  <xsl:function name="epub:get-font-media-type" as="xs:string">
+    <xsl:param name="filename" as="xs:string"/>
+    <xsl:variable name="ext" select="lower-case(tokenize($filename, '\.')[last()])"/>
+    <xsl:choose>
+      <xsl:when test="$ext = 'ttf'">font/ttf</xsl:when>
+      <xsl:when test="$ext = 'otf'">font/otf</xsl:when>
+      <xsl:when test="$ext = 'woff'">font/woff</xsl:when>
+      <xsl:when test="$ext = 'woff2'">font/woff2</xsl:when>
+      <xsl:otherwise>application/octet-stream</xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+  <!-- ================================================================== -->
+  <!-- Font filename parsing functions for @font-face CSS generation     -->
+  <!-- ================================================================== -->
+
+  <!-- Extract font family name from filename: Roboto-BoldItalic.woff2 → Roboto
+       Source-Code-Pro-Bold.woff2 → Source-Code-Pro
+       Strategy: strip known weight/style suffixes from the end of the basename. -->
+  <xsl:function name="epub:get-font-family" as="xs:string">
+    <xsl:param name="filename" as="xs:string"/>
+    <xsl:variable name="basename" select="replace($filename, '\.[^.]+$', '')"/>
+    <!-- Remove trailing weight/style tokens (case-insensitive): Thin, ExtraLight, UltraLight,
+         Light, Regular, Medium, SemiBold, DemiBold, Bold, ExtraBold, UltraBold, Black, Heavy,
+         Italic, Oblique.  These may appear after a hyphen or concatenated (e.g. BoldItalic). -->
+    <xsl:variable name="stripped" select="replace($basename,
+      '[-]?(Thin|Hairline|ExtraLight|UltraLight|Light|Regular|Medium|SemiBold|DemiBold|ExtraBold|UltraBold|Bold|Black|Heavy|Italic|Oblique)+$',
+      '', 'i')"/>
+    <!-- If stripping removed everything (e.g. "Bold.woff2"), fall back to full basename -->
+    <xsl:sequence select="if (string-length($stripped) > 0) then $stripped else $basename"/>
+  </xsl:function>
+
+  <!-- Detect font weight from filename -->
+  <xsl:function name="epub:get-font-weight" as="xs:string">
+    <xsl:param name="filename" as="xs:string"/>
+    <xsl:variable name="lower" select="lower-case($filename)"/>
+    <xsl:choose>
+      <xsl:when test="contains($lower, 'thin') or contains($lower, 'hairline')">100</xsl:when>
+      <xsl:when test="contains($lower, 'extralight') or contains($lower, 'ultralight')">200</xsl:when>
+      <xsl:when test="contains($lower, 'light')">300</xsl:when>
+      <xsl:when test="contains($lower, 'medium')">500</xsl:when>
+      <xsl:when test="contains($lower, 'semibold') or contains($lower, 'demibold')">600</xsl:when>
+      <xsl:when test="contains($lower, 'extrabold') or contains($lower, 'ultrabold')">800</xsl:when>
+      <xsl:when test="contains($lower, 'black') or contains($lower, 'heavy')">900</xsl:when>
+      <xsl:when test="contains($lower, 'bold')">700</xsl:when>
+      <xsl:otherwise>400</xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+  <!-- Detect font style from filename -->
+  <xsl:function name="epub:get-font-style" as="xs:string">
+    <xsl:param name="filename" as="xs:string"/>
+    <xsl:variable name="lower" select="lower-case($filename)"/>
+    <xsl:choose>
+      <xsl:when test="contains($lower, 'italic')">italic</xsl:when>
+      <xsl:when test="contains($lower, 'oblique')">oblique</xsl:when>
+      <xsl:otherwise>normal</xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+  <!-- Get CSS font format from file extension -->
+  <xsl:function name="epub:get-font-format" as="xs:string">
+    <xsl:param name="filename" as="xs:string"/>
+    <xsl:variable name="ext" select="lower-case(tokenize($filename, '\.')[last()])"/>
+    <xsl:choose>
+      <xsl:when test="$ext = 'woff2'">woff2</xsl:when>
+      <xsl:when test="$ext = 'woff'">woff</xsl:when>
+      <xsl:when test="$ext = 'ttf'">truetype</xsl:when>
+      <xsl:when test="$ext = 'otf'">opentype</xsl:when>
+      <xsl:otherwise>woff2</xsl:otherwise>
     </xsl:choose>
   </xsl:function>
 

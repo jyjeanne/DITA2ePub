@@ -35,7 +35,27 @@
     <property name="epub.embed.fonts" value=""/>
     <property name="epub.embedded.fonts" value=""/>
     <property name="epub.obfuscate.fonts" value="no"/>
+    <property name="epub.optimize.images" value="no"/>
+    <property name="epub.image.jpeg.quality" value="0.8"/>
+    <property name="epub.image.max.width" value="0"/>
     <property name="args.css" value="epub-default.css"/>
+    <property name="epub.custom.css" value=""/>
+    <property name="epub.generate.font.css" value="yes"/>
+    <property name="epub.figure.numbering" value="global"/>
+    <property name="epub.table.numbering" value="global"/>
+    <property name="epub.table.zebra" value="yes"/>
+    <property name="epub.code.line.numbers" value="no"/>
+    <property name="epub.code.syntax.classes" value="yes"/>
+    <property name="epub.drop.caps" value="no"/>
+    <property name="epub.isbn" value=""/>
+    <property name="epub.series.name" value=""/>
+    <property name="epub.series.position" value=""/>
+    <property name="epub.bisac.codes" value=""/>
+    <property name="epub.copyright.page" value="auto"/>
+    <property name="epub.generate.lof" value="no"/>
+    <property name="epub.generate.lot" value="no"/>
+    <property name="epub.hyphenation" value="auto"/>
+    <property name="epub.locale.quotes" value="no"/>
 
     <!-- Create output directories -->
     <mkdir dir="${output.dir}/${epub.topics.dir}"/>
@@ -47,15 +67,88 @@
     <echo message="EPUB3 initialization complete"/>
   </target>
 
+  <!-- Scan font source directory for font files (before XSLT transform).
+       Uses depends chain (not antcall) so that properties propagate correctly. -->
+  <target name="epub3.scan.fonts"
+          depends="epub3.scan.fonts.resolve-source,epub3.scan.fonts.dir">
+    <!-- Ensure epub.font.files has a value even if no fonts found -->
+    <property name="epub.font.files" value=""/>
+    <echo message="Font scan complete. epub.font.files=${epub.font.files}"/>
+  </target>
+
+  <!-- Resolve which font source directory to use -->
+  <target name="epub3.scan.fonts.resolve-source">
+    <condition property="font.source" value="${epub.embed.fonts}">
+      <and>
+        <isset property="epub.embed.fonts"/>
+        <length string="${epub.embed.fonts}" when="greater" length="0"/>
+      </and>
+    </condition>
+    <condition property="font.source" value="${epub.embedded.fonts}">
+      <and>
+        <not><isset property="font.source"/></not>
+        <isset property="epub.embedded.fonts"/>
+        <length string="${epub.embedded.fonts}" when="greater" length="0"/>
+      </and>
+    </condition>
+    <property name="font.source" value=""/>
+
+    <!-- Set flag if font source directory actually exists -->
+    <condition property="font.source.exists">
+      <and>
+        <length string="${font.source}" when="greater" length="0"/>
+        <available file="${font.source}" type="dir"/>
+      </and>
+    </condition>
+  </target>
+
+  <!-- Scan font directory if it exists (depends chain propagates properties) -->
+  <target name="epub3.scan.fonts.dir" if="font.source.exists">
+    <fileset id="font.fileset" dir="${font.source}" erroronmissingdir="false">
+      <include name="*.ttf"/>
+      <include name="*.otf"/>
+      <include name="*.woff"/>
+      <include name="*.woff2"/>
+    </fileset>
+    <pathconvert property="epub.font.files" refid="font.fileset" pathsep=",">
+      <mapper type="flatten"/>
+    </pathconvert>
+    <echo message="Found font files: ${epub.font.files}"/>
+  </target>
+
+  <!-- Copy custom CSS if specified -->
+  <target name="epub3.copy.custom.css">
+    <condition property="has.custom.css">
+      <and>
+        <isset property="epub.custom.css"/>
+        <length string="${epub.custom.css}" when="greater" length="0"/>
+        <available file="${epub.custom.css}" type="file"/>
+      </and>
+    </condition>
+    <antcall target="epub3.copy.custom.css.do"/>
+  </target>
+
+  <target name="epub3.copy.custom.css.do" if="has.custom.css">
+    <basename property="custom.css.filename" file="${epub.custom.css}"/>
+    <copy tofile="${output.dir}/${epub.css.dir}/${custom.css.filename}"
+          file="${epub.custom.css}"
+          failonerror="false"/>
+    <echo message="Custom CSS copied: ${custom.css.filename}"/>
+  </target>
+
   <!-- Main EPUB3 transformation target -->
   <target name="dita2epub3"
           depends="epub3.init,
                    build-init,
                    preprocess,
+                   epub3.scan.fonts,
                    epub3.transform,
                    epub3.copy.css,
+                   epub3.copy.custom.css,
                    epub3.copy.images,
                    epub3.copy.fonts,
+                   epub3.obfuscate.fonts,
+                   epub3.optimize.images,
                    epub3.create.mimetype,
                    epub3.package,
                    epub3.validate">
@@ -91,7 +184,25 @@
       <param name="epub.embed.fonts" expression="${epub.embed.fonts}"/>
       <param name="epub.embedded.fonts" expression="${epub.embedded.fonts}"/>
       <param name="epub.obfuscate.fonts" expression="${epub.obfuscate.fonts}"/>
+      <param name="epub.font.files" expression="${epub.font.files}" if="epub.font.files"/>
       <param name="args.css" expression="${args.css}"/>
+      <param name="epub.custom.css" expression="${epub.custom.css}"/>
+      <param name="epub.generate.font.css" expression="${epub.generate.font.css}"/>
+      <param name="epub.figure.numbering" expression="${epub.figure.numbering}"/>
+      <param name="epub.table.numbering" expression="${epub.table.numbering}"/>
+      <param name="epub.table.zebra" expression="${epub.table.zebra}"/>
+      <param name="epub.code.line.numbers" expression="${epub.code.line.numbers}"/>
+      <param name="epub.code.syntax.classes" expression="${epub.code.syntax.classes}"/>
+      <param name="epub.drop.caps" expression="${epub.drop.caps}"/>
+      <param name="epub.isbn" expression="${epub.isbn}"/>
+      <param name="epub.series.name" expression="${epub.series.name}"/>
+      <param name="epub.series.position" expression="${epub.series.position}"/>
+      <param name="epub.bisac.codes" expression="${epub.bisac.codes}"/>
+      <param name="epub.copyright.page" expression="${epub.copyright.page}"/>
+      <param name="epub.generate.lof" expression="${epub.generate.lof}"/>
+      <param name="epub.generate.lot" expression="${epub.generate.lot}"/>
+      <param name="epub.hyphenation" expression="${epub.hyphenation}"/>
+      <param name="epub.locale.quotes" expression="${epub.locale.quotes}"/>
 
       <!-- Use DITA-OT XML catalog for plugin URI resolution -->
       <xmlcatalog refid="dita.catalog"/>
@@ -232,6 +343,74 @@
     <!-- Handle comma-separated list of font files -->
     <!-- Note: This is a simplified version - for production, consider using a custom task -->
     <echo message="Font list processing not yet implemented - please use directory path"/>
+  </target>
+
+  <!-- Optimize images for EPUB -->
+  <target name="epub3.optimize.images">
+    <echo message="Checking if image optimization is needed..."/>
+
+    <condition property="should.optimize.images">
+      <and>
+        <equals arg1="${epub.optimize.images}" arg2="yes"/>
+        <available file="${output.dir}/${epub.images.dir}" type="dir"/>
+      </and>
+    </condition>
+
+    <antcall target="epub3.optimize.images.do"/>
+  </target>
+
+  <target name="epub3.optimize.images.do" if="should.optimize.images">
+    <echo message="Optimizing images..."/>
+
+    <java classname="io.github.jyjeanne.dita2epub.ImageOptimizer"
+          classpath="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/lib/epub-packager.jar"
+          fork="true"
+          failonerror="true">
+      <arg value="${output.dir}/${epub.images.dir}"/>
+      <arg value="--jpeg-quality=${epub.image.jpeg.quality}"/>
+      <arg value="--max-width=${epub.image.max.width}"/>
+      <arg value="--strip-metadata"/>
+      <arg value="--verbose"/>
+    </java>
+
+    <echo message="Image optimization complete"/>
+  </target>
+
+  <!-- Obfuscate embedded fonts (Adobe/IDPF algorithm) -->
+  <target name="epub3.obfuscate.fonts">
+    <echo message="Checking if font obfuscation is needed..."/>
+
+    <condition property="should.obfuscate.fonts">
+      <and>
+        <equals arg1="${epub.obfuscate.fonts}" arg2="yes"/>
+        <available file="${output.dir}/${epub.fonts.dir}" type="dir"/>
+        <available file="${output.dir}/.epub-identifier" type="file"/>
+      </and>
+    </condition>
+
+    <antcall target="epub3.obfuscate.fonts.do"/>
+  </target>
+
+  <target name="epub3.obfuscate.fonts.do" if="should.obfuscate.fonts">
+    <echo message="Obfuscating embedded fonts..."/>
+
+    <!-- Read the unique identifier written by XSLT -->
+    <loadfile property="epub.unique.identifier" srcFile="${output.dir}/.epub-identifier"/>
+
+    <java classname="io.github.jyjeanne.dita2epub.FontObfuscator"
+          classpath="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/lib/epub-packager.jar"
+          fork="true"
+          failonerror="true">
+      <arg value="${output.dir}"/>
+      <arg value="${epub.fonts.dir}"/>
+      <arg value="${epub.unique.identifier}"/>
+      <arg value="--verbose"/>
+    </java>
+
+    <!-- Clean up the identifier file -->
+    <delete file="${output.dir}/.epub-identifier" quiet="true"/>
+
+    <echo message="Font obfuscation complete"/>
   </target>
 
   <!-- Create mimetype file (must be uncompressed) -->

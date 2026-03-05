@@ -27,9 +27,14 @@
         <organization>Sample Publisher</organization>
       </bookowner>
     </bookrights>
+    <data name="series" value="DITA Publishing Guides"/>
+    <data name="series-position" value="1"/>
+    <data name="bisac" value="COM051360"/>
+    <data name="bisac" value="COM060160"/>
   </bookmeta>
 
   <frontmatter>
+    <topicref href="topics/dedication.dita" navtitle="Dedication" type="dedication"/>
     <topicref href="topics/preface.dita" navtitle="Preface"/>
   </frontmatter>
 
@@ -43,8 +48,20 @@
     <topicref href="topics/section2-2.dita" navtitle="2.2 Best Practices"/>
   </chapter>
 
+  <chapter href="topics/typography-showcase.dita" navtitle="Chapter 3: Typography Showcase"/>
+
   <backmatter>
     <topicref href="topics/appendix.dita" navtitle="Appendix"/>
-    <topicref href="topics/glossary.dita" navtitle="Glossary"/>
+    <topicref href="topics/colophon.dita" navtitle="Colophon" type="colophon"/>
+    <booklists>
+      <glossarylist>
+        <topicref href="topics/glossary/glossary-dita.dita" keys="gl-dita"/>
+        <topicref href="topics/glossary/glossary-epub.dita" keys="gl-epub"/>
+        <topicref href="topics/glossary/glossary-opf.dita" keys="gl-opf"/>
+        <topicref href="topics/glossary/glossary-ssv.dita" keys="gl-ssv"/>
+        <topicref href="topics/glossary/glossary-xhtml.dita" keys="gl-xhtml"/>
+        <topicref href="topics/glossary/glossary-xslt.dita" keys="gl-xslt"/>
+      </glossarylist>
+    </booklists>
   </backmatter>
 </bookmap>

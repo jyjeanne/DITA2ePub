@@ -182,7 +182,8 @@
                              indent="yes">
           <html xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:epub="http://www.idpf.org/2007/ops"
-                xml:lang="{epub:get-language($map)}">
+                xml:lang="{epub:get-language($map)}"
+                dir="{epub:get-dir(epub:get-language($map))}">
             <head>
               <meta charset="UTF-8"/>
               <title>Index</title>
@@ -194,6 +195,13 @@
                   <xsl:when test="starts-with(epub:get-language($map), 'fr')">Index</xsl:when>
                   <xsl:when test="starts-with(epub:get-language($map), 'de')">Stichwortverzeichnis</xsl:when>
                   <xsl:when test="starts-with(epub:get-language($map), 'es')">Índice</xsl:when>
+                  <xsl:when test="starts-with(epub:get-language($map), 'it')">Indice analitico</xsl:when>
+                  <xsl:when test="starts-with(epub:get-language($map), 'pt')">Índice remissivo</xsl:when>
+                  <xsl:when test="starts-with(epub:get-language($map), 'nl')">Register</xsl:when>
+                  <xsl:when test="starts-with(epub:get-language($map), 'ja')">索引</xsl:when>
+                  <xsl:when test="starts-with(epub:get-language($map), 'zh')">索引</xsl:when>
+                  <xsl:when test="starts-with(epub:get-language($map), 'ar')">الفهرس</xsl:when>
+                  <xsl:when test="starts-with(epub:get-language($map), 'he')">מפתח</xsl:when>
                   <xsl:otherwise>Index</xsl:otherwise>
                 </xsl:choose>
               </h1>

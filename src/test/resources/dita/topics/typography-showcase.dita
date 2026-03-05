@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="typography-showcase" xml:lang="en">
+  <title>Typography &amp; Styling Showcase</title>
+  <shortdesc>This chapter demonstrates the professional typography and styling features available in dita2epub v1.3.</shortdesc>
+  <body>
+    <p>The first paragraph of a chapter can optionally display a decorative drop cap when the <codeph>epub.drop.caps</codeph> parameter is enabled. This enhances the visual appeal of the opening text in each chapter.</p>
+
+    <p>Footnotes are a common requirement in professional publishing. This sentence includes a footnote<fn id="fn-demo1">This is the first footnote, demonstrating inline reference markers with backlinks.</fn> and here is another one<fn id="fn-demo2">A second footnote to show sequential numbering within the same topic.</fn> for testing purposes.</p>
+
+    <fig id="fig-demo">
+      <title>Sample Figure with Auto-Numbering</title>
+      <image href="../cover.svg" alt="Sample figure demonstrating automatic numbering" placement="break"/>
+    </fig>
+
+    <p>The figure above demonstrates automatic figure numbering. When <codeph>epub.figure.numbering</codeph> is set to <codeph>global</codeph>, each figure receives a sequential label (e.g., "Figure 1.").</p>
+
+    <table id="table-demo">
+      <title>Feature Comparison Table</title>
+      <tgroup cols="3">
+        <colspec colname="c1" colnum="1" align="left"/>
+        <colspec colname="c2" colnum="2" align="center"/>
+        <colspec colname="c3" colnum="3" align="right"/>
+        <thead>
+          <row>
+            <entry>Feature</entry>
+            <entry>Status</entry>
+            <entry>Version</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Custom CSS</entry>
+            <entry>Complete</entry>
+            <entry>1.3.0</entry>
+          </row>
+          <row>
+            <entry>Font CSS</entry>
+            <entry>Complete</entry>
+            <entry>1.3.0</entry>
+          </row>
+          <row>
+            <entry>Footnotes</entry>
+            <entry>Complete</entry>
+            <entry>1.3.0</entry>
+          </row>
+          <row>
+            <entry namest="c1" nameend="c2">Spanning two columns</entry>
+            <entry>1.3.0</entry>
+          </row>
+          <row>
+            <entry morerows="1">Rowspan demo</entry>
+            <entry>Row 1</entry>
+            <entry>Value A</entry>
+          </row>
+          <row>
+            <entry>Row 2</entry>
+            <entry>Value B</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <p>The following code block demonstrates language class annotation and optional line numbering:</p>
+
+    <codeblock outputclass="language-java">public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, EPUB!");
+        int count = 42;
+        // This is a comment
+        for (int i = 0; i &lt; count; i++) {
+            process(i);
+        }
+    }
+}</codeblock>
+
+    <lq href="https://www.w3.org/publishing/">Digital publishing transforms how we create, distribute, and consume written content. The transition to standards-based formats ensures long-term preservation and universal accessibility.</lq>
+
+    <section outputclass="sidebar">
+      <title>Did You Know?</title>
+      <p>EPUB 3.3 became a W3C Recommendation in May 2023, ensuring the format's continued evolution under open web standards governance.</p>
+    </section>
+
+    <p>Notes are now displayed with language-aware labels:</p>
+
+    <note type="tip">This tip note uses the correct label for the document's language.</note>
+
+    <note type="warning">This warning demonstrates the internationalized label system.</note>
+
+    <note type="important">Important notes are styled with a red left border and appropriate label.</note>
+
+    <p>A third footnote<fn id="fn-demo3">This demonstrates that footnote numbering continues sequentially across the entire topic content.</fn> appears later in the text to verify sequential numbering.</p>
+  </body>
+</topic>

@@ -7,32 +7,185 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-03-05
+
 ### Added
-- Initial project structure
-- Gradle build system with Kotlin DSL
-- DITA-OT 4.3.5 plugin integration
-- XSLT 3.0 transformation framework
-- EPUB3 basic generation
-- Internationalization support (English, French, German, Japanese)
-- Default CSS stylesheet
-- Accessibility features (WCAG 2.1 AA)
-- GitHub Actions CI/CD workflow
-- Comprehensive documentation
+- **DPUB-ARIA Roles**: `doc-chapter`, `doc-appendix`, `doc-foreword`, `doc-preface`, `doc-dedication`,
+  `doc-colophon`, `doc-copyright`, `doc-errata`, `doc-glossary`, `doc-acknowledgments`, `doc-introduction`,
+  `doc-epilogue` roles on `<article>` elements derived from `epub:type`
+  - `dpubAria` accessibility feature declared in OPF metadata
+  - Footnote aside corrected from `role="doc-footnote"` to `role="doc-endnotes"`
+- **RTL Language Support**: Arabic, Hebrew, Farsi, Urdu text direction
+  - `epub:is-rtl()` and `epub:get-dir()` utility functions
+  - `dir` attribute on all `<html>` elements (content, nav, cover, title, copyright, index, glossary)
+  - RTL-aware CSS: mirrored note borders, sidebar float, list padding, pull quote borders
+- **CSS Hyphenation**: `hyphens: auto` on `p`, `li`, `dd`, `blockquote`; `hyphens: none` on `pre`, `code`
+  - `lang` attribute on `<p>` elements for hyphenation engine
+- **Arabic/Hebrew i18n Labels**: All ~30 i18n choose blocks updated with Arabic and Hebrew translations
+  - Note labels (tip, important, warning, caution, danger, note)
+  - Figure and table numbering labels
+  - Navigation labels (TOC, landmarks, bodymatter, glossary, index, preface, dedication, appendix, colophon, copyright)
+  - Title page labels (By, Translation, Licensed under)
+  - Copyright page labels (All rights reserved, Published by, Licensed under)
+- **List of Figures (LOF)**: `lof.xhtml` with `<nav epub:type="loi">`
+  - Collects all `<fig>` with titles via `document()` calls
+  - Conditional generation: `epub.generate.lof` param (no/yes/auto)
+  - OPF manifest/spine, TOC and landmarks entries
+  - `listOfIllustrations` accessibility feature
+  - Full i18n headings (12 languages)
+- **List of Tables (LOT)**: `lot.xhtml` with `<nav epub:type="lot">`
+  - Same pattern as LOF for tables with titles
+  - `epub.generate.lot` param (no/yes/auto)
+  - `listOfTables` accessibility feature
+- **Extended Image Descriptions**: `aria-describedby` linking to hidden `<div>` for `<desc>` siblings
+  - Decorative images: `@outputclass='decorative'` or `@alt=''` → `alt="" role="presentation"`
+  - Missing alt text: `xsl:message` warning + empty alt fallback
+- **CJK Typography CSS**: `word-break: keep-all`, `overflow-wrap: break-word`, `line-break: strict`
+  - Japanese: Hiragino Mincho ProN / Yu Mincho font stack
+  - Chinese: PingFang SC / Heiti SC font stack
+  - Drop caps and hyphenation disabled for CJK languages
+- **Locale-Aware Quotation Marks**: `epub:get-quotes()` function with per-language quote pairs
+  - `epub.locale.quotes=yes`: `<span class="q">` with explicit Unicode quote chars
+  - `epub.locale.quotes=no` (default): standard `<q>` element
+  - Supports: fr «», de „", ja 「」, zh "", ar/he «», es/it «», pt/en ""
+- **Visually Hidden CSS Class**: `.visually-hidden` for screen-reader-only content
 
-### In Progress
-- Complete content transformation implementation
-- EPUBCheck validation integration
-- Full test suite
-- Navigation generation
-- Resource management (images, fonts, CSS)
+### Parameters Added
+- `epub.hyphenation` (enum: auto/yes/no, default: auto) — CSS hyphenation mode
+- `epub.locale.quotes` (enum: yes/no, default: no) — Locale-aware quotation marks
 
-## [1.0.0] - TBD
+### Parameters Activated
+- `epub.generate.lof` (enum: no/yes/auto, default: no) — List of Figures generation
+- `epub.generate.lot` (enum: no/yes/auto, default: no) — List of Tables generation
+
+## [1.4.0] - 2026-03-05
+
+### Added
+- **ISBN/ASIN Identifier Support**: Extract ISBN from bookmap `<bookid><isbn>` or override via `epub.isbn` parameter
+  - ONIX codelist5 identifier-type refinement: ISBN-13 (15), ISBN-10 (02), ASIN (01)
+  - Fallback to UUID when no ISBN is present
+- **Series Metadata**: `belongs-to-collection` with `collection-type` and `group-position`
+  - Parameters: `epub.series.name`, `epub.series.position`
+  - Also reads from bookmap `<data name="series">` and `<data name="series-position">`
+- **Multiple Contributor Roles**: MARC relator code lookup for all contributor types
+  - `epub:marc-relator()` function maps human-readable roles to MARC codes
+  - Extracts translators (`trl`) and editors (`edt`) from bookmeta `<data>` elements
+  - Supports: author, editor, translator, illustrator, reviewer, narrator, photographer, designer, foreword, afterword
+- **BISAC/ONIX Subject Classifications**: Comma-separated BISAC codes via `epub.bisac.codes` parameter
+  - Also reads from bookmap `<data name="bisac">` elements
+- **Frontmatter/Backmatter epub:type Expansion**: Full EPUB Structural Semantics support
+  - `dedication`, `colophon`, `copyright-page`, `errata`, `acknowledgments`, `halftitlepage`, `introduction`, `epilogue`
+  - `@type` attribute override on topicrefs for explicit epub:type mapping
+- **Extended Landmarks Navigation**: Conditional entries for preface, dedication, appendix, colophon, copyright page
+  - All labels i18n-aware (10 languages) following existing pattern
+- **Auto-Generated Copyright Page**: `copyright.xhtml` from bookmap metadata
+  - `epub.copyright.page` parameter: `auto` (default), `yes`, `no`
+  - Includes title, copyright notice, "All rights reserved", publisher, license, ISBN
+  - Added to OPF manifest/spine after title page
+
+### Parameters Added
+- `epub.isbn` (string, default: empty) — ISBN override
+- `epub.series.name` (string, default: empty) — Series/collection name
+- `epub.series.position` (string, default: empty) — Volume position in series
+- `epub.bisac.codes` (string, default: empty) — Comma-separated BISAC subject codes
+- `epub.copyright.page` (enum: auto/yes/no, default: auto) — Generate copyright page
+
+## [1.3.0] - 2026-03-05
+
+### Added
+- **Custom CSS Injection**: New `epub.custom.css` parameter to include publisher's custom stylesheet
+- **Auto @font-face CSS**: Automatic `@font-face` CSS generation from embedded font files
+  - Font family, weight, style, and format detection from filenames
+  - `epub-fonts.css` auto-generated in styles directory
+  - New `epub.generate.font.css` parameter (default: yes)
+- **Footnotes/Endnotes**: EPUB 3 `epub:type="footnote"` / `noteref` support
+  - Inline superscript reference markers with backlinks
+  - End-of-topic footnote sections with `role="doc-endnotes"`
+  - Popup support in Apple Books and Kobo
+- **Figure Auto-Numbering**: Automatic "Figure N." labels on `<fig>` elements
+  - Global sequential numbering via `epub.figure.numbering` parameter
+  - Language-aware labels (Figure/Abbildung/Figura/...)
+- **Table Auto-Numbering**: Automatic "Table N." labels on `<table>` captions
+  - Global sequential numbering via `epub.table.numbering` parameter
+- **Table Enhancements**: colspan, rowspan, alignment from colspec, zebra striping
+  - `@morerows` → `rowspan`, `@namest`/`@nameend` → `colspan`
+  - `colspec/@align` → `text-align` inline style
+  - `.row-odd` / `.row-even` classes via `epub.table.zebra` parameter
+- **Code Block Enhancements**: Language CSS class and optional line numbers
+  - `@outputclass` → `class="language-{outputclass}"` on `<code>` and `<pre>`
+  - Line number wrapping via `epub.code.line.numbers` parameter
+  - Base syntax highlight CSS classes (.keyword, .string, .comment, .number, .tag)
+- **Drop Caps**: Decorative first-letter styling on chapter opening paragraphs
+  - `epub.drop.caps` parameter (default: no)
+- **Pull Quotes**: `<lq>` elements rendered as styled blockquotes with attribution
+- **Sidebars**: `<section outputclass="sidebar">` rendered as floating `<aside>` boxes
+- **Typography Showcase**: New test topic exercising all v1.3 features
+
+### Fixed
+- **Note Labels i18n**: Replaced hardcoded French note labels with language-aware labels
+  - All 10 supported languages: en, fr, de, es, it, pt, nl, ja, zh + fallback
+  - All note types: tip, important, warning, caution, danger, note/notice
+
+### Parameters Added
+- `epub.custom.css` (file, default: empty)
+- `epub.generate.font.css` (enum: yes/no, default: yes)
+- `epub.figure.numbering` (enum: global/none, default: global)
+- `epub.table.numbering` (enum: global/none, default: global)
+- `epub.table.zebra` (enum: yes/no, default: yes)
+- `epub.code.line.numbers` (enum: yes/no, default: no)
+- `epub.code.syntax.classes` (enum: yes/no, default: yes)
+- `epub.drop.caps` (enum: yes/no, default: no)
+
+## [1.2.0] - 2026-03-05
+
+### Added
+- **Font Obfuscation**: Adobe/IDPF font obfuscation algorithm per EPUB OCF 3.3 Section 4.2
+  - SHA-1 key derivation from unique identifier
+  - XOR first 1040 bytes of each font file
+  - `META-INF/encryption.xml` generation
+  - New `FontObfuscator.java` utility
+- **Image Optimization**: JPEG quality reduction, PNG metadata stripping, optional resize
+  - Configurable JPEG quality (0.0-1.0, default 0.8)
+  - Maximum width constraint with aspect ratio preservation
+  - Size threshold (50KB) to skip small icons
+  - New `ImageOptimizer.java` utility
+- **Language Support**: Added Italian (it), Portuguese (pt), Dutch (nl), Japanese (ja), Chinese (zh) to all navigation labels
+  - Landmarks heading, TOC label, bodymatter label
+  - Glossary and index labels in landmarks, TOC, and page titles
+  - Appendices navtitle
+  - Title page labels (By, Translation, Licensed under)
+- **Font Manifest**: Dynamic font manifest generation from actual font files via Ant pipeline scanning
+  - Replaces previous placeholder implementation
+  - `epub.font.files` parameter passed from Ant to XSLT
+  - `epub:get-font-media-type()` function for font MIME types
+
+### Changed
+- `add-font-items` template now produces actual OPF `<item>` entries from scanned font files
+- Ant pipeline now includes `epub3.scan.fonts`, `epub3.obfuscate.fonts`, and `epub3.optimize.images` targets
+
+### Parameters Added
+- `epub.optimize.images` (enum: yes/no, default: no)
+- `epub.image.jpeg.quality` (string, default: 0.8)
+- `epub.image.max.width` (string, default: 0)
+- `epub.font.files` (internal, passed from Ant pipeline)
+
+## [1.1.0] - 2026-02-20
+
+### Added
+- Back-of-book index generation from `<indexterm>` elements
+- Consolidated glossary from `<glossentry>` topics
+- EPUB 3.3 Structural Semantics Vocabulary compliance
+- Three test datasets with 0 EPUBCheck errors
+
+## [1.0.0] - 2025-12-01
 
 ### Initial Release
 - EPUB3 transformation support
-- DITA-OT 4.3.5 compatibility
+- DITA-OT 4.4 compatibility
 - Gradle build integration
-- Accessibility built-in
+- Accessibility built-in (WCAG 2.1 AA)
+- Cover page generation
+- Font embedding
 - Modern Java 17 support
 - Comprehensive documentation
 
@@ -60,5 +213,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/jyjeanne/dita2epub/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/jyjeanne/dita2epub/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/jyjeanne/dita2epub/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/jyjeanne/dita2epub/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/jyjeanne/dita2epub/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/jyjeanne/dita2epub/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/jyjeanne/dita2epub/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/jyjeanne/dita2epub/releases/tag/v1.0.0

@@ -23,9 +23,23 @@
               xmlns:dcterms="http://purl.org/dc/terms/">
 
       <!-- Publication Identifier -->
+      <xsl:variable name="id-value" select="epub:get-identifier($root)"/>
       <dc:identifier id="pub-id">
-        <xsl:value-of select="epub:get-identifier($root)"/>
+        <xsl:value-of select="$id-value"/>
       </dc:identifier>
+
+      <!-- ISBN-13 identifier-type refinement (ONIX codelist5 value 15) -->
+      <xsl:if test="matches($id-value, '^\d{3}-?\d{1,5}-?\d{1,7}-?\d{1,6}-?\d$')">
+        <opf:meta refines="#pub-id" property="identifier-type" scheme="onix:codelist5">15</opf:meta>
+      </xsl:if>
+      <!-- ISBN-10 identifier-type refinement (ONIX codelist5 value 02) -->
+      <xsl:if test="matches($id-value, '^\d{1,5}-?\d{1,7}-?\d{1,6}-?[\dXx]$') and not(matches($id-value, '^\d{3}-?\d{1,5}-?\d{1,7}-?\d{1,6}-?\d$'))">
+        <opf:meta refines="#pub-id" property="identifier-type" scheme="onix:codelist5">02</opf:meta>
+      </xsl:if>
+      <!-- ASIN identifier-type refinement (ONIX codelist5 value 01 = proprietary) -->
+      <xsl:if test="matches($id-value, '^B[A-Z0-9]{9}$')">
+        <opf:meta refines="#pub-id" property="identifier-type" scheme="onix:codelist5">01</opf:meta>
+      </xsl:if>
 
       <!-- Title -->
       <dc:title id="title">
@@ -38,6 +52,27 @@
           <xsl:value-of select="normalize-space($root//*[contains(@class, ' bookmap/booktitle ')]/*[contains(@class, ' bookmap/booktitlealt ')][1])"/>
         </dc:title>
         <opf:meta refines="#subtitle" property="title-type">subtitle</opf:meta>
+      </xsl:if>
+
+      <!-- Series metadata (belongs-to-collection) -->
+      <xsl:variable name="series-name" select="
+        if (normalize-space($epub.series.name) != '') then $epub.series.name
+        else normalize-space($root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/data ')][@name='series']/@value)
+      "/>
+      <xsl:if test="normalize-space($series-name) != ''">
+        <opf:meta property="belongs-to-collection" id="series-id">
+          <xsl:value-of select="$series-name"/>
+        </opf:meta>
+        <opf:meta refines="#series-id" property="collection-type">series</opf:meta>
+        <xsl:variable name="series-pos" select="
+          if (normalize-space($epub.series.position) != '') then $epub.series.position
+          else normalize-space($root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/data ')][@name='series-position']/@value)
+        "/>
+        <xsl:if test="normalize-space($series-pos) != ''">
+          <opf:meta refines="#series-id" property="group-position">
+            <xsl:value-of select="$series-pos"/>
+          </opf:meta>
+        </xsl:if>
       </xsl:if>
 
       <!-- Language -->
@@ -145,6 +180,7 @@
   <xsl:template name="extract-contributors">
     <xsl:param name="root" as="element()"/>
 
+    <!-- Contributors from xnal-d/namedetails with roles -->
     <xsl:for-each select="$root//*[contains(@class, ' xnal-d/namedetails ')][@role != 'author']">
       <xsl:variable name="contrib-id" select="concat('contributor-', position())"/>
 
@@ -154,8 +190,32 @@
 
       <xsl:if test="@role">
         <opf:meta refines="#{$contrib-id}" property="role" scheme="marc:relators">
-          <xsl:value-of select="@role"/>
+          <xsl:value-of select="epub:marc-relator(@role)"/>
         </opf:meta>
+      </xsl:if>
+    </xsl:for-each>
+
+    <!-- Translators from bookmeta data -->
+    <xsl:for-each select="$root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/data ')][@name='translator']">
+      <xsl:variable name="trl-id" select="concat('translator-', position())"/>
+      <xsl:variable name="trl-name" select="normalize-space(if (@value) then @value else .)"/>
+      <xsl:if test="string-length($trl-name) > 0">
+        <dc:contributor id="{$trl-id}">
+          <xsl:value-of select="$trl-name"/>
+        </dc:contributor>
+        <opf:meta refines="#{$trl-id}" property="role" scheme="marc:relators">trl</opf:meta>
+      </xsl:if>
+    </xsl:for-each>
+
+    <!-- Editors from bookmeta data -->
+    <xsl:for-each select="$root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/data ')][@name='editor']">
+      <xsl:variable name="edt-id" select="concat('editor-', position())"/>
+      <xsl:variable name="edt-name" select="normalize-space(if (@value) then @value else .)"/>
+      <xsl:if test="string-length($edt-name) > 0">
+        <dc:contributor id="{$edt-id}">
+          <xsl:value-of select="$edt-name"/>
+        </dc:contributor>
+        <opf:meta refines="#{$edt-id}" property="role" scheme="marc:relators">edt</opf:meta>
       </xsl:if>
     </xsl:for-each>
   </xsl:template>
@@ -263,6 +323,23 @@
         <xsl:value-of select="normalize-space(.)"/>
       </dc:subject>
     </xsl:for-each>
+
+    <!-- BISAC codes from parameter -->
+    <xsl:for-each select="tokenize($epub.bisac.codes, ',')">
+      <xsl:variable name="code" select="normalize-space(.)"/>
+      <xsl:if test="string-length($code) > 0">
+        <dc:subject>
+          <xsl:value-of select="$code"/>
+        </dc:subject>
+      </xsl:if>
+    </xsl:for-each>
+
+    <!-- BISAC codes from bookmap bookmeta data elements -->
+    <xsl:for-each select="$root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/data ')][@name='bisac']">
+      <dc:subject>
+        <xsl:value-of select="normalize-space(if (@value) then @value else .)"/>
+      </dc:subject>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- Generate accessibility metadata -->
@@ -280,6 +357,21 @@
 
     <xsl:if test="epub:is-true($epub.aria.landmarks)">
       <opf:meta property="schema:accessibilityFeature">ARIA</opf:meta>
+    </xsl:if>
+
+    <!-- DPUB-ARIA doc-* roles on structural elements -->
+    <opf:meta property="schema:accessibilityFeature">dpubAria</opf:meta>
+
+    <!-- List of Illustrations (conditional on LOF generation) -->
+    <xsl:variable name="lof-figurelist" select="exists(root()//*[contains(@class, ' bookmap/figurelist ')])"/>
+    <xsl:if test="epub:is-true($epub.generate.lof) or ($epub.generate.lof = 'auto' and $lof-figurelist)">
+      <opf:meta property="schema:accessibilityFeature">listOfIllustrations</opf:meta>
+    </xsl:if>
+
+    <!-- List of Tables (conditional on LOT generation) -->
+    <xsl:variable name="lot-tablelist" select="exists(root()//*[contains(@class, ' bookmap/tablelist ')])"/>
+    <xsl:if test="epub:is-true($epub.generate.lot) or ($epub.generate.lot = 'auto' and $lot-tablelist)">
+      <opf:meta property="schema:accessibilityFeature">listOfTables</opf:meta>
     </xsl:if>
 
     <!-- Accessibility hazards -->

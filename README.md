@@ -9,7 +9,6 @@
 [![Tests](https://img.shields.io/badge/tests-41%20passing-success.svg)](#testing)
 
 [![CI Build](https://github.com/jyjeanne/dita2epub/actions/workflows/ci.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/ci.yml)
-[![Nightly Tests](https://github.com/jyjeanne/dita2epub/actions/workflows/nightly-tests.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/nightly-tests.yml)
 [![Documentation](https://github.com/jyjeanne/dita2epub/actions/workflows/docs.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/docs.yml)
 
 **Transform your DITA content into professional, accessible EPUB 3.3 publications**
@@ -32,17 +31,22 @@
 - **🔧 Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
 - **🚀 Modern Stack**: Built on DITA-OT 4.4, Java 17+, and latest web standards
 
-### What's New in v1.1.0?
+### What's New in v1.4.0?
 
-- **Back-of-Book Index** - Automatic index generation from DITA `<indexterm>` elements with precise anchor links
-- **EPUB 3.3 SSV Compliance** - Full Structural Semantics Vocabulary: `epub:type` for chapters, appendices, forewords, glossaries, index markup
-- **Three Test Datasets** - English sample, French Calibre Guide, and Indexing Guide with back-of-book index
-- **Zero EPUBCheck Errors** - All 3 test EPUBs pass EPUBCheck 5.3.0 with 0 errors and 0 warnings
-- **DITA-OT 4.4** - Built for the latest DITA Open Toolkit
-- **Cover Page Generation** - Automatic HTML cover pages with 3 customizable styles
-- **Font Embedding** - Embed custom fonts (TTF, OTF, WOFF, WOFF2) with proper manifest generation
-- **Comprehensive Testing** - 41 tests across 6 test classes with 100% unit test pass rate
-- **GitHub Actions CI/CD** - Automated testing, releases, and documentation validation
+- **ISBN/ASIN Identifier Support** - Extract ISBN from bookmap or override via `epub.isbn` parameter, with ONIX codelist5 refinement
+- **Series Metadata** - `belongs-to-collection` with collection-type and group-position for series/boxed sets
+- **Multiple Contributor Roles** - MARC relator codes for editor, translator, illustrator, and 7 more roles
+- **BISAC/ONIX Subject Classifications** - Comma-separated BISAC codes for retailer cataloging
+- **Frontmatter/Backmatter epub:type Expansion** - dedication, colophon, copyright-page, errata, acknowledgments, halftitlepage, introduction, epilogue
+- **Extended Landmarks Navigation** - Conditional entries for preface, dedication, appendix, colophon, copyright page (i18n)
+- **Auto-Generated Copyright Page** - `copyright.xhtml` with title, copyright notice, publisher, license, ISBN
+
+### Previous Releases
+
+- **v1.3.0**: Custom CSS, footnotes, figure/table numbering, drop caps, pull quotes, sidebars
+- **v1.2.0**: Font obfuscation, image optimization, 10-language i18n
+- **v1.1.0**: Back-of-book index, consolidated glossary, EPUB 3.3 SSV compliance
+- **v1.0.0**: Initial release with EPUB 3.3 generation, cover pages, font embedding
 
 ---
 
@@ -57,6 +61,7 @@
 
 ### Advanced Features
 - **Back-of-Book Index**: Automatic index generation from `<indexterm>` elements with alphabetical grouping, nested entries, cross-references (`See`/`See also`), and precise anchor links
+- **Consolidated Glossary**: Automatic glossary generation from `<glossentry>` topics with alphabetical grouping and `<dl epub:type="glossary">` semantic markup
 - **Cover Page Generation**: Automatic HTML cover pages with customizable styles
 - **Font Embedding**: Embed custom fonts (TTF, OTF, WOFF, WOFF2)
 - **Image Support**: Automatic image copying and manifest generation
@@ -65,7 +70,7 @@
 
 ### Developer Experience
 - **Gradle Build System**: Modern build configuration with Kotlin DSL
-- **Extensible Architecture**: 7 XSLT 3.0 modules with clear separation of concerns
+- **Extensible Architecture**: 8 XSLT 3.0 modules with clear separation of concerns
 - **Complete Documentation**: Guides, EPUB 3 anatomy reference, and API docs
 - **CI/CD Ready**: GitHub Actions workflow templates
 
@@ -264,6 +269,49 @@ The index generator supports:
 
 When set to `auto` (default), the index is generated automatically when a `<indexlist/>` element is present in the bookmap.
 
+### Consolidated Glossary
+
+Generate a consolidated glossary page from DITA `<glossentry>` topics:
+
+```bash
+dita --input=mybook.ditamap \
+     --format=epub3 \
+     --output=output \
+     --epub.generate.glossary=auto
+```
+
+The glossary generator:
+- Collects all `<glossentry>` topics referenced from a `<glossarylist>` in the bookmap
+- Extracts `<glossterm>` and `<glossdef>` from each entry
+- Groups entries alphabetically by first letter
+- Produces a consolidated `glossary.xhtml` with EPUB 3.3 `<dl epub:type="glossary">` semantic markup
+- Adds the glossary to the TOC, landmarks navigation, OPF manifest, and spine
+- Individual glossentry XHTML files are suppressed in favor of the consolidated page
+
+When set to `auto` (default), the glossary is generated automatically when a `<glossarylist>` with topicrefs is present in the bookmap backmatter.
+
+**Bookmap structure**:
+```xml
+<backmatter>
+  <booklists>
+    <glossarylist>
+      <topicref href="glossary/term-epub.dita" keys="gl-epub"/>
+      <topicref href="glossary/term-dita.dita" keys="gl-dita"/>
+    </glossarylist>
+  </booklists>
+</backmatter>
+```
+
+**Glossentry topic format**:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="epub">
+  <glossterm>EPUB</glossterm>
+  <glossdef>Electronic Publication — an open standard for digital books.</glossdef>
+</glossentry>
+```
+
 ### Advanced Configuration
 
 Complete example with all major features:
@@ -278,6 +326,7 @@ dita --input=mybook.ditamap \
      --epub.cover.page.style=full-page \
      --epub.embed.fonts=fonts/ \
      --epub.generate.index=auto \
+     --epub.generate.glossary=auto \
      --epub.toc.depth=4 \
      --epub.nav.depth=4 \
      --epub.accessibility=wcag-aa \
@@ -313,12 +362,28 @@ dita --input=mybook.ditamap \
 
 When set to `auto`, index generation triggers automatically when a `<indexlist/>` element is present in the bookmap. The index collects all `<indexterm>` elements from topics, groups them alphabetically, and generates an `index.xhtml` file with EPUB 3.3 Structural Semantics Vocabulary markup.
 
+### Glossary Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.generate.glossary` | enum | `auto` | Generate consolidated glossary: `auto` (detect from bookmap), `yes`, `no` |
+
+When set to `auto`, glossary generation triggers automatically when a `<glossarylist>` element with topicrefs is present in the bookmap. The glossary collects `<glossterm>` and `<glossdef>` from all referenced `<glossentry>` topics, groups them alphabetically, and generates a `glossary.xhtml` file with EPUB 3.3 `<dl epub:type="glossary">` markup.
+
 ### Font Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `epub.embed.fonts` | path | `(none)` | Directory containing fonts to embed |
-| `epub.obfuscate.fonts` | boolean | `no` | Enable font obfuscation (planned) |
+| `epub.obfuscate.fonts` | boolean | `no` | Enable Adobe/IDPF font obfuscation |
+
+### Image Optimization Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.optimize.images` | boolean | `no` | Optimize images for EPUB (reduce file size) |
+| `epub.image.jpeg.quality` | float | `0.8` | JPEG compression quality (0.0-1.0) |
+| `epub.image.max.width` | integer | `0` | Max image width in pixels (0 = no limit) |
 
 ### Directory Structure
 
@@ -328,6 +393,29 @@ When set to `auto`, index generation triggers automatically when a `<indexlist/>
 | `epub.images.dir` | string | `images` | Directory for images |
 | `epub.fonts.dir` | string | `fonts` | Directory for embedded fonts |
 | `epub.css.dir` | string | `styles` | Directory for CSS files |
+
+### Metadata & Retail Distribution Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.isbn` | string | `(none)` | ISBN override (extracts from bookmap if empty) |
+| `epub.series.name` | string | `(none)` | Series/collection name |
+| `epub.series.position` | string | `(none)` | Volume position in series |
+| `epub.bisac.codes` | string | `(none)` | Comma-separated BISAC subject codes |
+| `epub.copyright.page` | enum | `auto` | Generate copyright page: `auto`, `yes`, `no` |
+
+### Typography & Styling Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.custom.css` | path | `(none)` | Path to custom CSS file to include |
+| `epub.generate.font.css` | enum | `yes` | Auto-generate `@font-face` CSS from fonts |
+| `epub.figure.numbering` | enum | `global` | Figure numbering: `global`, `none` |
+| `epub.table.numbering` | enum | `global` | Table numbering: `global`, `none` |
+| `epub.table.zebra` | enum | `yes` | Zebra striping on table rows |
+| `epub.code.line.numbers` | enum | `no` | Line numbers in code blocks |
+| `epub.code.syntax.classes` | enum | `yes` | Language CSS class on code blocks |
+| `epub.drop.caps` | enum | `no` | Drop caps on chapter first paragraphs |
 
 ### Validation
 
@@ -353,7 +441,8 @@ dita2epub/
 │   │   │   ├── epub3-metadata.xsl     # Metadata extraction
 │   │   │   ├── epub3-content.xsl      # Content generation
 │   │   │   ├── epub3-impl.xsl         # OPF/navigation
-│   │   │   └── epub3-index.xsl        # Back-of-book index generation
+│   │   │   ├── epub3-index.xsl        # Back-of-book index generation
+│   │   │   └── epub3-glossary.xsl     # Consolidated glossary generation
 │   │   └── resources/
 │   │       ├── css/            # Stylesheets
 │   │       │   ├── epub-default.css   # Default styles
@@ -503,34 +592,31 @@ dita --input=training.ditamap \
 
 ## 🔄 Current Status
 
-### Completed Features (v1.1.0)
-- EPUB 3.3 generation from DITA bookmaps — **0 EPUBCheck errors** on all 3 test EPUBs
-- Full EPUB 3.3 Structural Semantics Vocabulary (SSV) compliance
-- Back-of-book index generation from `<indexterm>` elements with precise anchor links
-- Dynamic `epub:type` annotations (chapter, appendix, foreword, preface, glossary, index)
-- DITA-OT 4.4 integration with dita-ot-gradle 2.8.5 build system
-- Complete XHTML5 content generation with proper namespace handling
-- OPF package document, NCX TOC, and EPUB3 navigation document
-- Dublin Core metadata extraction from DITA maps/bookmaps
-- WCAG AA accessibility metadata and ARIA landmarks
-- Cover page generation with customizable styles (full-page, centered, custom)
-- Title page with author, copyright, translator, and license info
-- Font embedding (TTF, OTF, WOFF, WOFF2)
-- Image copying and manifest generation
-- EPUBCheck 5.3.0 validation integration
-- Three test datasets: English sample, French Calibre Guide, Indexing Guide
-- Comprehensive test suite (41 tests across 6 classes)
+### Completed Features (v1.4.0)
+- **All v1.3 features** plus book structure and retail distribution readiness:
+- ISBN/ASIN identifier support with ONIX codelist5 refinement
+- Series metadata (`belongs-to-collection`) with collection-type and group-position
+- Multiple contributor roles with MARC relator codes (10 roles)
+- BISAC/ONIX subject classifications for retailer cataloging
+- Expanded frontmatter/backmatter `epub:type` (dedication, colophon, copyright-page, errata, etc.)
+- Extended landmarks navigation (preface, dedication, appendix, colophon, copyright page)
+- Auto-generated copyright page from bookmap metadata
+- 0 EPUBCheck errors on all test EPUBs
 
-### Known Limitations
-- Font obfuscation not yet implemented (copying works)
-- Automatic font manifest generation (manual configuration available)
+### Roadmap
 
-### Planned Features
-- Font obfuscation (Adobe algorithm)
-- DITA 2.0 full support
-- Fixed Layout EPUB
-- Additional language support (de, ja)
-- Custom theme system
+**v1.5 — Accessibility & Internationalization**
+- Full ARIA `doc-*` roles for accessibility compliance
+- RTL language support (Arabic, Hebrew)
+- Hyphenation per language, List of Figures/Tables generation
+- Language-specific typography (CJK, locale-aware quotes)
+
+**v2.0 — Theme System & Platform Variants**
+- Built-in themes (academic, fiction, technical, training)
+- Retailer-specific build profiles (KDP, Apple Books, Kobo)
+- Fixed Layout EPUB, DITA 2.0 support, MathML rendering
+
+See [SPECIFICATION.md](docs/SPECIFICATION.md#roadmap) for the detailed roadmap.
 
 ---
 
@@ -598,13 +684,13 @@ You may obtain a copy of the License at
 
 ## 🎖️ Project Status
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.4.0-blue)
 ![Build](https://img.shields.io/badge/build-passing-success)
 ![Coverage](https://img.shields.io/badge/coverage-70%25-green)
 ![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
 
-**Last Updated**: February 23, 2026
-**Version**: 1.1.0
+**Last Updated**: March 5, 2026
+**Version**: 1.4.0
 **Status**: ✅ Production Ready
 
 ---

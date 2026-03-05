@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-xslt">
+  <glossterm>XSLT</glossterm>
+  <glossdef>Extensible Stylesheet Language Transformations — a language for transforming XML documents into other formats.</glossdef>
+  <glossBody>
+    <glossUsage>Used when referring to XSLT stylesheets or the XSLT processing model.</glossUsage>
+  </glossBody>
+</glossentry>

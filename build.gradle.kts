@@ -8,7 +8,7 @@ val ditaOtVersion = "4.4"
 val ditaOtHome = layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion")
 
 group = "io.github.jyjeanne"
-version = "1.0.1"
+version = "1.5.0"
 
 // =============================================================================
 // Shared EPUB properties (common to all EPUB builds)
@@ -130,11 +130,29 @@ val epubPackagerJar = tasks.register<Jar>("epubPackagerJar") {
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
     from(sourceSets.main.get().output) {
         include("io/github/jyjeanne/dita2epub/EpubPackager.class")
+        include("io/github/jyjeanne/dita2epub/FontObfuscator.class")
+        include("io/github/jyjeanne/dita2epub/ImageOptimizer.class")
     }
     manifest {
         attributes["Main-Class"] = "io.github.jyjeanne.dita2epub.EpubPackager"
     }
     dependsOn("compileJava")
+}
+
+// Shared plugin ZIP content configuration
+fun Zip.configurePluginContents() {
+    dependsOn(epubPackagerJar)
+    from(projectDir) {
+        include("plugin.xml")
+        include("plugin-info.xml")
+        include("build-epub3.xml")
+        include("src/main/**")
+        include("strings/**")
+    }
+    from(layout.buildDirectory.dir("libs")) {
+        include("epub-packager.jar")
+        into("lib")
+    }
 }
 
 // Package the local plugin as a ZIP file for DITA-OT installation
@@ -143,19 +161,34 @@ val packagePlugin = tasks.register<Zip>("packagePlugin") {
     description = "Package the dita2epub plugin as a ZIP file"
     archiveFileName.set("io.github.jyjeanne.dita2epub.zip")
     destinationDirectory.set(layout.buildDirectory.dir("plugin"))
-    dependsOn(epubPackagerJar)
-    from(projectDir) {
-        include("plugin.xml")
-        include("plugin-info.xml")
-        include("build-epub3.xml")
-        include("src/**")
-        include("xsl/**")
-        include("css/**")
-        include("strings/**")
-    }
-    from(layout.buildDirectory.dir("libs")) {
-        include("epub-packager.jar")
-        into("lib")
+    configurePluginContents()
+}
+
+// Package for registry distribution (versioned filename for GitHub Releases)
+val distPlugin = tasks.register<Zip>("distPlugin") {
+    group = "distribution"
+    description = "Package the plugin for DITA-OT registry distribution"
+    archiveFileName.set("io.github.jyjeanne.dita2epub-${version}.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("dist"))
+    configurePluginContents()
+}
+
+// Generate SHA-256 checksum for the distribution ZIP
+tasks.register("distChecksum") {
+    group = "distribution"
+    description = "Generate SHA-256 checksum for the distribution ZIP"
+    dependsOn(distPlugin)
+    doLast {
+        val zipFile = layout.buildDirectory.file("dist/io.github.jyjeanne.dita2epub-${version}.zip").get().asFile
+        ant.withGroovyBuilder {
+            "checksum"("file" to zipFile.absolutePath, "algorithm" to "SHA-256", "forceOverwrite" to "yes")
+        }
+        val checksumFile = file("${zipFile.absolutePath}.SHA-256")
+        if (checksumFile.exists()) {
+            val hash = checksumFile.readText().trim()
+            println("SHA-256: $hash")
+            println("Checksum file: ${checksumFile.absolutePath}")
+        }
     }
 }
 
@@ -195,6 +228,7 @@ tasks.named<com.github.jyjeanne.DitaOtTask>("dita") {
         "epub.identifier.scheme" to "UUID",
         "epub.validate" to "yes",
         "args.output.base.name" to "sample-book",
+        "epub.generate.glossary" to "auto",
     ))
 }
 

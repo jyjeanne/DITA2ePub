@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-ssv">
+  <glossterm>Structural Semantics Vocabulary</glossterm>
+  <glossdef>A set of epub:type values defined by the W3C for marking up the structural semantics of EPUB content documents.</glossdef>
+  <glossBody>
+    <glossUsage>Used when referring to epub:type attribute values such as glossary, index, or chapter.</glossUsage>
+  </glossBody>
+</glossentry>

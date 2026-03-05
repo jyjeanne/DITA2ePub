@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin id="io.github.jyjeanne.dita2epub" version="1.0.1">
-  <feature extension="package.version" value="1.0.1"/>
+<plugin id="io.github.jyjeanne.dita2epub" version="1.5.0">
+  <feature extension="package.version" value="1.4.0"/>
 
   <!-- Require DITA-OT 4.4 or later -->
   <require plugin="org.dita.base"/>
@@ -85,6 +85,116 @@
       <val default="true">auto</val>
       <val>yes</val>
       <val>no</val>
+    </param>
+    <param name="epub.generate.glossary"
+           desc="Generate consolidated glossary page from glossentry topics (auto/yes/no)"
+           type="enum">
+      <val default="true">auto</val>
+      <val>yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.optimize.images"
+           desc="Optimize images for EPUB (reduce file size)"
+           type="enum">
+      <val default="true">no</val>
+      <val>yes</val>
+    </param>
+    <param name="epub.image.jpeg.quality"
+           desc="JPEG quality for image optimization (0.0-1.0)"
+           type="string">0.8</param>
+    <param name="epub.image.max.width"
+           desc="Max image width in pixels (0=no limit)"
+           type="string">0</param>
+    <param name="epub.custom.css"
+           desc="Path to a custom CSS file to include in the EPUB"
+           type="file"/>
+    <param name="epub.generate.font.css"
+           desc="Auto-generate @font-face CSS from embedded fonts"
+           type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.figure.numbering"
+           desc="Figure numbering mode"
+           type="enum">
+      <val default="true">global</val>
+      <val>none</val>
+    </param>
+    <param name="epub.table.numbering"
+           desc="Table numbering mode"
+           type="enum">
+      <val default="true">global</val>
+      <val>none</val>
+    </param>
+    <param name="epub.table.zebra"
+           desc="Zebra striping on table rows"
+           type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.code.line.numbers"
+           desc="Line numbers in code blocks"
+           type="enum">
+      <val default="true">no</val>
+      <val>yes</val>
+    </param>
+    <param name="epub.code.syntax.classes"
+           desc="Add language CSS class to code blocks"
+           type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.drop.caps"
+           desc="Drop caps on first paragraph of chapters"
+           type="enum">
+      <val default="true">no</val>
+      <val>yes</val>
+    </param>
+    <param name="epub.isbn"
+           desc="ISBN for the publication (overrides bookmap)"
+           type="string"/>
+    <param name="epub.series.name"
+           desc="Series or collection name"
+           type="string"/>
+    <param name="epub.series.position"
+           desc="Volume position in series"
+           type="string"/>
+    <param name="epub.bisac.codes"
+           desc="Comma-separated BISAC subject codes"
+           type="string"/>
+    <param name="epub.copyright.page"
+           desc="Generate copyright page: auto/yes/no"
+           type="enum">
+      <val default="true">auto</val>
+      <val>yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.generate.lof"
+           desc="Generate List of Figures (auto/yes/no)"
+           type="enum">
+      <val default="true">no</val>
+      <val>yes</val>
+      <val>auto</val>
+    </param>
+    <param name="epub.generate.lot"
+           desc="Generate List of Tables (auto/yes/no)"
+           type="enum">
+      <val default="true">no</val>
+      <val>yes</val>
+      <val>auto</val>
+    </param>
+    <param name="epub.hyphenation"
+           desc="CSS hyphenation mode: auto/yes/no"
+           type="enum">
+      <val default="true">auto</val>
+      <val>yes</val>
+      <val>no</val>
+    </param>
+    <param name="epub.locale.quotes"
+           desc="Use locale-aware quotation marks"
+           type="enum">
+      <val default="true">no</val>
+      <val>yes</val>
     </param>
   </transtype>
 

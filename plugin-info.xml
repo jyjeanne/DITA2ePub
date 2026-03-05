@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin-info>
   <name>Dita2epub</name>
-  <description>Modern EPUB3 transformation plugin for DITA-OT 4.4 with cover pages and font embedding</description>
-  <version>1.0.1</version>
+  <description>Modern EPUB 3.3 transformation plugin for DITA-OT 4.4 with accessibility, cover pages, font embedding, and image optimization</description>
+  <version>1.2.0</version>
   <author>J. Jeanne</author>
   <license>Apache License 2.0</license>
   <homepage>https://github.com/jyjeanne/dita2epub</homepage>
@@ -16,15 +16,15 @@
 
   <features>
     <feature>EPUB 3.3 support</feature>
-    <feature>WCAG 2.1 accessibility</feature>
-    <feature>Modern HTML5 semantic markup</feature>
+    <feature>WCAG 2.1 accessibility (A, AA, AAA)</feature>
     <feature>Cover page generation with multiple styles</feature>
     <feature>Font embedding (TTF, OTF, WOFF, WOFF2)</feature>
-    <feature>Gradle build integration</feature>
-    <feature>Internationalization support</feature>
+    <feature>Font obfuscation (Adobe/IDPF algorithm)</feature>
+    <feature>Image optimization (JPEG quality, PNG metadata stripping)</feature>
+    <feature>Back-of-book index generation</feature>
+    <feature>Consolidated glossary generation</feature>
+    <feature>10-language internationalization (en, fr, de, es, it, pt, nl, ja, zh)</feature>
     <feature>Custom CSS styling</feature>
-    <feature>Rich media support</feature>
-    <feature>Comprehensive test suite (44 tests)</feature>
   </features>
 
   <dependencies>
@@ -33,21 +33,22 @@
   </dependencies>
 
   <release-notes>
-    <release version="1.0.1" date="2025-10-29">
-      <note>Cover page generation with customizable styles (full-page, centered, custom)</note>
-      <note>Font embedding support (TTF, OTF, WOFF, WOFF2)</note>
-      <note>Comprehensive test suite with 44 tests across 6 test classes</note>
-      <note>GitHub Actions CI/CD automation</note>
-      <note>Enhanced documentation with complete parameter reference</note>
-      <note>Fixed Windows path handling for cover images</note>
-      <note>Improved parameter passing from Ant to XSLT</note>
+    <release version="1.2.0" date="2026-03-05">
+      <note>Font obfuscation using Adobe/IDPF algorithm per EPUB OCF 3.3</note>
+      <note>Image optimization with configurable JPEG quality and PNG metadata stripping</note>
+      <note>Added Italian, Portuguese, Dutch, Japanese, Chinese language support</note>
+      <note>Dynamic font manifest generation from actual font files</note>
     </release>
-    <release version="1.0.0" date="2025-10-29">
-      <note>Initial release</note>
-      <note>EPUB3 transformation support</note>
-      <note>DITA-OT 4.3.5 compatibility</note>
-      <note>Gradle build system integration</note>
-      <note>Accessibility features built-in</note>
+    <release version="1.1.0" date="2026-02-20">
+      <note>Back-of-book index generation from indexterm elements</note>
+      <note>Consolidated glossary from glossentry topics</note>
+      <note>EPUB 3.3 Structural Semantics Vocabulary compliance</note>
+    </release>
+    <release version="1.0.0" date="2025-12-01">
+      <note>Initial release with EPUB3 transformation support</note>
+      <note>DITA-OT 4.4 compatibility</note>
+      <note>Accessibility features built-in (WCAG 2.1)</note>
+      <note>Cover page generation and font embedding</note>
     </release>
   </release-notes>
 </plugin-info>

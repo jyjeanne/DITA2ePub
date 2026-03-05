@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-dita">
+  <glossterm>DITA</glossterm>
+  <glossdef>Darwin Information Typing Architecture — an XML standard for authoring, producing, and delivering technical documentation.</glossdef>
+  <glossBody>
+    <glossUsage>Used when referring to the DITA specification, DITA topics, or DITA maps.</glossUsage>
+  </glossBody>
+</glossentry>

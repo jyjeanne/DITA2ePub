@@ -41,12 +41,26 @@
   <xsl:param name="epub.embed.fonts" as="xs:string" select="''"/>
   <xsl:param name="epub.embedded.fonts" as="xs:string" select="''"/>
   <xsl:param name="epub.obfuscate.fonts" as="xs:string" select="'no'"/>
+  <xsl:param name="epub.font.files" as="xs:string" select="''"/>
 
   <!-- Metadata -->
   <xsl:param name="epub.publisher" as="xs:string" select="''"/>
   <xsl:param name="epub.rights" as="xs:string" select="''"/>
   <xsl:param name="epub.identifier.scheme" as="xs:string" select="'UUID'"/>
   <xsl:param name="epub.language" as="xs:string" select="'en'"/>
+
+  <!-- ISBN/ASIN Identifier -->
+  <xsl:param name="epub.isbn" as="xs:string" select="''"/>
+
+  <!-- Series Metadata -->
+  <xsl:param name="epub.series.name" as="xs:string" select="''"/>
+  <xsl:param name="epub.series.position" as="xs:string" select="''"/>
+
+  <!-- BISAC/ONIX Subject Classifications -->
+  <xsl:param name="epub.bisac.codes" as="xs:string" select="''"/>
+
+  <!-- Copyright Page Generation -->
+  <xsl:param name="epub.copyright.page" as="xs:string" select="'auto'"/>
 
   <!-- Optional Features -->
   <xsl:param name="epub.generate.lof" as="xs:string" select="'no'"/>
@@ -55,6 +69,14 @@
 
   <!-- Index Generation -->
   <xsl:param name="epub.generate.index" as="xs:string" select="'auto'"/>
+
+  <!-- Glossary Generation -->
+  <xsl:param name="epub.generate.glossary" as="xs:string" select="'auto'"/>
+
+  <!-- Image Optimization -->
+  <xsl:param name="epub.optimize.images" as="xs:string" select="'no'"/>
+  <xsl:param name="epub.image.jpeg.quality" as="xs:string" select="'0.8'"/>
+  <xsl:param name="epub.image.max.width" as="xs:string" select="'0'"/>
 
   <!-- Validation -->
   <xsl:param name="epub.validate" as="xs:string" select="'yes'"/>
@@ -70,6 +92,32 @@
   <xsl:param name="args.csspath" as="xs:string" select="'styles'"/>
   <xsl:param name="args.css" as="xs:string" select="'epub-default.css'"/>
   <xsl:param name="args.copycss" as="xs:string" select="'yes'"/>
+
+  <!-- Custom CSS -->
+  <xsl:param name="epub.custom.css" as="xs:string" select="''"/>
+
+  <!-- Font CSS Generation -->
+  <xsl:param name="epub.generate.font.css" as="xs:string" select="'yes'"/>
+
+  <!-- Figure and Table Numbering -->
+  <xsl:param name="epub.figure.numbering" as="xs:string" select="'global'"/>
+  <xsl:param name="epub.table.numbering" as="xs:string" select="'global'"/>
+
+  <!-- Table Zebra Striping -->
+  <xsl:param name="epub.table.zebra" as="xs:string" select="'yes'"/>
+
+  <!-- Code Block Enhancements -->
+  <xsl:param name="epub.code.line.numbers" as="xs:string" select="'no'"/>
+  <xsl:param name="epub.code.syntax.classes" as="xs:string" select="'yes'"/>
+
+  <!-- Drop Caps -->
+  <xsl:param name="epub.drop.caps" as="xs:string" select="'no'"/>
+
+  <!-- CSS Hyphenation -->
+  <xsl:param name="epub.hyphenation" as="xs:string" select="'auto'"/>
+
+  <!-- Locale-Aware Quotation Marks -->
+  <xsl:param name="epub.locale.quotes" as="xs:string" select="'no'"/>
 
   <!-- Debugging -->
   <xsl:param name="debug" as="xs:string" select="'no'"/>

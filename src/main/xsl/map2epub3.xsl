@@ -28,6 +28,7 @@
   <xsl:include href="epub3-content.xsl"/>
   <xsl:include href="epub3-impl.xsl"/>
   <xsl:include href="epub3-index.xsl"/>
+  <xsl:include href="epub3-glossary.xsl"/>
 
   <!-- Output method for XHTML5 (no doctype-system to avoid OPF-073 errors) -->
   <xsl:output method="xhtml"
@@ -45,7 +46,7 @@
   <!-- Root template -->
   <xsl:template match="/">
     <xsl:message>
-      <xsl:text>Dita2epub v1.0.0 - Starting EPUB3 transformation</xsl:text>
+      <xsl:text>Dita2epub v1.5.0 - Starting EPUB3 transformation</xsl:text>
     </xsl:message>
     <xsl:message>
       <xsl:text>DITA-OT Version: 4.4</xsl:text>
@@ -91,8 +92,28 @@
       <xsl:with-param name="map" select="$map"/>
     </xsl:call-template>
 
+    <!-- Generate copyright page -->
+    <xsl:call-template name="generate-copyright-page">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
     <!-- Generate content files -->
     <xsl:call-template name="generate-content">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
+    <!-- Generate consolidated glossary if glossentry topics are present -->
+    <xsl:call-template name="generate-glossary">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
+    <!-- Generate List of Figures -->
+    <xsl:call-template name="generate-lof">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
+    <!-- Generate List of Tables -->
+    <xsl:call-template name="generate-lot">
       <xsl:with-param name="map" select="$map"/>
     </xsl:call-template>
 
@@ -100,6 +121,9 @@
     <xsl:call-template name="generate-index">
       <xsl:with-param name="map" select="$map"/>
     </xsl:call-template>
+
+    <!-- Generate @font-face CSS if fonts are embedded -->
+    <xsl:call-template name="generate-font-css"/>
 
     <!-- Generate container.xml -->
     <xsl:call-template name="generate-container"/>

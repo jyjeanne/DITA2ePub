@@ -1,0 +1,62 @@
+[
+  {
+    "name": "io.github.jyjeanne.dita2epub",
+    "description": "Modern EPUB 3.3 transformation plugin for DITA-OT with accessibility, cover pages, font embedding/obfuscation, image optimization, and 10-language support.",
+    "keywords": ["EPUB", "EPUB3", "accessibility", "WCAG", "cover-page", "font-embedding", "font-obfuscation", "image-optimization", "index", "glossary"],
+    "homepage": "https://github.com/jyjeanne/dita2epub",
+    "vers": "1.2.0",
+    "license": "Apache-2.0",
+    "deps": [
+      {
+        "name": "org.dita.base",
+        "req": ">=4.4.0"
+      },
+      {
+        "name": "org.dita.html5",
+        "req": ">=4.4.0"
+      }
+    ],
+    "url": "https://github.com/jyjeanne/dita2epub/releases/download/v1.2.0/io.github.jyjeanne.dita2epub-1.2.0.zip",
+    "cksum": ""
+  },
+  {
+    "name": "io.github.jyjeanne.dita2epub",
+    "description": "Modern EPUB 3.3 transformation plugin for DITA-OT with accessibility, cover pages, font embedding, index, and glossary support.",
+    "keywords": ["EPUB", "EPUB3", "accessibility", "WCAG", "cover-page", "font-embedding", "index", "glossary"],
+    "homepage": "https://github.com/jyjeanne/dita2epub",
+    "vers": "1.1.0",
+    "license": "Apache-2.0",
+    "deps": [
+      {
+        "name": "org.dita.base",
+        "req": ">=4.4.0"
+      },
+      {
+        "name": "org.dita.html5",
+        "req": ">=4.4.0"
+      }
+    ],
+    "url": "https://github.com/jyjeanne/dita2epub/releases/download/v1.1.0/io.github.jyjeanne.dita2epub-1.1.0.zip",
+    "cksum": ""
+  },
+  {
+    "name": "io.github.jyjeanne.dita2epub",
+    "description": "Modern EPUB 3.3 transformation plugin for DITA-OT with accessibility, cover pages, and font embedding.",
+    "keywords": ["EPUB", "EPUB3", "accessibility", "WCAG", "cover-page", "font-embedding"],
+    "homepage": "https://github.com/jyjeanne/dita2epub",
+    "vers": "1.0.0",
+    "license": "Apache-2.0",
+    "deps": [
+      {
+        "name": "org.dita.base",
+        "req": ">=4.4.0"
+      },
+      {
+        "name": "org.dita.html5",
+        "req": ">=4.4.0"
+      }
+    ],
+    "url": "https://github.com/jyjeanne/dita2epub/releases/download/v1.0.0/io.github.jyjeanne.dita2epub-1.0.0.zip",
+    "cksum": ""
+  }
+]
