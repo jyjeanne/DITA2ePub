@@ -4,7 +4,7 @@
 
 **Project Name:** Dita2epub
 **Plugin ID:** io.github.jyjeanne.dita2epub
-**Version:** 1.4.0
+**Version:** 2.0.0
 **Target DITA-OT Version:** 4.4+
 **License:** Apache License 2.0
 **Author:** J. Jeanne
@@ -12,7 +12,7 @@
 
 ### Description
 
-Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 that converts DITA XML content and maps into publication-ready EPUB 3.3 publications. It extends the DITA-OT HTML5 base transformation with 8 XSLT 3.0 modules for OPF, navigation, metadata, content generation, back-of-book index, and consolidated glossary generation, backed by Java utilities for EPUB-compliant ZIP packaging, font obfuscation, image optimization, and validation. The plugin produces EPUB 3.3 output with full Structural Semantics Vocabulary (SSV) compliance, professional typography features, and retail distribution metadata (ISBN, series, BISAC, MARC relator codes) suitable for Amazon KDP, Apple Books, and Kobo ingestion.
+Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 that converts DITA XML content and maps into publication-ready EPUB 3.3 publications. It extends the DITA-OT HTML5 base transformation with 9 XSLT 3.0 modules for OPF, navigation, metadata, content generation, back-of-book index, consolidated glossary, and platform-specific logic, backed by Java utilities for EPUB-compliant ZIP packaging, font obfuscation, image optimization, and validation. The plugin produces EPUB 3.3 output with full Structural Semantics Vocabulary (SSV) compliance, professional typography features, and retail distribution metadata (ISBN, series, BISAC, MARC relator codes) suitable for Amazon KDP, Apple Books, and Kobo ingestion.
 
 ### Key Differentiators
 
@@ -208,14 +208,21 @@ dita2epub/
 │   │   │   ├── epub3-content.xsl       # DITA topic → XHTML5 generation
 │   │   │   ├── epub3-impl.xsl          # OPF, navigation, NCX, font CSS generation
 │   │   │   ├── epub3-index.xsl         # Back-of-book index generation
-│   │   │   └── epub3-glossary.xsl      # Consolidated glossary generation
+│   │   │   ├── epub3-glossary.xsl      # Consolidated glossary generation
+│   │   │   └── epub3-platform.xsl      # Platform-specific logic (KDP, Apple, Kobo)
 │   │   │
 │   │   └── resources/
 │   │       ├── css/
-│   │       │   ├── epub-default.css    # Default EPUB styles
-│   │       │   └── epub-fonts.css      # @font-face declaration templates
-│   │       └── fonts/                  # Font directory template
-│   │           └── README.md           # Font embedding guide
+│   │       │   ├── epub-default.css          # Default EPUB styles (CSS custom properties)
+│   │       │   ├── epub-theme-academic.css   # Academic theme overrides
+│   │       │   ├── epub-theme-fiction.css    # Fiction theme overrides
+│   │       │   ├── epub-theme-technical.css  # Technical theme overrides
+│   │       │   ├── epub-theme-training.css   # Training theme overrides
+│   │       │   ├── epub-platform-kdp.css     # Amazon KDP CSS overrides
+│   │       │   ├── epub-fxl.css              # Fixed Layout CSS overlay
+│   │       │   └── epub-fonts.css            # @font-face declaration templates
+│   │       └── fonts/                        # Font directory template
+│   │           └── README.md                 # Font embedding guide
 │   │
 │   └── test/
 │       ├── java/io/github/jyjeanne/dita2epub/
@@ -619,6 +626,40 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 | `epub.validate` | enum | `yes` | Run EPUBCheck after build: `yes`, `no` |
 | `epub.validation.level` | enum | `error` | Validation reporting level |
 
+### Theme Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.theme` | enum | `default` | Visual theme: `default`, `academic`, `fiction`, `technical`, `training` |
+
+### Platform Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.platform` | enum | `generic` | Target platform: `generic`, `kdp`, `apple`, `kobo` |
+
+Platform-specific behavior:
+- **`kdp`** — Forces NCX generation, expanded `<guide>` element, KDP-safe CSS overlay, cover/SVG/font warnings
+- **`apple`** — Adds `ibooks:specified-fonts` and `ibooks:version` OPF metadata
+- **`kobo`** — Standard EPUB3 with cover validation warnings
+
+### Fixed Layout Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.layout` | enum | `reflowable` | Layout type: `reflowable`, `fixed` |
+| `epub.fxl.width` | integer | `1024` | Viewport width in pixels (fixed layout only) |
+| `epub.fxl.height` | integer | `768` | Viewport height in pixels (fixed layout only) |
+| `epub.fxl.orientation` | enum | `auto` | Orientation: `auto`, `portrait`, `landscape` |
+| `epub.fxl.spread` | enum | `auto` | Spread behavior: `auto`, `both`, `landscape`, `none` |
+
+When `epub.layout=fixed`:
+- OPF metadata includes `rendition:layout` (pre-paginated), `rendition:orientation`, `rendition:spread`
+- All XHTML pages include `<meta name="viewport" content="width=..., height=..."/>`
+- Fixed-layout CSS overlay (`epub-fxl.css`) is applied after all other stylesheets
+- Drop caps, floating sidebars, and hyphenation are disabled
+- All values are validated with fallback to defaults for invalid input
+
 ### Debug Parameters
 
 | Parameter | Type | Default | Description |
@@ -693,12 +734,10 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 
 ## Known Limitations
 
-- Figure/table numbering is per-topic (not truly global across book) due to `document()` scoping of `preceding::` axis
 - Column alignment fallback does not account for rowspan from previous rows
 - Cover page limited to 3 styles (full-page, centered, custom)
-- No RTL language support (Arabic, Hebrew)
-- No Fixed Layout EPUB support
-- No List of Figures / List of Tables generation
+- Fixed Layout EPUB does not support per-spine-item layout overrides (mixed reflowable/fixed)
+- `float: inline-start/inline-end` not supported in EPUB readers (physical float with RTL override used instead)
 
 ---
 
@@ -754,24 +793,22 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Extended landmarks navigation** — Conditional entries for preface, dedication, appendix, colophon, copyright page; all labels i18n-aware (10 languages)
 - [x] **Auto-generated copyright page** — `copyright.xhtml` from bookmap metadata with title, copyright notice, "All rights reserved" (i18n), publisher, license, ISBN
 
-### v1.5.0 — Accessibility & Internationalization
-*Goal: Meet EU Accessibility Act 2025 and US ADA requirements; support global markets.*
-
-- [ ] **Full ARIA `doc-*` roles** — `doc-footnote`, `doc-noteref`, `doc-pagebreak`, `doc-bibliography`, `doc-colophon`
-- [ ] **RTL language support** — Arabic and Hebrew with proper text direction, CSS logical properties, and bidirectional reflow
-- [ ] **Hyphenation per language** — `hyphens: auto` with proper `lang` attributes on content elements
-- [ ] **List of Figures / List of Tables** generation from `<fig>` and `<table>` captions
-- [ ] **Extended image descriptions** — long descriptions beyond `alt` text (WCAG AAA)
-- [ ] **Language-specific typography** — CJK line-breaking rules, locale-aware quotation marks
-
-### v2.0.0 — Theme System & Platform Variants
+### v2.0.0 — Theme System, Platform Variants & Fixed Layout (Current)
 *Goal: Enable publishers to produce branded, series-consistent output across multiple retail channels.*
 
-- [ ] **Theme system** — built-in themes (academic, fiction, technical, training) with CSS custom properties and theme inheritance
-- [ ] **Build profiles** — retailer-specific output variants (Amazon KDP, Apple Books, Kobo) handling each platform's validation quirks
-- [ ] **Fixed Layout EPUB** — for children's books, cookbooks, comics, and image-heavy publications
+- [x] **CSS Foundation** — Refactored to CSS custom properties for theme overridability, extracted inline styles
+- [x] **RTL Language Completion** — OPF `page-progression-direction`, CSS logical properties, Arabic/Hebrew/Farsi/Urdu font stacks, `emit-lang-dir` template, disabled drop caps/hyphenation for RTL
+- [x] **Theme system** — 5 built-in themes (`default`, `academic`, `fiction`, `technical`, `training`) with CSS custom properties and cascade inheritance
+- [x] **Platform variants** — `epub.platform` parameter (`generic`, `kdp`, `apple`, `kobo`) with platform-specific OPF, CSS, metadata, and validation warnings
+- [x] **Fixed Layout EPUB** — `epub.layout` parameter (`reflowable`, `fixed`) with viewport dimensions, orientation/spread controls, rendition metadata, and fixed-layout CSS overlay
+- [x] **Global figure/table numbering** — Cross-topic sequential numbering via `xsl:iterate` offset pre-computation
+- [x] **List of Figures / List of Tables** — Auto-generated from bookmap `<figurelist/>` and `<tablelist/>`
+
+### Future
 - [ ] **DITA 2.0 support** — full compatibility with DITA 2.0 specializations and processing
 - [ ] **MathML / equation rendering** — for STEM publishing with proper fallback images
+- [ ] **Per-spine-item layout overrides** — mixed reflowable/fixed content within a single EPUB
+- [ ] **Extended image descriptions** — long descriptions beyond `alt` text (WCAG AAA)
 
 ---
 

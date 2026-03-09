@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-03-09
+
+### Added
+- **Theme System**: `epub.theme` parameter with 5 built-in themes (`default`, `academic`, `fiction`, `technical`, `training`)
+  - CSS-only themes via `:root` variable overrides — no duplication of base rules
+  - Cascade order: `epub-default.css` → `epub-theme-*.css` → `epub-platform-*.css` → `epub-fonts.css` → custom CSS → `epub-fxl.css`
+  - Theme CSS automatically added to OPF manifest and all XHTML pages
+  - Parameter validation with fallback to `default` for unrecognized values
+- **Platform Variants**: `epub.platform` parameter (`generic`, `kdp`, `apple`, `kobo`)
+  - **Amazon KDP**: forced NCX generation, expanded `<guide>` element, KDP-safe CSS overlay, SVG/cover/font warnings
+  - **Apple Books**: `ibooks:specified-fonts` and `ibooks:version` OPF metadata with `prefix` attribute
+  - **Kobo**: standard EPUB3 with cover validation warnings
+  - New `epub3-platform.xsl` module for platform-specific logic
+  - NCX generation now conditional (forced for KDP, optional via `epub.generate.ncx`)
+- **Fixed Layout EPUB**: `epub.layout` parameter (`reflowable`, `fixed`)
+  - `epub.fxl.width`, `epub.fxl.height` viewport dimensions with numeric validation
+  - `epub.fxl.orientation` (`auto`, `portrait`, `landscape`) and `epub.fxl.spread` (`auto`, `both`, `landscape`, `none`)
+  - OPF rendition metadata: `rendition:layout` (pre-paginated), `rendition:orientation`, `rendition:spread`
+  - Fixed-layout CSS overlay (`epub-fxl.css`): viewport-filling pages, disabled reflow features
+  - `<meta name="viewport">` with exact pixel dimensions on all XHTML pages
+- **CSS Foundation**: Refactored to CSS custom properties for theme overridability
+  - CSS logical properties for RTL support (`border-inline-start`, `padding-inline-start`, `text-align: start`)
+  - Arabic, Hebrew, Farsi, Urdu font stacks with `:lang()` selectors
+  - `--spacing-section` variable for section spacing
+- **Global Figure/Table Numbering**: Cross-topic sequential numbering via `xsl:iterate` offset pre-computation
+
+### Fixed
+- OPF `<guide>` element removed for non-KDP platforms (deprecated in EPUB 3.3)
+- `epub:is-true('wcag-aa')` now correctly evaluates as truthy for accessibility viewport
+- `dpubAria` metadata now conditional on `epub.aria.landmarks`
+- `epub.generate.ncx`, `epub.generate.index`, `epub.generate.glossary` now passed from Ant to XSLT
+- CJK drop-cap override uses logical `padding-inline-end` instead of physical `padding-right`
+- `inset-inline-start` fallback with `left:` for limited EPUB reader support
+- Theme CSS variable name mismatches (`--color-code-bg` → `--color-background-code`, `--syntax-*` → `--color-syntax-*`)
+
 ## [1.5.0] - 2026-03-05
 
 ### Added

@@ -217,6 +217,7 @@ tasks.named<com.github.jyjeanne.DitaOtTask>("dita") {
         "epub.identifier.scheme" to "ISBN",
         "epub.validate" to "yes",
         "args.output.base.name" to "dita-to-epub-handbook",
+        "epub.platform" to "generic",
     ))
 }
 

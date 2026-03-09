@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Theme: Technical
+   Clean, structured styling for technical documentation and manuals.
+   Override only — inherits everything from epub-default.css.
+   ========================================================================== */
+
+:root {
+  /* Typography: system sans-serif for clarity */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", "Cascadia Code", "Fira Code", "Consolas", "Courier New", monospace;
+  --font-size-base: 15px;
+  --line-height-base: 1.6;
+
+  /* Colors: cool, professional */
+  --color-text: #24292f;
+  --color-text-heading: #1b1f23;
+  --color-link: #0969da;
+  --color-background: #ffffff;
+  --color-border: #d0d7de;
+  --color-text-muted: #57606a;
+  --color-background-sidebar: #f6f8fa;
+
+  /* Notes: distinct, informational */
+  --color-note: #0969da;
+  --color-note-bg: #ddf4ff;
+  --color-warning: #9a6700;
+  --color-warning-bg: #fff8c5;
+  --color-important: #8250df;
+  --color-important-bg: #fbefff;
+  --color-tip: #1a7f37;
+  --color-tip-bg: #dafbe1;
+  --color-caution: #cf222e;
+  --color-caution-bg: #ffebe9;
+  --color-danger: #a40e26;
+  --color-danger-bg: #ffebe9;
+
+  /* Spacing: compact for dense content */
+  --spacing-paragraph: 0.75em;
+  --spacing-section: 2em;
+  --spacing-list-indent: 2em;
+
+  /* Blockquotes */
+  --blockquote-font-size: 0.95em;
+  --blockquote-text-color: #57606a;
+  --blockquote-border-color: #d0d7de;
+  --blockquote-ornament-color: #d0d7de;
+
+  /* Code: prominent, well-defined */
+  --color-background-code: #f6f8fa;
+  --color-syntax-keyword: #cf222e;
+  --color-syntax-string: #0a3069;
+  --color-syntax-comment: #6e7781;
+  --color-syntax-number: #0550ae;
+
+  /* Drop caps: disabled for technical content */
+  --drop-cap-size: 1em;
+  --drop-cap-line-height: inherit;
+  --drop-cap-color: inherit;
+
+  /* Footnotes */
+  --footnote-font-size: 0.85em;
+  --footnote-separator-color: #d0d7de;
+}
+
+/* Disable drop cap visual effect for technical docs */
+p.drop-cap::first-letter {
+  float: none;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  padding-inline-end: 0;
+  margin-top: 0;
+}

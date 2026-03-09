@@ -56,6 +56,16 @@
     <property name="epub.generate.lot" value="no"/>
     <property name="epub.hyphenation" value="auto"/>
     <property name="epub.locale.quotes" value="no"/>
+    <property name="epub.generate.ncx" value="no"/>
+    <property name="epub.generate.index" value="auto"/>
+    <property name="epub.generate.glossary" value="auto"/>
+    <property name="epub.theme" value="default"/>
+    <property name="epub.platform" value="generic"/>
+    <property name="epub.layout" value="reflowable"/>
+    <property name="epub.fxl.width" value="1024"/>
+    <property name="epub.fxl.height" value="768"/>
+    <property name="epub.fxl.orientation" value="auto"/>
+    <property name="epub.fxl.spread" value="auto"/>
 
     <!-- Create output directories -->
     <mkdir dir="${output.dir}/${epub.topics.dir}"/>
@@ -116,8 +126,8 @@
     <echo message="Found font files: ${epub.font.files}"/>
   </target>
 
-  <!-- Copy custom CSS if specified -->
-  <target name="epub3.copy.custom.css">
+  <!-- Resolve custom CSS availability (depends chain preserves properties) -->
+  <target name="epub3.copy.custom.css.check">
     <condition property="has.custom.css">
       <and>
         <isset property="epub.custom.css"/>
@@ -125,10 +135,12 @@
         <available file="${epub.custom.css}" type="file"/>
       </and>
     </condition>
-    <antcall target="epub3.copy.custom.css.do"/>
   </target>
 
-  <target name="epub3.copy.custom.css.do" if="has.custom.css">
+  <!-- Copy custom CSS if specified (depends chain so property is visible) -->
+  <target name="epub3.copy.custom.css"
+          depends="epub3.copy.custom.css.check"
+          if="has.custom.css">
     <basename property="custom.css.filename" file="${epub.custom.css}"/>
     <copy tofile="${output.dir}/${epub.css.dir}/${custom.css.filename}"
           file="${epub.custom.css}"
@@ -203,6 +215,16 @@
       <param name="epub.generate.lot" expression="${epub.generate.lot}"/>
       <param name="epub.hyphenation" expression="${epub.hyphenation}"/>
       <param name="epub.locale.quotes" expression="${epub.locale.quotes}"/>
+      <param name="epub.generate.ncx" expression="${epub.generate.ncx}"/>
+      <param name="epub.generate.index" expression="${epub.generate.index}"/>
+      <param name="epub.generate.glossary" expression="${epub.generate.glossary}"/>
+      <param name="epub.theme" expression="${epub.theme}"/>
+      <param name="epub.platform" expression="${epub.platform}"/>
+      <param name="epub.layout" expression="${epub.layout}"/>
+      <param name="epub.fxl.width" expression="${epub.fxl.width}"/>
+      <param name="epub.fxl.height" expression="${epub.fxl.height}"/>
+      <param name="epub.fxl.orientation" expression="${epub.fxl.orientation}"/>
+      <param name="epub.fxl.spread" expression="${epub.fxl.spread}"/>
 
       <!-- Use DITA-OT XML catalog for plugin URI resolution -->
       <xmlcatalog refid="dita.catalog"/>
@@ -220,10 +242,71 @@
           todir="${output.dir}/${epub.css.dir}"
           failonerror="false"/>
 
-    <!-- Copy custom CSS if specified -->
-    <!-- Removed conditional copy to avoid namespace issues -->
+    <!-- Copy theme CSS if a non-default theme is selected -->
+    <antcall target="epub3.copy.theme.css"/>
+
+    <!-- Copy platform CSS if applicable -->
+    <antcall target="epub3.copy.platform.css"/>
+
+    <!-- Copy fixed-layout CSS if applicable -->
+    <antcall target="epub3.copy.fxl.css"/>
 
     <echo message="CSS files copied"/>
+  </target>
+
+  <!-- Resolve theme CSS availability (depends chain preserves properties) -->
+  <target name="epub3.copy.theme.css.check">
+    <condition property="has.theme.css">
+      <and>
+        <isset property="epub.theme"/>
+        <not><equals arg1="${epub.theme}" arg2="default"/></not>
+        <length string="${epub.theme}" when="greater" length="0"/>
+      </and>
+    </condition>
+  </target>
+
+  <!-- Copy theme CSS if a non-default theme is selected (depends chain so property is visible) -->
+  <target name="epub3.copy.theme.css"
+          depends="epub3.copy.theme.css.check"
+          if="has.theme.css">
+    <copy file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/src/main/resources/css/epub-theme-${epub.theme}.css"
+          todir="${output.dir}/${epub.css.dir}"
+          failonerror="true"/>
+    <echo message="Theme CSS copied: epub-theme-${epub.theme}.css"/>
+  </target>
+
+  <!-- Resolve platform CSS availability -->
+  <target name="epub3.copy.platform.css.check">
+    <condition property="has.platform.css">
+      <equals arg1="${epub.platform}" arg2="kdp"/>
+    </condition>
+  </target>
+
+  <!-- Copy platform CSS if KDP platform is selected -->
+  <target name="epub3.copy.platform.css"
+          depends="epub3.copy.platform.css.check"
+          if="has.platform.css">
+    <copy file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/src/main/resources/css/epub-platform-kdp.css"
+          todir="${output.dir}/${epub.css.dir}"
+          failonerror="true"/>
+    <echo message="Platform CSS copied: epub-platform-kdp.css"/>
+  </target>
+
+  <!-- Resolve fixed-layout CSS availability -->
+  <target name="epub3.copy.fxl.css.check">
+    <condition property="has.fxl.css">
+      <equals arg1="${epub.layout}" arg2="fixed" casesensitive="false"/>
+    </condition>
+  </target>
+
+  <!-- Copy fixed-layout CSS if layout is fixed -->
+  <target name="epub3.copy.fxl.css"
+          depends="epub3.copy.fxl.css.check"
+          if="has.fxl.css">
+    <copy file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/src/main/resources/css/epub-fxl.css"
+          todir="${output.dir}/${epub.css.dir}"
+          failonerror="true"/>
+    <echo message="Fixed-layout CSS copied: epub-fxl.css"/>
   </target>
 
   <!-- Copy images -->

@@ -72,6 +72,7 @@
   --spacing-heading-top: 1.5em;
   --spacing-heading-bottom: 0.5em;
   --spacing-list-indent: 2em;
+  --spacing-section: 2em;
   --spacing-figure: 1.5em;
 
   /* Drop Caps */
@@ -141,6 +142,18 @@ h1 { font-size: var(--font-size-h1); }
 h2 { font-size: var(--font-size-h2); }
 h3 { font-size: var(--font-size-h3); }
 h4 { font-size: var(--font-size-h4); }
+
+/* ==========================================================================
+   Sections
+   ========================================================================== */
+
+section {
+  margin-top: var(--spacing-section);
+}
+
+section:first-child {
+  margin-top: 0;
+}
 
 /* ==========================================================================
    Paragraphs and Lists
@@ -283,7 +296,7 @@ figcaption {
    ========================================================================== */
 
 p.drop-cap::first-letter {
-  float: inline-start;
+  float: left;
   font-size: var(--drop-cap-size);
   line-height: var(--drop-cap-line-height);
   font-weight: 700;
@@ -291,6 +304,9 @@ p.drop-cap::first-letter {
   margin-top: 0.05em;
   color: var(--drop-cap-color);
 }
+
+/* Drop caps are disabled for RTL scripts via :lang() rules below,
+   so physical float: left is safe here. */
 
 /* ==========================================================================
    Blockquotes and Pull Quotes
@@ -311,6 +327,7 @@ blockquote.pull-quote::before {
   font-size: 3em;
   color: var(--blockquote-ornament-color);
   position: absolute;
+  left: 0.1em;
   inset-inline-start: 0.1em;
   top: -0.1em;
   line-height: 1;
@@ -328,15 +345,19 @@ blockquote.pull-quote::before {
    ========================================================================== */
 
 aside.sidebar {
-  float: inline-end;
+  float: right;
   width: 40%;
-  margin-block: 0 1em;
-  margin-inline-start: 1.5em;
+  margin: 0 0 1em 1.5em;
   padding: 1em;
   background-color: var(--color-background-sidebar);
   border: 1px solid var(--color-border);
   border-radius: 5px;
   font-size: 0.9em;
+}
+
+[dir="rtl"] aside.sidebar {
+  float: left;
+  margin: 0 1.5em 1em 0;
 }
 
 aside.sidebar h2 {
@@ -653,7 +674,7 @@ pre, code {
   font-size: inherit;
   line-height: inherit;
   font-weight: inherit;
-  padding-right: 0;
+  padding-inline-end: 0;
   margin-top: 0;
 }
 

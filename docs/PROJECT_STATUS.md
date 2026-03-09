@@ -1,8 +1,8 @@
 # Dita2epub Project Status
 
-## ✅ Current Version: 1.0.1
+## ✅ Current Version: 2.0.0
 
-**Release Date:** October 29, 2025
+**Release Date:** March 9, 2026
 **Status:** Production Ready
 **Repository:** https://github.com/jyjeanne/dita2epub
 

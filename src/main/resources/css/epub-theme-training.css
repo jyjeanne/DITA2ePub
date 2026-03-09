@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Theme: Training
+   Engaging, structured styling for educational and training materials.
+   Override only — inherits everything from epub-default.css.
+   ========================================================================== */
+
+:root {
+  /* Typography: friendly sans-serif */
+  --font-body: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Consolas", "Courier New", monospace;
+  --font-size-base: 16px;
+  --line-height-base: 1.65;
+
+  /* Colors: warm, engaging */
+  --color-text: #2c3e50;
+  --color-text-heading: #1a252f;
+  --color-link: #2980b9;
+  --color-background: #ffffff;
+  --color-border: #bdc3c7;
+  --color-text-muted: #7f8c8d;
+  --color-background-sidebar: #ecf0f1;
+
+  /* Notes: colorful, attention-grabbing for learners */
+  --color-note: #2980b9;
+  --color-note-bg: #ebf5fb;
+  --color-warning: #f39c12;
+  --color-warning-bg: #fef9e7;
+  --color-important: #8e44ad;
+  --color-important-bg: #f5eef8;
+  --color-tip: #27ae60;
+  --color-tip-bg: #eafaf1;
+  --color-caution: #e67e22;
+  --color-caution-bg: #fdf2e9;
+  --color-danger: #e74c3c;
+  --color-danger-bg: #fdedec;
+
+  /* Spacing: balanced for structured learning */
+  --spacing-paragraph: 0.85em;
+  --spacing-section: 2.5em;
+  --spacing-list-indent: 2.2em;
+
+  /* Blockquotes: callout style */
+  --blockquote-font-size: 1em;
+  --blockquote-text-color: #2c3e50;
+  --blockquote-border-color: #2980b9;
+  --blockquote-ornament-color: #3498db;
+
+  /* Code: clear, instructional */
+  --color-background-code: #f8f9fa;
+  --color-syntax-keyword: #d63384;
+  --color-syntax-string: #20c997;
+  --color-syntax-comment: #6c757d;
+  --color-syntax-number: #0d6efd;
+
+  /* Drop caps: moderate */
+  --drop-cap-size: 2.8em;
+  --drop-cap-line-height: 0.85;
+  --drop-cap-color: #2980b9;
+
+  /* Footnotes */
+  --footnote-font-size: 0.85em;
+  --footnote-separator-color: #bdc3c7;
+
+  /* Title page */
+  --titlepage-font-size-title: 2.2em;
+  --titlepage-font-size-subtitle: 1.1em;
+  --titlepage-padding: 3em;
+}

@@ -93,6 +93,24 @@
   <xsl:param name="args.css" as="xs:string" select="'epub-default.css'"/>
   <xsl:param name="args.copycss" as="xs:string" select="'yes'"/>
 
+  <!-- Theme (default | academic | fiction | technical | training) -->
+  <xsl:param name="epub.theme" as="xs:string" select="'default'"/>
+
+  <!-- Validated theme value: falls back to 'default' for unrecognized values -->
+  <xsl:variable name="epub.theme.validated" as="xs:string"
+                select="if (lower-case(normalize-space($epub.theme)) = ('default', 'academic', 'fiction', 'technical', 'training'))
+                        then lower-case(normalize-space($epub.theme))
+                        else 'default'"/>
+
+  <!-- Platform (generic | kdp | apple | kobo) -->
+  <xsl:param name="epub.platform" as="xs:string" select="'generic'"/>
+
+  <!-- Validated platform value: falls back to 'generic' for unrecognized values -->
+  <xsl:variable name="epub.platform.validated" as="xs:string"
+                select="if (lower-case(normalize-space($epub.platform)) = ('generic', 'kdp', 'apple', 'kobo'))
+                        then lower-case(normalize-space($epub.platform))
+                        else 'generic'"/>
+
   <!-- Custom CSS -->
   <xsl:param name="epub.custom.css" as="xs:string" select="''"/>
 
@@ -118,6 +136,39 @@
 
   <!-- Locale-Aware Quotation Marks -->
   <xsl:param name="epub.locale.quotes" as="xs:string" select="'no'"/>
+
+  <!-- Fixed Layout EPUB -->
+  <xsl:param name="epub.layout" as="xs:string" select="'reflowable'"/>
+  <xsl:param name="epub.fxl.width" as="xs:string" select="'1024'"/>
+  <xsl:param name="epub.fxl.height" as="xs:string" select="'768'"/>
+  <xsl:param name="epub.fxl.orientation" as="xs:string" select="'auto'"/>
+  <xsl:param name="epub.fxl.spread" as="xs:string" select="'auto'"/>
+
+  <!-- Validated layout value -->
+  <xsl:variable name="epub.layout.validated" as="xs:string"
+                select="if (lower-case(normalize-space($epub.layout)) = ('reflowable', 'fixed'))
+                        then lower-case(normalize-space($epub.layout))
+                        else 'reflowable'"/>
+
+  <!-- Validated FXL dimensions: must be positive integers, fallback to defaults -->
+  <xsl:variable name="epub.fxl.width.validated" as="xs:string"
+                select="if (normalize-space($epub.fxl.width) castable as xs:positiveInteger)
+                        then normalize-space($epub.fxl.width) else '1024'"/>
+  <xsl:variable name="epub.fxl.height.validated" as="xs:string"
+                select="if (normalize-space($epub.fxl.height) castable as xs:positiveInteger)
+                        then normalize-space($epub.fxl.height) else '768'"/>
+
+  <!-- Validated FXL orientation and spread (case-insensitive) -->
+  <xsl:variable name="epub.fxl.orientation.validated" as="xs:string"
+                select="if (lower-case(normalize-space($epub.fxl.orientation)) = ('auto', 'portrait', 'landscape'))
+                        then lower-case(normalize-space($epub.fxl.orientation)) else 'auto'"/>
+  <xsl:variable name="epub.fxl.spread.validated" as="xs:string"
+                select="if (lower-case(normalize-space($epub.fxl.spread)) = ('auto', 'both', 'landscape', 'none'))
+                        then lower-case(normalize-space($epub.fxl.spread)) else 'auto'"/>
+
+  <!-- Convenience: is this a fixed-layout publication? -->
+  <xsl:variable name="is-fixed-layout" as="xs:boolean"
+                select="$epub.layout.validated = 'fixed'"/>
 
   <!-- Debugging -->
   <xsl:param name="debug" as="xs:string" select="'no'"/>

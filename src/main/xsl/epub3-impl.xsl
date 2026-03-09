@@ -15,11 +15,19 @@
     Main implementation for EPUB3 generation
   -->
 
-  <!-- Emit CSS stylesheet links (centralized for all generated XHTML pages) -->
+  <!-- Emit CSS stylesheet links (centralized for all generated XHTML pages).
+       Cascade order: epub-default.css → epub-theme-*.css → epub-platform-*.css → epub-fonts.css → custom.css -->
   <xsl:template name="emit-css-links">
     <!-- Default stylesheet -->
     <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css"
           href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
+    <!-- Theme CSS (only when a non-default theme is selected) -->
+    <xsl:if test="$epub.theme.validated != 'default' and normalize-space($epub.theme.validated) != ''">
+      <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css"
+            href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-theme-', $epub.theme.validated, '.css'))}"/>
+    </xsl:if>
+    <!-- Platform CSS (KDP overrides) -->
+    <xsl:call-template name="emit-platform-css-link"/>
     <!-- Font CSS -->
     <xsl:if test="normalize-space($epub.font.files) != '' and epub:is-true($epub.generate.font.css)">
       <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css"
@@ -30,6 +38,13 @@
       <xsl:variable name="custom-css-filename" select="tokenize(replace($epub.custom.css, '\\', '/'), '/')[last()]"/>
       <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css"
             href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $custom-css-filename))}"/>
+    </xsl:if>
+    <!-- Fixed Layout CSS and viewport -->
+    <xsl:if test="$is-fixed-layout">
+      <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css"
+            href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-fxl.css'))}"/>
+      <meta xmlns="http://www.w3.org/1999/xhtml" name="viewport"
+            content="width={$epub.fxl.width.validated}, height={$epub.fxl.height.validated}"/>
     </xsl:if>
   </xsl:template>
 
@@ -91,6 +106,9 @@
                version="3.0"
                unique-identifier="pub-id"
                xml:lang="{epub:get-language($map)}">
+        <xsl:if test="epub:is-platform('apple')">
+          <xsl:attribute name="prefix">ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/</xsl:attribute>
+        </xsl:if>
 
         <!-- Metadata -->
         <xsl:call-template name="extract-metadata">
@@ -99,10 +117,12 @@
 
         <!-- Manifest -->
         <manifest>
-          <!-- NCX for backwards compatibility (at root level) -->
-          <item id="ncx"
-                href="../toc.ncx"
-                media-type="application/x-dtbncx+xml"/>
+          <!-- NCX for backwards compatibility (forced for KDP, optional otherwise) -->
+          <xsl:if test="epub:should-generate-ncx()">
+            <item id="ncx"
+                  href="../toc.ncx"
+                  media-type="application/x-dtbncx+xml"/>
+          </xsl:if>
 
           <!-- Navigation document -->
           <item id="nav"
@@ -114,6 +134,13 @@
           <item id="css-main"
                 href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"
                 media-type="text/css"/>
+
+          <!-- Theme CSS (if a non-default theme is selected) -->
+          <xsl:if test="$epub.theme.validated != 'default' and normalize-space($epub.theme.validated) != ''">
+            <item id="css-theme"
+                  href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-theme-', $epub.theme.validated, '.css'))}"
+                  media-type="text/css"/>
+          </xsl:if>
 
           <!-- Font CSS (if fonts embedded and font CSS generation enabled) -->
           <xsl:if test="normalize-space($epub.font.files) != '' and epub:is-true($epub.generate.font.css)">
@@ -127,6 +154,20 @@
             <xsl:variable name="custom-css-filename" select="tokenize(replace($epub.custom.css, '\\', '/'), '/')[last()]"/>
             <item id="css-custom"
                   href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $custom-css-filename))}"
+                  media-type="text/css"/>
+          </xsl:if>
+
+          <!-- Fixed Layout CSS -->
+          <xsl:if test="$is-fixed-layout">
+            <item id="css-fxl"
+                  href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-fxl.css'))}"
+                  media-type="text/css"/>
+          </xsl:if>
+
+          <!-- Platform CSS (if KDP) -->
+          <xsl:if test="epub:is-platform('kdp')">
+            <item id="css-platform"
+                  href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-platform-kdp.css'))}"
                   media-type="text/css"/>
           </xsl:if>
 
@@ -224,7 +265,10 @@
         </manifest>
 
         <!-- Spine -->
-        <spine toc="ncx" page-progression-direction="{if (epub:is-rtl(epub:get-language($map))) then 'rtl' else 'ltr'}">
+        <spine page-progression-direction="{if (epub:is-rtl(epub:get-language($map))) then 'rtl' else 'ltr'}">
+          <xsl:if test="epub:should-generate-ncx()">
+            <xsl:attribute name="toc" select="'ncx'"/>
+          </xsl:if>
           <!-- Cover page first if generated -->
           <xsl:if test="epub:is-true($epub.generate.cover.page) and $epub.cover.image != ''">
             <itemref idref="cover" linear="yes"/>
@@ -269,11 +313,15 @@
           </xsl:if>
         </spine>
 
-        <!-- Guide (optional for backward compatibility) -->
-        <xsl:if test="epub:is-true($epub.generate.cover.page) and $epub.cover.image != ''">
-          <guide>
-            <reference type="cover" title="Cover" href="cover.xhtml"/>
-          </guide>
+        <!-- Guide element: only for KDP (deprecated in EPUB 3.0.1, removed in 3.3) -->
+        <xsl:if test="epub:should-generate-guide()">
+          <xsl:call-template name="generate-kdp-guide">
+            <xsl:with-param name="map" select="$map"/>
+            <xsl:with-param name="generate-glossary" select="$generate-glossary"/>
+            <xsl:with-param name="generate-index" select="$generate-index"/>
+            <xsl:with-param name="generate-lof" select="$generate-lof"/>
+            <xsl:with-param name="generate-lot" select="$generate-lot"/>
+          </xsl:call-template>
         </xsl:if>
 
       </package>

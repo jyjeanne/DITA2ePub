@@ -1,0 +1,64 @@
+/* ==========================================================================
+   Theme: Fiction
+   Clean, elegant styling for novels and narrative works.
+   Override only — inherits everything from epub-default.css.
+   ========================================================================== */
+
+:root {
+  /* Typography: elegant serif, generous spacing */
+  --font-body: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --font-heading: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --font-size-base: 17px;
+  --line-height-base: 1.8;
+
+  /* Colors: warm, easy on the eyes */
+  --color-text: #2d2d2d;
+  --color-text-heading: #1a1a1a;
+  --color-link: #8b4513;
+  --color-background: #fffff8;
+  --color-border: #d4c5a9;
+  --color-text-muted: #6b6b6b;
+  --color-background-sidebar: #faf5eb;
+
+  /* Notes: warm tones */
+  --color-note: #6b5b3e;
+  --color-note-bg: #faf5eb;
+  --color-warning: #8b6914;
+  --color-warning-bg: #fdf6e3;
+  --color-important: #6b5b3e;
+  --color-important-bg: #faf5eb;
+  --color-tip: #4a7c59;
+  --color-tip-bg: #f2f8f0;
+  --color-caution: #a0522d;
+  --color-caution-bg: #fef5f0;
+  --color-danger: #8b2500;
+  --color-danger-bg: #fdf2f2;
+
+  /* Spacing: airy paragraphs for leisurely reading */
+  --spacing-paragraph: 1.1em;
+  --spacing-section: 3em;
+  --spacing-list-indent: 2em;
+
+  /* Blockquotes: literary, ornamental */
+  --blockquote-font-size: 1.05em;
+  --blockquote-text-color: #4a4a4a;
+  --blockquote-border-color: #d4c5a9;
+  --blockquote-ornament-color: #8b7355;
+
+  /* Code: minimal (rarely used in fiction) */
+  --color-background-code: #f5f0e6;
+
+  /* Drop caps: prominent, decorative */
+  --drop-cap-size: 4em;
+  --drop-cap-line-height: 0.8;
+  --drop-cap-color: #8b4513;
+
+  /* Footnotes */
+  --footnote-font-size: 0.85em;
+  --footnote-separator-color: #d4c5a9;
+
+  /* Title page: elegant */
+  --titlepage-font-size-title: 2.5em;
+  --titlepage-font-size-subtitle: 1.2em;
+  --titlepage-padding: 4em;
+}

@@ -1,0 +1,58 @@
+/* ==========================================================================
+   Theme: Academic
+   Scholarly, formal styling for academic publications.
+   Override only — inherits everything from epub-default.css.
+   ========================================================================== */
+
+:root {
+  /* Typography: serif body, distinct heading font */
+  --font-body: "Georgia", "Times New Roman", "Palatino Linotype", serif;
+  --font-heading: "Georgia", "Times New Roman", serif;
+  --font-size-base: 15px;
+  --line-height-base: 1.7;
+
+  /* Colors: muted, scholarly palette */
+  --color-text: #1a1a2e;
+  --color-text-heading: #16213e;
+  --color-link: #1a5276;
+  --color-background: #fefefe;
+  --color-border: #c8c8c8;
+  --color-text-muted: #5a5a5a;
+
+  /* Notes: subtle, formal */
+  --color-note: #1a5276;
+  --color-note-bg: #f0f4f8;
+  --color-warning: #7d6608;
+  --color-warning-bg: #fdf6e3;
+  --color-important: #1a5276;
+  --color-important-bg: #f0f4f8;
+  --color-tip: #1e6f50;
+  --color-tip-bg: #f0f8f4;
+  --color-caution: #a04000;
+  --color-caution-bg: #fef5f0;
+  --color-danger: #922b21;
+  --color-danger-bg: #fdf2f2;
+
+  /* Spacing: generous for readability */
+  --spacing-paragraph: 0.9em;
+  --spacing-section: 2.5em;
+  --spacing-list-indent: 2.5em;
+
+  /* Blockquotes: formal, indented */
+  --blockquote-font-size: 0.95em;
+  --blockquote-text-color: #2c3e50;
+  --blockquote-border-color: #1a5276;
+  --blockquote-ornament-color: #1a5276;
+
+  /* Code: subdued */
+  --color-background-code: #f5f5f5;
+
+  /* Drop caps: classic serif */
+  --drop-cap-size: 3.5em;
+  --drop-cap-line-height: 0.85;
+  --drop-cap-color: #16213e;
+
+  /* Footnotes */
+  --footnote-font-size: 0.82em;
+  --footnote-separator-color: #1a5276;
+}

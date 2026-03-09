@@ -1,0 +1,129 @@
+/* ==========================================================================
+   Fixed Layout EPUB Stylesheet
+   Applied only when epub.layout=fixed. Overrides reflowable defaults.
+
+   Fixed-layout pages have absolute dimensions matching the viewport.
+   Content is positioned within the fixed canvas rather than reflowing.
+   ========================================================================== */
+
+/* Page canvas fills the viewport exactly */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Content area with padding inside the fixed canvas */
+body {
+  padding: 5%;
+  box-sizing: border-box;
+}
+
+/* Disable reflowable features that conflict with fixed layout */
+body {
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+  text-align: left;
+}
+
+/* Images scale to fit within the page */
+img {
+  max-width: 100%;
+  max-height: 90vh;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Full-bleed images (use outputclass="full-bleed" on DITA image) */
+.full-bleed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  object-fit: cover;
+}
+
+/* Fixed-layout cover page fills entire viewport */
+.cover-page-full .cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.cover-page-full .cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tables in fixed layout: ensure they don't overflow */
+table {
+  max-width: 100%;
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+/* Code blocks: prevent overflow with scrolling disabled */
+pre, code {
+  max-width: 100%;
+  overflow: hidden;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Disable drop caps in fixed layout (unpredictable positioning) */
+p.drop-cap::first-letter {
+  float: none;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  padding-inline-end: 0;
+  margin-top: 0;
+}
+
+/* Page break enforcement for fixed layout */
+h1 {
+  page-break-before: always;
+}
+
+/* Prevent content from overflowing the fixed page */
+section, article, div {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Sidebar positioning: inline for fixed layout */
+aside.sidebar {
+  float: none;
+  width: 100%;
+  max-width: 100%;
+  margin: 1em 0;
+}
+
+/* Footnotes: keep inline with content */
+.footnotes {
+  margin-top: 1em;
+  border-top: 1px solid var(--color-border, #ccc);
+  padding-top: 0.5em;
+}
+
+/* Title page: centered in fixed viewport */
+.titlepage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  text-align: center;
+}

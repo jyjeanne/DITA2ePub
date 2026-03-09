@@ -132,6 +132,20 @@
         <opf:meta name="cover" content="cover-image"/>
       </xsl:if>
 
+      <!-- Platform-specific metadata -->
+      <xsl:call-template name="emit-apple-metadata"/>
+
+      <!-- Fixed Layout rendition metadata -->
+      <xsl:if test="$is-fixed-layout">
+        <opf:meta property="rendition:layout">pre-paginated</opf:meta>
+        <opf:meta property="rendition:orientation">
+          <xsl:value-of select="$epub.fxl.orientation.validated"/>
+        </opf:meta>
+        <opf:meta property="rendition:spread">
+          <xsl:value-of select="$epub.fxl.spread.validated"/>
+        </opf:meta>
+      </xsl:if>
+
     </metadata>
   </xsl:template>
 
@@ -363,7 +377,9 @@
     </xsl:if>
 
     <!-- DPUB-ARIA doc-* roles on structural elements -->
-    <opf:meta property="schema:accessibilityFeature">dpubAria</opf:meta>
+    <xsl:if test="epub:is-true($epub.aria.landmarks)">
+      <opf:meta property="schema:accessibilityFeature">dpubAria</opf:meta>
+    </xsl:if>
 
     <!-- List of Illustrations (conditional on LOF generation) -->
     <xsl:variable name="lof-figurelist" select="exists($root//*[contains(@class, ' bookmap/figurelist ')])"/>

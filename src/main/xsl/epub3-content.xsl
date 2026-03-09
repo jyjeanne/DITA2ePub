@@ -118,8 +118,8 @@
         <title><xsl:value-of select="epub:clean-text($topic-title)"/></title>
         <xsl:call-template name="emit-css-links"/>
 
-        <!-- Accessibility metadata -->
-        <xsl:if test="epub:is-true($epub.accessibility)">
+        <!-- Accessibility viewport (reflowable only — FXL viewport is emitted by emit-css-links) -->
+        <xsl:if test="not($is-fixed-layout) and normalize-space($epub.accessibility) != '' and not(lower-case($epub.accessibility) = ('no', 'false', '0', 'none'))">
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         </xsl:if>
       </head>

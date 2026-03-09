@@ -1,0 +1,96 @@
+/* ==========================================================================
+   Platform: Amazon KDP (Kindle Direct Publishing)
+   KDP-safe CSS overrides for Kindle compatibility.
+   Override only — inherits everything from the base and theme CSS.
+
+   Kindle rendering constraints addressed:
+   - No position:absolute/fixed (Kindle ignores or misrenders)
+   - No CSS columns (unsupported on older Kindle)
+   - Explicit page breaks for chapter boundaries
+   - Float restrictions (only left/right, no inline-start/end)
+   - Limited SVG support
+   - No CSS Grid or Flexbox on older Kindle
+   ========================================================================== */
+
+/* Disable absolute positioning (Kindle ignores it or misrenders) */
+blockquote.pull-quote {
+  position: static;
+}
+
+blockquote.pull-quote::before {
+  position: static;
+  display: block;
+  left: auto;
+  inset-inline-start: auto;
+  top: auto;
+  margin-bottom: -0.5em;
+}
+
+/* Disable sidebar float — Kindle handles floats inconsistently */
+aside.sidebar {
+  float: none;
+  width: 100%;
+  max-width: 100%;
+  margin: 1em 0;
+}
+
+/* Force page breaks before major sections for Kindle */
+h1 {
+  page-break-before: always;
+  -webkit-column-break-before: always;
+}
+
+/* Prevent page breaks inside key elements */
+figure,
+table,
+pre,
+blockquote {
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+}
+
+/* Prevent orphan headings */
+h1, h2, h3, h4, h5, h6 {
+  page-break-after: avoid;
+  -webkit-column-break-after: avoid;
+}
+
+/* Keep images within viewport */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Disable CSS columns (unsupported on older Kindle) */
+.multi-column {
+  -webkit-column-count: auto;
+  -moz-column-count: auto;
+  column-count: auto;
+}
+
+/* Ensure footnotes are accessible without position tricks */
+.footnotes {
+  page-break-before: always;
+}
+
+/* Kindle-safe drop cap (simplified — no float tricks) */
+p.drop-cap::first-letter {
+  float: left;
+  font-size: var(--drop-cap-size, 3em);
+  line-height: var(--drop-cap-line-height, 0.85);
+  padding-right: 0.1em;
+  padding-inline-end: 0.1em;
+  margin-top: 0;
+}
+
+/* Cover page — ensure full viewport on Kindle */
+.cover-page-full .cover {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.cover-page-full .cover-image {
+  max-width: 100%;
+  max-height: 100%;
+}

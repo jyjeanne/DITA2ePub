@@ -29,6 +29,7 @@
   <xsl:include href="epub3-impl.xsl"/>
   <xsl:include href="epub3-index.xsl"/>
   <xsl:include href="epub3-glossary.xsl"/>
+  <xsl:include href="epub3-platform.xsl"/>
 
   <!-- Output method for XHTML5 (no doctype-system to avoid OPF-073 errors) -->
   <xsl:output method="xhtml"
@@ -46,7 +47,7 @@
   <!-- Root template -->
   <xsl:template match="/">
     <xsl:message>
-      <xsl:text>Dita2epub v1.5.0 - Starting EPUB3 transformation</xsl:text>
+      <xsl:text>Dita2epub v2.0.0 - Starting EPUB3 transformation</xsl:text>
     </xsl:message>
     <xsl:message>
       <xsl:text>DITA-OT Version: 4.4</xsl:text>
@@ -67,6 +68,11 @@
     <xsl:message>Generating EPUB3 components...</xsl:message>
     <xsl:message>Map title: <xsl:value-of select="epub:get-title($map)"/></xsl:message>
 
+    <!-- Emit platform-specific validation warnings -->
+    <xsl:call-template name="emit-platform-warnings">
+      <xsl:with-param name="map" select="$map"/>
+    </xsl:call-template>
+
     <!-- Generate OPF package document -->
     <xsl:call-template name="generate-opf">
       <xsl:with-param name="map" select="$map"/>
@@ -77,10 +83,12 @@
       <xsl:with-param name="map" select="$map"/>
     </xsl:call-template>
 
-    <!-- Generate NCX table of contents for backwards compatibility -->
-    <xsl:call-template name="generate-ncx">
-      <xsl:with-param name="map" select="$map"/>
-    </xsl:call-template>
+    <!-- Generate NCX table of contents (forced for KDP, optional otherwise) -->
+    <xsl:if test="epub:should-generate-ncx()">
+      <xsl:call-template name="generate-ncx">
+        <xsl:with-param name="map" select="$map"/>
+      </xsl:call-template>
+    </xsl:if>
 
     <!-- Generate cover page if cover image is specified -->
     <xsl:call-template name="generate-cover-page">
