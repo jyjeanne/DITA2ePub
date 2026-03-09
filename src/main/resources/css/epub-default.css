@@ -1,70 +1,172 @@
 /**
  * Dita2epub Default Stylesheet
  * Modern EPUB3 styles for DITA content
+ *
+ * All visual properties use CSS custom properties (variables) defined in :root.
+ * Themes override these variables to change the appearance without modifying rules.
+ * CSS cascade order: epub-default.css → epub-theme-*.css → epub-platform-*.css → custom.css
  */
 
-/* Root and basic elements */
+/* ==========================================================================
+   CSS Custom Properties (Theme Variables)
+   ========================================================================== */
+
 :root {
-  font-size: 16px;
-  line-height: 1.6;
+  /* Typography - Base */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: inherit;
+  --font-mono: "Courier New", Courier, monospace;
+  --font-size-base: 16px;
+  --line-height-base: 1.6;
+  --line-height-heading: 1.3;
+
+  /* Typography - Scale */
+  --font-size-h1: 2em;
+  --font-size-h2: 1.5em;
+  --font-size-h3: 1.25em;
+  --font-size-h4: 1.1em;
+  --font-weight-heading: 600;
+  --font-weight-bold: 600;
+
+  /* Colors - Text */
+  --color-text: #333;
+  --color-text-heading: #222;
+  --color-text-muted: #666;
+  --color-text-code: #333;
+  --color-background: #fff;
+  --color-link: #0066cc;
+
+  /* Colors - UI */
+  --color-border: #ddd;
+  --color-border-heavy: #bbb;
+  --color-background-code: #f5f5f5;
+  --color-background-sidebar: #f5f5f5;
+  --color-background-th: #f5f5f5;
+  --color-zebra-even: #f8f8f8;
+  --color-zebra-odd: #fff;
+
+  /* Colors - Notes/Admonitions */
+  --color-note: #0066cc;
+  --color-note-bg: #f9f9f9;
+  --color-warning: #ff6600;
+  --color-warning-bg: #fff3e0;
+  --color-caution: #ffcc00;
+  --color-caution-bg: #fffde7;
+  --color-important: #cc0000;
+  --color-important-bg: #ffebee;
+  --color-tip: #00cc66;
+  --color-tip-bg: #e8f5e9;
+  --color-danger: #990000;
+  --color-danger-bg: #fce4ec;
+
+  /* Colors - Syntax Highlighting */
+  --color-syntax-keyword: #0033b3;
+  --color-syntax-string: #067d17;
+  --color-syntax-comment: #8c8c8c;
+  --color-syntax-number: #1750eb;
+  --color-syntax-tag: #0033b3;
+
+  /* Spacing */
+  --spacing-body: 1em;
+  --spacing-paragraph: 0.75em;
+  --spacing-heading-top: 1.5em;
+  --spacing-heading-bottom: 0.5em;
+  --spacing-list-indent: 2em;
+  --spacing-figure: 1.5em;
+
+  /* Drop Caps */
+  --drop-cap-size: 3.2em;
+  --drop-cap-line-height: 0.8;
+  --drop-cap-color: #222;
+
+  /* Blockquote / Pull Quote */
+  --blockquote-border-color: #0066cc;
+  --blockquote-font-size: 1.1em;
+  --blockquote-text-color: #444;
+  --blockquote-ornament-color: #ccc;
+
+  /* Footnotes */
+  --footnote-font-size: 0.85em;
+  --footnote-separator-color: #ccc;
+
+  /* Cover Page */
+  --cover-background: #fff;
+
+  /* Title Page */
+  --titlepage-font-size-title: 2em;
+  --titlepage-font-size-subtitle: 1.2em;
+  --titlepage-font-size-author: 1.1em;
+  --titlepage-font-size-meta: 0.9em;
+  --titlepage-padding: 2em;
+
+  /* Copyright Page */
+  --copyright-font-size: 0.85em;
+  --copyright-font-size-title: 1.4em;
+  --copyright-padding: 2em;
+
+  /* Base element defaults */
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
 }
 
+/* ==========================================================================
+   Base Elements
+   ========================================================================== */
+
 html {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: #333;
-  background-color: #fff;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-background);
 }
 
 body {
-  margin: 1em;
+  margin: var(--spacing-body);
   padding: 0;
 }
 
-/* Headings */
+/* ==========================================================================
+   Headings
+   ========================================================================== */
+
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.3;
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  color: #222;
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+  margin-top: var(--spacing-heading-top);
+  margin-bottom: var(--spacing-heading-bottom);
+  color: var(--color-text-heading);
 }
 
-h1 {
-  font-size: 2em;
-}
+h1 { font-size: var(--font-size-h1); }
+h2 { font-size: var(--font-size-h2); }
+h3 { font-size: var(--font-size-h3); }
+h4 { font-size: var(--font-size-h4); }
 
-h2 {
-  font-size: 1.5em;
-}
+/* ==========================================================================
+   Paragraphs and Lists
+   ========================================================================== */
 
-h3 {
-  font-size: 1.25em;
-}
-
-h4 {
-  font-size: 1.1em;
-}
-
-/* Paragraphs */
 p {
-  margin: 0.75em 0;
+  margin: var(--spacing-paragraph) 0;
   orphans: 2;
   widows: 2;
 }
 
-/* Lists */
 ul, ol {
-  margin: 0.75em 0;
-  padding-left: 2em;
+  margin: var(--spacing-paragraph) 0;
+  padding-inline-start: var(--spacing-list-indent);
 }
 
 li {
   margin: 0.25em 0;
 }
 
-/* Links */
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
 a {
-  color: #0066cc;
+  color: var(--color-link);
   text-decoration: none;
 }
 
@@ -72,17 +174,21 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Code */
+/* ==========================================================================
+   Code
+   ========================================================================== */
+
 code {
-  font-family: "Courier New", Courier, monospace;
-  background-color: #f5f5f5;
+  font-family: var(--font-mono);
+  background-color: var(--color-background-code);
   padding: 0.1em 0.3em;
   border-radius: 3px;
   font-size: 0.9em;
+  color: var(--color-text-code);
 }
 
 pre {
-  background-color: #f5f5f5;
+  background-color: var(--color-background-code);
   padding: 1em;
   border-radius: 5px;
   overflow-x: auto;
@@ -95,7 +201,10 @@ pre code {
   padding: 0;
 }
 
-/* Tables */
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -104,17 +213,25 @@ table {
 }
 
 th, td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   padding: 0.5em;
-  text-align: left;
+  text-align: start;
 }
 
 th {
-  background-color: #f5f5f5;
-  font-weight: 600;
+  background-color: var(--color-background-th);
+  font-weight: var(--font-weight-bold);
+  border-bottom: 2px solid var(--color-border-heavy);
 }
 
-/* Images */
+/* Table zebra striping */
+.row-odd  { background-color: var(--color-zebra-odd); }
+.row-even { background-color: var(--color-zebra-even); }
+
+/* ==========================================================================
+   Images and Figures
+   ========================================================================== */
+
 img {
   max-width: 100%;
   height: auto;
@@ -123,93 +240,130 @@ img {
 }
 
 figure {
-  margin: 1.5em 0;
+  margin: var(--spacing-figure) 0;
   text-align: center;
 }
 
 figcaption {
   font-style: italic;
   font-size: 0.9em;
-  color: #666;
+  color: var(--color-text-muted);
   margin-top: 0.5em;
 }
 
-/* Notes and admonitions */
-.note, .warning, .caution, .important, .tip {
+.numbered-figure {
+  margin: var(--spacing-figure) 0;
+  text-align: center;
+}
+
+.fig-label, .table-label {
+  font-weight: var(--font-weight-bold);
+}
+
+/* ==========================================================================
+   Notes and Admonitions
+   ========================================================================== */
+
+.note, .warning, .caution, .important, .tip, .danger {
   margin: 1em 0;
   padding: 1em;
-  border-left: 4px solid;
-  background-color: #f9f9f9;
+  border-inline-start: 4px solid;
+  background-color: var(--color-note-bg);
 }
 
-.note {
-  border-left-color: #0066cc;
+.note      { border-inline-start-color: var(--color-note); }
+.warning   { border-inline-start-color: var(--color-warning);   background-color: var(--color-warning-bg); }
+.caution   { border-inline-start-color: var(--color-caution);   background-color: var(--color-caution-bg); }
+.important { border-inline-start-color: var(--color-important); background-color: var(--color-important-bg); }
+.tip       { border-inline-start-color: var(--color-tip);       background-color: var(--color-tip-bg); }
+.danger    { border-inline-start-color: var(--color-danger);    background-color: var(--color-danger-bg); }
+
+/* ==========================================================================
+   Drop Caps
+   ========================================================================== */
+
+p.drop-cap::first-letter {
+  float: inline-start;
+  font-size: var(--drop-cap-size);
+  line-height: var(--drop-cap-line-height);
+  font-weight: 700;
+  padding-inline-end: 0.05em;
+  margin-top: 0.05em;
+  color: var(--drop-cap-color);
 }
 
-.warning {
-  border-left-color: #ff6600;
-  background-color: #fff3e0;
+/* ==========================================================================
+   Blockquotes and Pull Quotes
+   ========================================================================== */
+
+blockquote.pull-quote {
+  margin: 1.5em 2em;
+  padding: 1em 1.5em;
+  border-inline-start: 4px solid var(--blockquote-border-color);
+  font-style: italic;
+  font-size: var(--blockquote-font-size);
+  color: var(--blockquote-text-color);
+  position: relative;
 }
 
-.caution {
-  border-left-color: #ffcc00;
-  background-color: #fffde7;
+blockquote.pull-quote::before {
+  content: "\201C";
+  font-size: 3em;
+  color: var(--blockquote-ornament-color);
+  position: absolute;
+  inset-inline-start: 0.1em;
+  top: -0.1em;
+  line-height: 1;
 }
 
-.important {
-  border-left-color: #cc0000;
-  background-color: #ffebee;
+.quote-attribution {
+  font-style: normal;
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+  margin-top: 0.5em;
 }
 
-.tip {
-  border-left-color: #00cc66;
-  background-color: #e8f5e9;
+/* ==========================================================================
+   Sidebars
+   ========================================================================== */
+
+aside.sidebar {
+  float: inline-end;
+  width: 40%;
+  margin-block: 0 1em;
+  margin-inline-start: 1.5em;
+  padding: 1em;
+  background-color: var(--color-background-sidebar);
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  font-size: 0.9em;
 }
 
-.danger {
-  border-left-color: #990000;
-  background-color: #fce4ec;
+aside.sidebar h2 {
+  font-size: 1.1em;
+  margin-top: 0;
 }
 
-/* Navigation */
-nav {
-  margin: 2em 0;
-}
+/* ==========================================================================
+   Footnotes
+   ========================================================================== */
 
-nav h1 {
-  font-size: 1.5em;
-}
-
-nav ol, nav ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-nav li {
-  margin: 0.5em 0;
-}
-
-nav li li {
-  margin-left: 1.5em;
-}
-
-/* Footnotes */
 .footnotes {
   margin-top: 2em;
-  font-size: 0.85em;
+  font-size: var(--footnote-font-size);
   line-height: 1.4;
 }
 
 hr.fn-separator {
   border: none;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--footnote-separator-color);
   margin-bottom: 0.5em;
   width: 40%;
-  margin-left: 0;
+  margin-inline-start: 0;
 }
 
 .fn-list {
-  padding-left: 1.5em;
+  padding-inline-start: 1.5em;
   margin: 0;
 }
 
@@ -220,7 +374,7 @@ hr.fn-separator {
 .fn-ref a {
   font-size: 0.75em;
   text-decoration: none;
-  color: #0066cc;
+  color: var(--color-link);
 }
 
 a[role="doc-backlink"] {
@@ -228,30 +382,35 @@ a[role="doc-backlink"] {
   font-size: 0.85em;
 }
 
-/* Figure numbering */
-.numbered-figure {
-  margin: 1.5em 0;
-  text-align: center;
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+
+nav {
+  margin: 2em 0;
 }
 
-.fig-label, .table-label {
-  font-weight: 600;
+nav h1 {
+  font-size: 1.5em;
 }
 
-/* Table zebra striping */
-.row-odd {
-  background-color: #fff;
+nav ol, nav ul {
+  list-style-type: none;
+  padding-inline-start: 0;
 }
 
-.row-even {
-  background-color: #f8f8f8;
+nav li {
+  margin: 0.5em 0;
 }
 
-th {
-  border-bottom: 2px solid #bbb;
+nav li li {
+  margin-inline-start: 1.5em;
 }
 
-/* Code line numbers */
+/* ==========================================================================
+   Code Line Numbers
+   ========================================================================== */
+
 .line {
   display: block;
 }
@@ -259,11 +418,11 @@ th {
 .line-number {
   display: inline-block;
   width: 3em;
-  text-align: right;
-  padding-right: 0.75em;
-  margin-right: 0.75em;
-  border-right: 1px solid #ddd;
-  color: #999;
+  text-align: end;
+  padding-inline-end: 0.75em;
+  margin-inline-end: 0.75em;
+  border-inline-end: 1px solid var(--color-border);
+  color: var(--color-text-muted);
   -webkit-user-select: none;
   user-select: none;
 }
@@ -273,70 +432,115 @@ th {
 }
 
 /* Syntax highlight base classes */
-.keyword { color: #0033b3; font-weight: 600; }
-.string { color: #067d17; }
-.comment { color: #8c8c8c; font-style: italic; }
-.number { color: #1750eb; }
-.tag { color: #0033b3; }
+.keyword { color: var(--color-syntax-keyword); font-weight: var(--font-weight-bold); }
+.string  { color: var(--color-syntax-string); }
+.comment { color: var(--color-syntax-comment); font-style: italic; }
+.number  { color: var(--color-syntax-number); }
+.tag     { color: var(--color-syntax-tag); }
 
-/* Drop caps */
-p.drop-cap::first-letter {
-  float: left;
-  font-size: 3.2em;
-  line-height: 0.8;
-  font-weight: 700;
-  padding-right: 0.05em;
-  margin-top: 0.05em;
-  color: #222;
+/* ==========================================================================
+   Cover Page
+   ========================================================================== */
+
+.cover-page-full body {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  background-color: var(--cover-background);
 }
 
-/* Pull quotes */
-blockquote.pull-quote {
-  margin: 1.5em 2em;
-  padding: 1em 1.5em;
-  border-left: 4px solid #0066cc;
+.cover-page-full .cover-image {
+  width: 100%;
+  height: 100vh;
+  object-fit: contain;
+}
+
+.cover-page-centered body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 2em;
+  background-color: var(--cover-background);
+}
+
+.cover-page-centered .cover-image {
+  max-width: 100%;
+  max-height: 90vh;
+}
+
+/* ==========================================================================
+   Title Page
+   ========================================================================== */
+
+.titlepage {
+  text-align: center;
+  padding: var(--titlepage-padding);
+}
+
+.titlepage h1 {
+  font-size: var(--titlepage-font-size-title);
+  margin-bottom: 0.5em;
+}
+
+.titlepage h2 {
+  font-size: var(--titlepage-font-size-subtitle);
+  font-weight: normal;
+  margin-bottom: 2em;
+}
+
+.titlepage h3 {
+  font-size: var(--titlepage-font-size-author);
+  font-weight: normal;
+  margin: 2em 0;
+}
+
+.titlepage p {
+  margin: 1em 0;
+}
+
+.titlepage .copyright,
+.titlepage .translator,
+.titlepage .license {
+  font-size: var(--titlepage-font-size-meta);
+}
+
+/* ==========================================================================
+   Copyright Page
+   ========================================================================== */
+
+.copyright-page {
+  text-align: center;
+  padding: var(--copyright-padding);
+  font-size: var(--copyright-font-size);
+}
+
+.copyright-page h1 {
+  font-size: var(--copyright-font-size-title);
+  margin-bottom: 1.5em;
+}
+
+.copyright-page p {
+  margin: 0.5em 0;
+}
+
+.copyright-page .isbn {
+  margin-top: 1.5em;
+  font-family: var(--font-mono);
+}
+
+.copyright-page .rights {
+  margin-top: 1.5em;
   font-style: italic;
-  font-size: 1.1em;
-  color: #444;
-  position: relative;
 }
 
-blockquote.pull-quote::before {
-  content: "\201C";
-  font-size: 3em;
-  color: #ccc;
-  position: absolute;
-  left: 0.1em;
-  top: -0.1em;
-  line-height: 1;
-}
+/* ==========================================================================
+   Accessibility — Skip Navigation (screen-reader)
+   ========================================================================== */
 
-.quote-attribution {
-  font-style: normal;
-  font-size: 0.85em;
-  color: #666;
-  margin-top: 0.5em;
-}
-
-/* Sidebars */
-aside.sidebar {
-  float: right;
-  width: 40%;
-  margin: 0 0 1em 1.5em;
-  padding: 1em;
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 0.9em;
-}
-
-aside.sidebar h2 {
-  font-size: 1.1em;
-  margin-top: 0;
-}
-
-/* Accessibility — visually hidden but accessible to screen readers */
-.skip-nav {
+.skip-nav,
+.visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -350,56 +554,12 @@ aside.sidebar h2 {
 
 /* ==========================================================================
    RTL (Right-to-Left) Language Support
+   Most layout is handled by CSS logical properties above.
+   This section covers only features that need explicit RTL overrides.
    ========================================================================== */
 
-[dir="rtl"] .note,
-[dir="rtl"] .warning,
-[dir="rtl"] .caution,
-[dir="rtl"] .important,
-[dir="rtl"] .tip,
-[dir="rtl"] .danger {
-  border-left: none;
-  border-right: 4px solid;
-}
-
-[dir="rtl"] .note { border-right-color: #0066cc; }
-[dir="rtl"] .warning { border-right-color: #ff6600; }
-[dir="rtl"] .caution { border-right-color: #ffcc00; }
-[dir="rtl"] .important { border-right-color: #cc0000; }
-[dir="rtl"] .tip { border-right-color: #00cc66; }
-[dir="rtl"] .danger { border-right-color: #990000; }
-
-[dir="rtl"] aside.sidebar {
-  float: left;
-  margin: 0 1.5em 1em 0;
-}
-
-[dir="rtl"] ul,
-[dir="rtl"] ol {
-  padding-left: 0;
-  padding-right: 2em;
-}
-
-[dir="rtl"] blockquote.pull-quote {
-  border-left: none;
-  border-right: 4px solid #0066cc;
-  margin: 1.5em 0 1.5em 2em;
-}
-
-[dir="rtl"] blockquote.pull-quote::before {
-  left: auto;
-  right: 0.1em;
-}
-
-[dir="rtl"] hr.fn-separator {
-  margin-left: auto;
-  margin-right: 0;
-}
-
-[dir="rtl"] .fn-list {
-  padding-left: 0;
-  padding-right: 1.5em;
-}
+/* Bidirectional isolation is handled via HTML dir attributes and <bdi> elements
+   in the XSLT output rather than CSS unicode-bidi (restricted in EPUB). */
 
 /* ==========================================================================
    CSS Hyphenation
@@ -437,6 +597,54 @@ pre, code {
   font-family: "PingFang SC", "Heiti SC", sans-serif;
 }
 
+/* ==========================================================================
+   Arabic and Hebrew Typography
+   ========================================================================== */
+
+:lang(ar) {
+  font-family: "Geeza Pro", "Simplified Arabic", "Traditional Arabic", Tahoma, serif;
+  line-height: 1.8;
+}
+
+:lang(he) {
+  font-family: "New Peninim MT", "Arial Hebrew", "Lucida Grande", David, serif;
+  line-height: 1.7;
+}
+
+:lang(fa) {
+  font-family: "Geeza Pro", "B Nazanin", "Iranian Sans", Tahoma, serif;
+  line-height: 1.8;
+}
+
+:lang(ur) {
+  font-family: "Geeza Pro", "Jameel Noori Nastaleeq", "Noto Nastaliq Urdu", Tahoma, serif;
+  line-height: 2.0;
+}
+
+/* Disable drop caps for RTL languages (visual complexity) */
+:lang(ar) p.drop-cap::first-letter,
+:lang(he) p.drop-cap::first-letter,
+:lang(fa) p.drop-cap::first-letter,
+:lang(ur) p.drop-cap::first-letter {
+  float: none;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  padding-inline-end: 0;
+  margin-top: 0;
+}
+
+/* Disable hyphenation for Arabic script (not well-supported) */
+:lang(ar) p, :lang(ar) li,
+:lang(he) p, :lang(he) li,
+:lang(fa) p, :lang(fa) li,
+:lang(ur) p, :lang(ur) li {
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
 /* Disable drop caps and hyphenation for CJK */
 :lang(ja) p.drop-cap::first-letter,
 :lang(zh) p.drop-cap::first-letter,
@@ -459,22 +667,9 @@ pre, code {
 }
 
 /* ==========================================================================
-   Accessibility — Visually Hidden (screen-reader only)
+   Print Styles
    ========================================================================== */
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-  padding: 0;
-  margin: -1px;
-}
-
-/* Print styles */
 @media print {
   body {
     font-size: 12pt;

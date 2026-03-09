@@ -610,13 +610,37 @@ dita --input=training.ditamap \
 - Skip-navigation links for accessibility
 - 0 EPUBCheck errors on generated EPUB
 
-### Roadmap
+### Roadmap — v2.0 (Theme System & Platform Variants)
 
-**v2.0 — Theme System & Platform Variants**
-- Built-in themes (academic, fiction, technical, training)
-- Retailer-specific build profiles (KDP, Apple Books, Kobo)
-- Fixed Layout EPUB, DITA 2.0 support, MathML rendering
-- RTL language support (Arabic, Hebrew)
+**Phase 1 — CSS Foundation** ✅
+- Refactor stylesheet to CSS custom properties for theme overridability
+- Extract inline styles from cover, title, and copyright pages into CSS
+
+**Phase 2 — RTL Language Completion** ✅
+- OPF `page-progression-direction` for RTL content
+- CSS logical properties (`border-inline-start`, `padding-inline-start`, `text-align: start`)
+- Arabic, Hebrew, Farsi, and Urdu font stacks with tuned line-height
+- Mixed-direction `dir` attributes via `emit-lang-dir` template
+- Disabled drop caps and hyphenation for RTL scripts
+- Removed all physical `[dir="rtl"]` CSS overrides (replaced by logical properties)
+
+**Phase 3 — Theme System**
+- `epub.theme` parameter: `default`, `academic`, `fiction`, `technical`, `training`
+- CSS-only themes via `:root` variable overrides
+- Cascade: `epub-default.css` → `epub-theme-*.css` → `epub-platform-*.css` → custom CSS
+
+**Phase 4 — Platform Variants** (KDP focus)
+- `epub.platform` parameter: `generic`, `kdp`, `apple`, `kobo`
+- **Amazon KDP profile**: forced NCX generation, ASIN support, `<guide>` element, SVG-to-PNG conversion, KDP-safe CSS (no `position:absolute`, explicit page breaks), cover image validation, font embedding warnings, file size warnings
+- Apple Books: `ibooks:specified-fonts` meta, `-webkit-` prefixes
+- Kobo: standard EPUB3 with recommended metadata
+- New `epub3-platform.xsl` module for platform-specific logic
+
+**Phase 5 — Fixed Layout EPUB**
+- `epub.layout` parameter: `reflowable`, `fixed`
+- Viewport dimensions, orientation, spread controls
+- OPF rendition metadata (`pre-paginated`)
+- Fixed-layout CSS overlay
 
 See [SPECIFICATION.md](docs/SPECIFICATION.md#roadmap) for the detailed roadmap.
 

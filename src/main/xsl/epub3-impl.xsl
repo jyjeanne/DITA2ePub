@@ -15,6 +15,24 @@
     Main implementation for EPUB3 generation
   -->
 
+  <!-- Emit CSS stylesheet links (centralized for all generated XHTML pages) -->
+  <xsl:template name="emit-css-links">
+    <!-- Default stylesheet -->
+    <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css"
+          href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
+    <!-- Font CSS -->
+    <xsl:if test="normalize-space($epub.font.files) != '' and epub:is-true($epub.generate.font.css)">
+      <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css"
+            href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-fonts.css'))}"/>
+    </xsl:if>
+    <!-- Custom CSS -->
+    <xsl:if test="normalize-space($epub.custom.css) != ''">
+      <xsl:variable name="custom-css-filename" select="tokenize(replace($epub.custom.css, '\\', '/'), '/')[last()]"/>
+      <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css"
+            href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $custom-css-filename))}"/>
+    </xsl:if>
+  </xsl:template>
+
   <!-- Generate OPF package document -->
   <xsl:template name="generate-opf">
     <xsl:param name="map" as="element()"/>
@@ -206,7 +224,7 @@
         </manifest>
 
         <!-- Spine -->
-        <spine toc="ncx">
+        <spine toc="ncx" page-progression-direction="{if (epub:is-rtl(epub:get-language($map))) then 'rtl' else 'ltr'}">
           <!-- Cover page first if generated -->
           <xsl:if test="epub:is-true($epub.generate.cover.page) and $epub.cover.image != ''">
             <itemref idref="cover" linear="yes"/>
@@ -313,14 +331,7 @@
             <xsl:text>Navigation - </xsl:text>
             <xsl:value-of select="epub:get-title($map)"/>
           </title>
-          <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
-          <xsl:if test="normalize-space($epub.font.files) != '' and epub:is-true($epub.generate.font.css)">
-            <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-fonts.css'))}"/>
-          </xsl:if>
-          <xsl:if test="normalize-space($epub.custom.css) != ''">
-            <xsl:variable name="custom-css-filename" select="tokenize(replace($epub.custom.css, '\\', '/'), '/')[last()]"/>
-            <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $custom-css-filename))}"/>
-          </xsl:if>
+          <xsl:call-template name="emit-css-links"/>
         </head>
         <body>
           <!-- Table of Contents -->
@@ -493,7 +504,7 @@
                   </li>
                 </xsl:if>
                 <!-- Preface landmark -->
-                <xsl:variable name="preface-ref" select="($map//*[contains(@class, ' bookmap/preface ')][@href])[1]"/>
+                <xsl:variable name="preface-ref" select="($map//*[contains(@class, ' bookmap/preface ')][@href] | $map//*[contains(@class, ' map/topicref ')][@type='preface'][@href])[1]"/>
                 <xsl:if test="$preface-ref">
                   <li>
                     <a epub:type="preface" href="{epub:get-topic-filename($preface-ref)}">
@@ -853,48 +864,14 @@
                            method="xhtml"
                            encoding="UTF-8"
                            indent="yes">
-        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{epub:get-language($map)}" dir="{epub:get-dir(epub:get-language($map))}">
+        <html xmlns="http://www.w3.org/1999/xhtml"
+              xml:lang="{epub:get-language($map)}"
+              dir="{epub:get-dir(epub:get-language($map))}"
+              class="cover-page-{if ($epub.cover.page.style = 'centered') then 'centered' else 'full'}">
           <head>
             <meta charset="UTF-8"/>
             <title>Cover</title>
-            <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
-            <xsl:if test="normalize-space($epub.font.files) != '' and epub:is-true($epub.generate.font.css)">
-              <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-fonts.css'))}"/>
-            </xsl:if>
-            <xsl:if test="normalize-space($epub.custom.css) != ''">
-              <xsl:variable name="custom-css-filename" select="tokenize(replace($epub.custom.css, '\\', '/'), '/')[last()]"/>
-              <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $custom-css-filename))}"/>
-            </xsl:if>
-            <style type="text/css">
-              <xsl:choose>
-                <xsl:when test="$epub.cover.page.style = 'full-page'">
-                  body {
-                    margin: 0;
-                    padding: 0;
-                    text-align: center;
-                  }
-                  .cover-image {
-                    width: 100%;
-                    height: 100vh;
-                    object-fit: contain;
-                  }
-                </xsl:when>
-                <xsl:when test="$epub.cover.page.style = 'centered'">
-                  body {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                    margin: 0;
-                    padding: 2em;
-                  }
-                  .cover-image {
-                    max-width: 100%;
-                    max-height: 90vh;
-                  }
-                </xsl:when>
-              </xsl:choose>
-            </style>
+            <xsl:call-template name="emit-css-links"/>
           </head>
           <body>
             <div class="cover">
@@ -949,42 +926,7 @@
         <head>
           <meta charset="UTF-8"/>
           <title><xsl:value-of select="$main-title"/></title>
-          <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
-          <xsl:if test="normalize-space($epub.font.files) != '' and epub:is-true($epub.generate.font.css)">
-            <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-fonts.css'))}"/>
-          </xsl:if>
-          <xsl:if test="normalize-space($epub.custom.css) != ''">
-            <xsl:variable name="custom-css-filename" select="tokenize(replace($epub.custom.css, '\\', '/'), '/')[last()]"/>
-            <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $custom-css-filename))}"/>
-          </xsl:if>
-          <style type="text/css">
-            .titlepage {
-              text-align: center;
-              padding: 2em;
-            }
-            .titlepage h1 {
-              font-size: 2em;
-              margin-bottom: 0.5em;
-            }
-            .titlepage h2 {
-              font-size: 1.2em;
-              font-weight: normal;
-              margin-bottom: 2em;
-            }
-            .titlepage h3 {
-              font-size: 1.1em;
-              font-weight: normal;
-              margin: 2em 0;
-            }
-            .titlepage p {
-              margin: 1em 0;
-            }
-            .titlepage .copyright,
-            .titlepage .translator,
-            .titlepage .license {
-              font-size: 0.9em;
-            }
-          </style>
+          <xsl:call-template name="emit-css-links"/>
         </head>
         <body>
           <div class="titlepage">
@@ -1157,36 +1099,7 @@
           <head>
             <meta charset="UTF-8"/>
             <title>Copyright</title>
-            <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
-            <xsl:if test="normalize-space($epub.font.files) != '' and epub:is-true($epub.generate.font.css)">
-              <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-fonts.css'))}"/>
-            </xsl:if>
-            <xsl:if test="normalize-space($epub.custom.css) != ''">
-              <xsl:variable name="custom-css-filename" select="tokenize(replace($epub.custom.css, '\\', '/'), '/')[last()]"/>
-              <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $custom-css-filename))}"/>
-            </xsl:if>
-            <style type="text/css">
-              .copyright-page {
-                text-align: center;
-                padding: 2em;
-                font-size: 0.85em;
-              }
-              .copyright-page h1 {
-                font-size: 1.4em;
-                margin-bottom: 1.5em;
-              }
-              .copyright-page p {
-                margin: 0.5em 0;
-              }
-              .copyright-page .isbn {
-                margin-top: 1.5em;
-                font-family: monospace;
-              }
-              .copyright-page .rights {
-                margin-top: 1.5em;
-                font-style: italic;
-              }
-            </style>
+            <xsl:call-template name="emit-css-links"/>
           </head>
           <body>
             <section epub:type="copyright-page" class="copyright-page">
@@ -1420,7 +1333,7 @@
       <xsl:variable name="lang" select="epub:get-language($map)"/>
       <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
 
-      <!-- Collect all figures with titles from all topics -->
+      <!-- Collect all figures with titles from all topics (in document order) -->
       <xsl:variable name="fig-entries" as="element()*">
         <xsl:for-each select="$all-topicrefs">
           <xsl:variable name="topic-doc" select="document(@href, .)"/>
@@ -1428,8 +1341,7 @@
           <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/fig ')][*[contains(@class, ' topic/title ')]]">
             <xsl:variable name="fig-id" select="if (@id) then @id else generate-id(.)"/>
             <xsl:variable name="fig-title" select="normalize-space(*[contains(@class, ' topic/title ')])"/>
-            <xsl:variable name="fig-number" select="count(preceding::*[contains(@class, ' topic/fig ')]) + 1"/>
-            <fig-entry id="{$fig-id}" title="{$fig-title}" number="{$fig-number}" file="{$topic-filename}"/>
+            <fig-entry id="{$fig-id}" title="{$fig-title}" file="{$topic-filename}"/>
           </xsl:for-each>
         </xsl:for-each>
       </xsl:variable>
@@ -1478,7 +1390,7 @@
             <head>
               <meta charset="UTF-8"/>
               <title><xsl:value-of select="$lof-title"/></title>
-              <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
+              <xsl:call-template name="emit-css-links"/>
             </head>
             <body>
               <nav epub:type="loi">
@@ -1487,7 +1399,7 @@
                   <xsl:for-each select="$fig-entries">
                     <li>
                       <a href="{@file}#{@id}">
-                        <xsl:value-of select="concat($fig-label-prefix, @number, '. ', @title)"/>
+                        <xsl:value-of select="concat($fig-label-prefix, position(), '. ', @title)"/>
                       </a>
                     </li>
                   </xsl:for-each>
@@ -1521,7 +1433,7 @@
       <xsl:variable name="lang" select="epub:get-language($map)"/>
       <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
 
-      <!-- Collect all tables with titles from all topics -->
+      <!-- Collect all tables with titles from all topics (in document order) -->
       <xsl:variable name="table-entries" as="element()*">
         <xsl:for-each select="$all-topicrefs">
           <xsl:variable name="topic-doc" select="document(@href, .)"/>
@@ -1529,8 +1441,7 @@
           <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/table ')][*[contains(@class, ' topic/title ')]]">
             <xsl:variable name="table-id" select="if (@id) then @id else generate-id(.)"/>
             <xsl:variable name="table-title" select="normalize-space(*[contains(@class, ' topic/title ')])"/>
-            <xsl:variable name="table-number" select="count(preceding::*[contains(@class, ' topic/table ')]) + 1"/>
-            <table-entry id="{$table-id}" title="{$table-title}" number="{$table-number}" file="{$topic-filename}"/>
+            <table-entry id="{$table-id}" title="{$table-title}" file="{$topic-filename}"/>
           </xsl:for-each>
         </xsl:for-each>
       </xsl:variable>
@@ -1579,7 +1490,7 @@
             <head>
               <meta charset="UTF-8"/>
               <title><xsl:value-of select="$lot-title"/></title>
-              <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
+              <xsl:call-template name="emit-css-links"/>
             </head>
             <body>
               <nav epub:type="lot">
@@ -1588,7 +1499,7 @@
                   <xsl:for-each select="$table-entries">
                     <li>
                       <a href="{@file}#{@id}">
-                        <xsl:value-of select="concat($table-label-prefix, @number, '. ', @title)"/>
+                        <xsl:value-of select="concat($table-label-prefix, position(), '. ', @title)"/>
                       </a>
                     </li>
                   </xsl:for-each>

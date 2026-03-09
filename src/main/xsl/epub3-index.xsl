@@ -187,7 +187,7 @@
             <head>
               <meta charset="UTF-8"/>
               <title>Index</title>
-              <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
+              <xsl:call-template name="emit-css-links"/>
             </head>
             <body epub:type="index">
               <h1>

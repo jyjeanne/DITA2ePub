@@ -21,14 +21,40 @@
 
     <xsl:message>Generating content files from DITA topics...</xsl:message>
 
+    <!-- Pre-compute global numbering offsets for cross-topic figure/table numbering.
+         The preceding:: axis only works within a single document tree, so when each
+         topic is loaded via document(), numbering restarts from 1. This pre-computes
+         cumulative counts so each topic can offset its local numbers correctly. -->
+    <xsl:variable name="all-content-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
+    <xsl:variable name="numbering-offsets" as="element()*">
+      <xsl:iterate select="$all-content-topicrefs">
+        <xsl:param name="fig-total" as="xs:integer" select="0"/>
+        <xsl:param name="table-total" as="xs:integer" select="0"/>
+
+        <xsl:variable name="topic-doc" select="document(@href, .)"/>
+        <xsl:variable name="fig-count" select="if ($topic-doc) then count($topic-doc//*[contains(@class, ' topic/fig ')]) else 0"/>
+        <xsl:variable name="table-count" select="if ($topic-doc) then count($topic-doc//*[contains(@class, ' topic/table ')]) else 0"/>
+
+        <numbering-offset href="{@href}" fig="{$fig-total}" table="{$table-total}"/>
+
+        <xsl:next-iteration>
+          <xsl:with-param name="fig-total" select="$fig-total + $fig-count"/>
+          <xsl:with-param name="table-total" select="$table-total + $table-count"/>
+        </xsl:next-iteration>
+      </xsl:iterate>
+    </xsl:variable>
+
     <!-- Process all topicrefs in the map -->
-    <xsl:apply-templates select="$map//*[contains(@class, ' map/topicref ')]" mode="generate-content"/>
+    <xsl:apply-templates select="$map//*[contains(@class, ' map/topicref ')]" mode="generate-content">
+      <xsl:with-param name="numbering-offsets" select="$numbering-offsets" tunnel="yes"/>
+    </xsl:apply-templates>
 
     <xsl:message>Content generation complete.</xsl:message>
   </xsl:template>
 
   <!-- Process topicref and generate XHTML file -->
   <xsl:template match="*[contains(@class, ' map/topicref ')]" mode="generate-content">
+    <xsl:param name="numbering-offsets" as="element()*" tunnel="yes" select="()"/>
     <xsl:variable name="href" select="@href"/>
     <xsl:variable name="output-filename" select="epub:get-topic-filename(.)"/>
 
@@ -49,6 +75,7 @@
         <xsl:call-template name="generate-topic-content">
           <xsl:with-param name="topicref" select="."/>
           <xsl:with-param name="filename" select="$output-filename"/>
+          <xsl:with-param name="numbering-offsets" select="$numbering-offsets"/>
         </xsl:call-template>
       </xsl:result-document>
     </xsl:if>
@@ -58,6 +85,7 @@
   <xsl:template name="generate-topic-content">
     <xsl:param name="topicref" as="element()"/>
     <xsl:param name="filename" as="xs:string"/>
+    <xsl:param name="numbering-offsets" as="element()*" select="()"/>
 
     <!-- Load topic to get its language and title -->
     <xsl:variable name="topic-doc" select="if ($topicref/@href) then document($topicref/@href, $topicref) else ()"/>
@@ -88,19 +116,7 @@
       <head>
         <meta charset="UTF-8"/>
         <title><xsl:value-of select="epub:clean-text($topic-title)"/></title>
-        <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $args.css))}"/>
-
-        <!-- Font CSS -->
-        <xsl:if test="normalize-space($epub.font.files) != '' and epub:is-true($epub.generate.font.css)">
-          <link rel="stylesheet" type="text/css" href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/epub-fonts.css'))}"/>
-        </xsl:if>
-
-        <!-- Custom CSS -->
-        <xsl:if test="normalize-space($epub.custom.css) != ''">
-          <xsl:variable name="custom-css-filename" select="tokenize(replace($epub.custom.css, '\\', '/'), '/')[last()]"/>
-          <link rel="stylesheet" type="text/css"
-                href="{epub:get-relative-path($epub.topics.dir, concat($epub.css.dir, '/', $custom-css-filename))}"/>
-        </xsl:if>
+        <xsl:call-template name="emit-css-links"/>
 
         <!-- Accessibility metadata -->
         <xsl:if test="epub:is-true($epub.accessibility)">
@@ -117,6 +133,7 @@
         <main id="content" role="main">
           <xsl:call-template name="generate-topic-body">
             <xsl:with-param name="topicref" select="$topicref"/>
+            <xsl:with-param name="numbering-offsets" select="$numbering-offsets"/>
           </xsl:call-template>
         </main>
       </body>
@@ -126,11 +143,17 @@
   <!-- Generate topic body content -->
   <xsl:template name="generate-topic-body">
     <xsl:param name="topicref" as="element()"/>
+    <xsl:param name="numbering-offsets" as="element()*" select="()"/>
 
     <!-- Load the DITA topic file -->
     <xsl:variable name="topic-href" select="$topicref/@href"/>
     <xsl:variable name="topic-doc" select="if ($topic-href) then document($topic-href, $topicref) else ()"/>
     <xsl:variable name="topic" select="$topic-doc/*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference]"/>
+
+    <!-- Look up global numbering offsets for this topic -->
+    <xsl:variable name="current-offset" select="$numbering-offsets[@href = $topic-href]"/>
+    <xsl:variable name="fig-offset" as="xs:integer" select="if ($current-offset) then xs:integer($current-offset/@fig) else 0"/>
+    <xsl:variable name="table-offset" as="xs:integer" select="if ($current-offset) then xs:integer($current-offset/@table) else 0"/>
 
     <!-- Fallback title from topicref -->
     <xsl:variable name="fallback-title">
@@ -160,6 +183,7 @@
           <xsl:when test="$topicref/@type = 'foreword'">foreword</xsl:when>
           <xsl:when test="$topicref/@type = 'introduction'">introduction</xsl:when>
           <xsl:when test="$topicref/@type = 'epilogue'">epilogue</xsl:when>
+          <xsl:when test="$topicref/@type = 'preface'">preface</xsl:when>
           <!-- Bookmap structural elements -->
           <xsl:when test="contains($topicref/@class, ' bookmap/dedication ')">dedication</xsl:when>
           <xsl:when test="contains($topicref/@class, ' bookmap/colophon ')">colophon</xsl:when>
@@ -167,7 +191,8 @@
           <xsl:when test="contains($topicref/@class, ' bookmap/amendments ')">errata</xsl:when>
           <xsl:when test="contains($topicref/@class, ' bookmap/preface ')">preface</xsl:when>
           <xsl:when test="$topicref/ancestor-or-self::*[contains(@class, ' bookmap/frontmatter ')]
-                          and not(contains($topicref/@class, ' bookmap/preface '))">foreword</xsl:when>
+                          and not(contains($topicref/@class, ' bookmap/preface '))
+                          and not($topicref/@type = 'preface')">foreword</xsl:when>
           <xsl:when test="contains($topicref/@class, ' bookmap/appendix ')">appendix</xsl:when>
           <xsl:when test="$topicref/ancestor-or-self::*[contains(@class, ' bookmap/appendix ')]">appendix</xsl:when>
           <xsl:when test="contains($topicref/@class, ' bookmap/glossarylist ')
@@ -187,7 +212,10 @@
           <!-- Process actual topic content -->
           <xsl:apply-templates select="$topic/*[contains(@class, ' topic/title ') or self::title]" mode="topic-content"/>
           <xsl:apply-templates select="$topic/*[contains(@class, ' topic/shortdesc ') or self::shortdesc]" mode="topic-content"/>
-          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/body ') or self::body or self::conbody or self::taskbody or self::refbody]" mode="topic-content"/>
+          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/body ') or self::body or self::conbody or self::taskbody or self::refbody]" mode="topic-content">
+            <xsl:with-param name="fig-offset" select="$fig-offset" tunnel="yes"/>
+            <xsl:with-param name="table-offset" select="$table-offset" tunnel="yes"/>
+          </xsl:apply-templates>
 
           <!-- Collect footnotes from this topic -->
           <xsl:variable name="footnotes" select="$topic//*[contains(@class, ' topic/fn ')]"/>
@@ -222,6 +250,20 @@
     so the output is in the correct XHTML namespace.
   -->
 
+  <!-- Emit lang and dir attributes when an element has @xml:lang.
+       Sets dir only when the element's language direction differs from
+       the document language, enabling mixed-direction (bidi) content. -->
+  <xsl:template name="emit-lang-dir">
+    <xsl:if test="@xml:lang">
+      <xsl:attribute name="lang" select="@xml:lang"/>
+      <xsl:variable name="elem-dir" select="epub:get-dir(@xml:lang)"/>
+      <xsl:variable name="doc-dir" select="epub:get-dir($epub.language)"/>
+      <xsl:if test="$elem-dir != $doc-dir">
+        <xsl:attribute name="dir" select="$elem-dir"/>
+      </xsl:if>
+    </xsl:if>
+  </xsl:template>
+
   <!-- Transform DITA topic title to HTML h1 -->
   <xsl:template match="*[contains(@class, ' topic/title ')] | title" mode="topic-content">
     <h1 xmlns="http://www.w3.org/1999/xhtml">
@@ -251,8 +293,8 @@
       parent::*[contains(@class, ' topic/body ') or self::body or self::conbody or self::taskbody or self::refbody] and
       not(preceding-sibling::*[contains(@class, ' topic/p ')])
     "/>
-    <xsl:variable name="p-lang" select="(ancestor-or-self::*/@xml:lang, $epub.language)[1]"/>
-    <p xmlns="http://www.w3.org/1999/xhtml" lang="{$p-lang}">
+    <p xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-lang-dir"/>
       <xsl:if test="@id">
         <xsl:attribute name="id" select="@id"/>
       </xsl:if>
@@ -266,6 +308,7 @@
   <!-- Transform DITA section to HTML section -->
   <xsl:template match="*[contains(@class, ' topic/section ')] | section" mode="topic-content">
     <section xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-lang-dir"/>
       <xsl:if test="@id">
         <xsl:attribute name="id" select="@id"/>
       </xsl:if>
@@ -507,6 +550,7 @@
 
   <!-- Transform DITA table to HTML table -->
   <xsl:template match="*[contains(@class, ' topic/table ')]" mode="topic-content">
+    <xsl:param name="table-offset" as="xs:integer" select="0" tunnel="yes"/>
     <table xmlns="http://www.w3.org/1999/xhtml">
       <xsl:if test="@id">
         <xsl:attribute name="id" select="@id"/>
@@ -514,7 +558,7 @@
       <xsl:if test="*[contains(@class, ' topic/title ')]">
         <caption>
           <xsl:if test="$epub.table.numbering = 'global'">
-            <xsl:variable name="table-number" select="count(preceding::*[contains(@class, ' topic/table ')]) + 1"/>
+            <xsl:variable name="table-number" select="count(preceding::*[contains(@class, ' topic/table ')]) + 1 + $table-offset"/>
             <xsl:variable name="lang" select="(ancestor-or-self::*/@xml:lang, $epub.language)[1]"/>
             <span class="table-label">
               <xsl:choose>
@@ -626,7 +670,15 @@
         </xsl:choose>
       </xsl:variable>
       <xsl:if test="string-length($colspec-align) > 0">
-        <xsl:attribute name="style" select="concat('text-align: ', $colspec-align)"/>
+        <!-- Map physical left/right to logical start/end for bidi support -->
+        <xsl:variable name="logical-align">
+          <xsl:choose>
+            <xsl:when test="$colspec-align = 'left'">start</xsl:when>
+            <xsl:when test="$colspec-align = 'right'">end</xsl:when>
+            <xsl:otherwise><xsl:value-of select="$colspec-align"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:attribute name="style" select="concat('text-align: ', $logical-align)"/>
       </xsl:if>
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </xsl:element>
@@ -704,6 +756,7 @@
 
   <!-- Transform DITA fig to HTML figure with optional numbering -->
   <xsl:template match="*[contains(@class, ' topic/fig ')]" mode="topic-content" priority="10">
+    <xsl:param name="fig-offset" as="xs:integer" select="0" tunnel="yes"/>
     <xsl:variable name="fig-id" select="if (@id) then @id else generate-id(.)"/>
     <figure xmlns="http://www.w3.org/1999/xhtml" id="{$fig-id}" class="numbered-figure">
       <!-- Process image and other content (not title) -->
@@ -712,7 +765,7 @@
       <xsl:if test="*[contains(@class, ' topic/title ')]">
         <figcaption>
           <xsl:if test="$epub.figure.numbering = 'global'">
-            <xsl:variable name="fig-number" select="count(preceding::*[contains(@class, ' topic/fig ')]) + 1"/>
+            <xsl:variable name="fig-number" select="count(preceding::*[contains(@class, ' topic/fig ')]) + 1 + $fig-offset"/>
             <xsl:variable name="lang" select="(ancestor-or-self::*/@xml:lang, $epub.language)[1]"/>
             <span class="fig-label">
               <xsl:choose>
@@ -768,6 +821,7 @@
   <!-- Transform DITA lq to HTML blockquote (pull quote) -->
   <xsl:template match="*[contains(@class, ' topic/lq ')]" mode="topic-content">
     <blockquote xmlns="http://www.w3.org/1999/xhtml" class="pull-quote">
+      <xsl:call-template name="emit-lang-dir"/>
       <xsl:apply-templates select="node()" mode="topic-content"/>
       <xsl:if test="@href or *[contains(@class, ' topic/longquoteref ')]">
         <footer class="quote-attribution">
@@ -790,6 +844,7 @@
       <xsl:when test="epub:is-true($epub.locale.quotes)">
         <xsl:variable name="quotes" select="epub:get-quotes($q-lang)"/>
         <span xmlns="http://www.w3.org/1999/xhtml" class="q">
+          <xsl:call-template name="emit-lang-dir"/>
           <xsl:value-of select="$quotes[1]"/>
           <xsl:apply-templates mode="topic-content"/>
           <xsl:value-of select="$quotes[2]"/>
