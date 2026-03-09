@@ -1,67 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-<topic id="chapter1">
-  <title>Chapter 1: Introduction</title>
-  <shortdesc>An introduction to DITA and EPUB transformation.</shortdesc>
+<topic id="chapter1" xml:lang="en">
+  <title>Foundations</title>
+  <shortdesc>The building blocks: DITA as a source format, EPUB as a delivery format, and the transformation that connects them.</shortdesc>
   <body>
-    <p>This chapter introduces the fundamental concepts of DITA to EPUB transformation using modern tools and standards.</p>
+    <p>Before diving into configuration and advanced features, it is worth understanding the two standards that the dita2epub plugin bridges: <indexterm>DITA<indexterm>definition</indexterm></indexterm>DITA on the authoring side and <indexterm>EPUB<indexterm>definition</indexterm></indexterm>EPUB on the delivery side. This chapter introduces both, explains why the combination is powerful, and gives you a mental model for how the transformation works.</p>
 
     <section>
-      <title>What is DITA?</title>
-      <p>DITA (Darwin Information Typing Architecture) is an XML standard for creating and managing content. It provides:</p>
+      <title>What Is DITA?</title>
+      <p>DITA — the <indexterm>Darwin Information Typing Architecture</indexterm>Darwin Information Typing Architecture — is an XML-based standard for creating, managing, and publishing content. Originally developed at IBM in the early 2000s and later standardized by <indexterm>OASIS</indexterm>OASIS, DITA has become the dominant structured authoring framework for enterprise technical documentation<fn id="fn-ch1-dita">As of 2024, DITA is used by over 80% of Fortune 500 companies that produce structured technical documentation, according to industry surveys by The Content Wrangler.</fn>.</p>
+      <p>DITA's core principles are:</p>
       <ul>
-        <li>Structured authoring framework</li>
-        <li>Content reuse through conref and keyref</li>
-        <li>Multi-channel publishing</li>
-        <li>Topic-based organization</li>
+        <li><indexterm>topic-based authoring</indexterm><b>Topic-based authoring</b> — content is organized into self-contained topics, each covering a single subject. Topics can be assembled into publications using maps.</li>
+        <li><indexterm>structured authoring</indexterm><b>Strong typing</b> — DITA defines specialized topic types (concept, task, reference, glossary entry) with constrained content models, ensuring consistency across authors and teams.</li>
+        <li><b>Reuse</b> — content can be shared across publications through <indexterm>conref</indexterm>conref (content reference), <indexterm>keyref</indexterm>keyref (key-based reference), and conditional processing attributes.</li>
+        <li><indexterm>multi-channel publishing</indexterm><b>Multi-channel output</b> — a single set of source files can be transformed into PDF, HTML, EPUB, and other formats through the DITA Open Toolkit's plugin architecture.</li>
       </ul>
     </section>
 
     <section>
-      <title>What is EPUB3?</title>
-      <p>EPUB3 is the third major revision of the EPUB standard. Key features include:</p>
-      <ol>
-        <li>HTML5 and CSS3 support</li>
-        <li>Rich media embedding</li>
-        <li>Enhanced accessibility</li>
-        <li>JavaScript interactivity</li>
-        <li>MathML support</li>
-      </ol>
+      <title>What Is EPUB 3?</title>
+      <p><indexterm>EPUB<indexterm>specification</indexterm></indexterm>EPUB 3 is the current version of the Electronic Publication standard, maintained by the <indexterm>W3C</indexterm>W3C since 2017. It defines a container format for reflowable digital documents built on web technologies: XHTML 5 for content, CSS 3 for styling, and SVG for vector graphics.</p>
+
+      <p>An EPUB file is, at its core, a ZIP archive with a specific structure<fn id="fn-ch1-zip">The ZIP format was chosen for its universal support and compression capabilities. The <codeph>mimetype</codeph> file must appear first in the archive and must not be compressed, to allow reading systems to identify the file type without fully decompressing it.</fn>:</p>
+
+      <fig id="fig-epub-arch">
+        <title>EPUB 3 Container Architecture</title>
+        <image href="../epub-architecture.svg" alt="Diagram showing the layered structure of an EPUB 3 container: mimetype, META-INF, and content directory with OPF, navigation, XHTML topics, styles, fonts, and images" placement="break"/>
+      </fig>
+
+      <p>The key components are:</p>
+      <dl>
+        <dlentry>
+          <dt><codeph>mimetype</codeph></dt>
+          <dd>A plain text file containing <codeph>application/epub+zip</codeph>, stored uncompressed at byte offset zero.</dd>
+        </dlentry>
+        <dlentry>
+          <dt><codeph>META-INF/container.xml</codeph></dt>
+          <dd>Points to the OPF package document. May also include <codeph>encryption.xml</codeph> for obfuscated fonts.</dd>
+        </dlentry>
+        <dlentry>
+          <dt><codeph>content.opf</codeph></dt>
+          <dd>The package document: Dublin Core metadata, a manifest listing every file in the EPUB, and a spine defining the reading order.</dd>
+        </dlentry>
+        <dlentry>
+          <dt><codeph>nav.xhtml</codeph></dt>
+          <dd>The navigation document: table of contents, landmarks, and optionally a page list.</dd>
+        </dlentry>
+      </dl>
     </section>
 
-    <note type="tip">Modern EPUB3 readers provide excellent support for accessibility features, making content available to wider audiences.</note>
-
     <section>
-      <title>Why Transform DITA to EPUB?</title>
-      <p>Converting DITA content to EPUB provides several benefits:</p>
-      <table>
-        <tgroup cols="2">
+      <title>Why DITA to EPUB?</title>
+      <p>The combination of DITA and EPUB is natural. DITA provides the structure and semantics; EPUB provides the delivery format. The transformation maps one to the other:</p>
+      <table id="table-mapping-overview">
+        <title>DITA to EPUB Structural Mapping</title>
+        <tgroup cols="3">
+          <colspec colname="dita" colnum="1" align="left"/>
+          <colspec colname="epub" colnum="2" align="left"/>
+          <colspec colname="notes" colnum="3" align="left"/>
           <thead>
             <row>
-              <entry>Benefit</entry>
-              <entry>Description</entry>
+              <entry>DITA Concept</entry>
+              <entry>EPUB Equivalent</entry>
+              <entry>Notes</entry>
             </row>
           </thead>
           <tbody>
             <row>
-              <entry>Portability</entry>
-              <entry>EPUB files work on multiple devices and platforms</entry>
+              <entry>Bookmap</entry>
+              <entry>OPF package + spine</entry>
+              <entry>Structure, metadata, reading order</entry>
             </row>
             <row>
-              <entry>Offline Access</entry>
-              <entry>Users can read content without internet connection</entry>
+              <entry>Topic</entry>
+              <entry>XHTML content document</entry>
+              <entry>One file per topic</entry>
             </row>
             <row>
-              <entry>Accessibility</entry>
-              <entry>Built-in support for screen readers and assistive technologies</entry>
+              <entry>Chapter/part</entry>
+              <entry>Spine item with <codeph>epub:type</codeph></entry>
+              <entry>Semantic role assignment</entry>
             </row>
             <row>
-              <entry>Reflow</entry>
-              <entry>Content adapts to different screen sizes</entry>
+              <entry>Frontmatter</entry>
+              <entry>Landmark navigation entries</entry>
+              <entry>Preface, foreword, dedication</entry>
+            </row>
+            <row>
+              <entry>Bookmeta</entry>
+              <entry>Dublin Core + OPF meta</entry>
+              <entry>Title, author, ISBN, rights</entry>
+            </row>
+            <row>
+              <entry>Glossarylist</entry>
+              <entry>Consolidated glossary page</entry>
+              <entry>Alphabetically grouped</entry>
+            </row>
+            <row>
+              <entry>Indexterm</entry>
+              <entry>Back-of-book index with anchors</entry>
+              <entry>Multi-level, with see/see-also</entry>
             </row>
           </tbody>
         </tgroup>
       </table>
     </section>
+
+    <note type="tip">If you are already familiar with DITA and EPUB, you can skip ahead to <q>Getting Started</q> in the next section for installation and first-run instructions.</note>
   </body>
 </topic>

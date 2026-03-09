@@ -1,8 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-<topic id="section2-2">
-  <title>2.2 Best Practices</title>
+<topic id="section2-2" xml:lang="en">
+  <title>Accessibility and Best Practices</title>
+  <shortdesc>Building EPUBs that are accessible, discoverable, and maintainable.</shortdesc>
   <body>
-    <p>Best practices for DITA to EPUB transformation.</p>
+    <section>
+      <title>Accessibility Architecture</title>
+      <p><indexterm>accessibility<indexterm>architecture</indexterm></indexterm>Accessibility in EPUB is not a single feature — it is a layered system where each layer builds on the ones below:</p>
+
+      <fig id="fig-a11y-layers">
+        <title>EPUB Accessibility Layers</title>
+        <image href="../accessibility-layers.svg" alt="Nested layers of EPUB accessibility: content alternatives at the core, then semantic markup, navigation and structure, and WCAG conformance as the outermost layer" placement="break"/>
+      </fig>
+
+      <p>The dita2epub plugin addresses each layer automatically:</p>
+      <dl>
+        <dlentry>
+          <dt>Content alternatives</dt>
+          <dd>Images require <codeph>@alt</codeph> text. The plugin emits a warning for any image missing alt text and marks decorative images (those with <codeph>outputclass="decorative"</codeph> or an empty <codeph>@alt</codeph>) with <codeph>role="presentation"</codeph>.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Semantic markup</dt>
+          <dd>Every structural element receives the appropriate <codeph>epub:type</codeph> and DPUB-ARIA <codeph>role</codeph> attribute. Chapters get <codeph>doc-chapter</codeph>, appendices get <codeph>doc-appendix</codeph>, footnotes get <codeph>doc-footnote</codeph> with <codeph>doc-noteref</codeph> backlinks, and so on.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Navigation and structure</dt>
+          <dd>The generated <codeph>nav.xhtml</codeph> includes a hierarchical table of contents and <indexterm>ARIA landmarks</indexterm>ARIA landmark navigation. When <codeph>epub.skip.nav=yes</codeph>, a skip-navigation link is inserted at the top of each content document.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>WCAG conformance</dt>
+          <dd><indexterm>WCAG</indexterm>The OPF metadata declares the target conformance level (A, AA, or AAA) and lists the accessibility features present in the publication: structural navigation, reading order, ARIA roles, and any generated lists of illustrations or tables.</dd>
+        </dlentry>
+      </dl>
+    </section>
+
+    <section>
+      <title>Metadata Best Practices</title>
+      <p>Complete <indexterm>metadata<indexterm>best practices</indexterm></indexterm>metadata improves discoverability in bookstores, library catalogs, and search engines. For commercial distribution, ensure the following are present:</p>
+      <ol>
+        <li><b>Unique identifier</b> — an <indexterm>ISBN</indexterm>ISBN-13 is preferred for commercial distribution. The plugin also supports ISBN-10, ASIN, and auto-generated UUIDs.</li>
+        <li><indexterm>BISAC codes</indexterm><b>Subject classification</b> — BISAC codes are the industry standard for bookstore categorization. Add them as <codeph>&lt;data name="bisac" value="COM051360"/&gt;</codeph> elements in your bookmap's <codeph>&lt;bookmeta&gt;</codeph>.</li>
+        <li><b>Publication date</b> — use the <codeph>&lt;published&gt;&lt;completed&gt;</codeph> element with <codeph>&lt;year&gt;</codeph>, <codeph>&lt;month&gt;</codeph>, and <codeph>&lt;day&gt;</codeph> children for precise dating.</li>
+        <li><b>Copyright information</b> — the <codeph>&lt;bookrights&gt;</codeph> element with <codeph>&lt;copyrfirst&gt;</codeph> and <codeph>&lt;copyrlast&gt;</codeph> generates both the OPF metadata and the copyright page.</li>
+        <li><indexterm>series metadata</indexterm><b>Series metadata</b> — if the book belongs to a series, add <codeph>&lt;data name="series" value="..."/&gt;</codeph> and <codeph>&lt;data name="series-position" value="..."/&gt;</codeph> to generate the EPUB <codeph>belongs-to-collection</codeph> property.</li>
+      </ol>
+    </section>
+
+    <section>
+      <title>Content Quality Guidelines</title>
+      <lq href="https://www.w3.org/TR/epub-a11y-11/" reftitle="EPUB Accessibility 1.1, W3C Recommendation">EPUB publications should meet at minimum the requirements of WCAG 2.0 Level AA. Publishers are encouraged to exceed these requirements wherever possible, as doing so improves the reading experience for all users.</lq>
+
+      <p>Beyond accessibility, follow these guidelines for high-quality output:</p>
+      <ul>
+        <li><b>Use semantic elements.</b> Prefer <codeph>&lt;note type="warning"&gt;</codeph> over bold-red paragraphs. Prefer <codeph>&lt;codeblock outputclass="language-java"&gt;</codeph> over <codeph>&lt;pre&gt;</codeph>. The plugin can only produce good output from well-structured input.</li>
+        <li><b>Provide complete alt text.</b> Describe the <i>purpose</i> of the image, not its appearance. Write <q>Bar chart showing EPUB adoption increasing from 15% in 2015 to 45% in 2025</q>, not <q>bar chart</q>.</li>
+        <li><b>Use index terms generously.</b> The back-of-book index is only as useful as the index terms in your content. Aim for at least two or three index terms per section, with secondary entries for important sub-topics.</li>
+        <li><b>Test on real devices.</b> Reading systems vary in their CSS support, font rendering, and navigation behavior. Test on at least three platforms before publishing<fn id="fn-test-systems">Recommended test targets: Apple Books (iOS/macOS), Google Play Books (Android/web), Kobo (e-ink), and Thorium Reader (desktop). These four cover the most common rendering engines.</fn>.</li>
+      </ul>
+      <note type="caution">Avoid embedding large raster images (above 2 MB each). Many e-ink readers have limited memory and may fail to render oversized images. Use SVG for diagrams and charts wherever possible.</note>
+    </section>
   </body>
 </topic>

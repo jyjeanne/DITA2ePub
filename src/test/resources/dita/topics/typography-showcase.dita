@@ -1,94 +1,179 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
 <topic id="typography-showcase" xml:lang="en">
-  <title>Typography &amp; Styling Showcase</title>
-  <shortdesc>This chapter demonstrates the professional typography and styling features available in dita2epub v1.3.</shortdesc>
+  <title>Typography and Element Showcase</title>
+  <shortdesc>A comprehensive demonstration of every DITA element supported by the dita2epub plugin, with examples of the rendered output.</shortdesc>
   <body>
-    <p>The first paragraph of a chapter can optionally display a decorative drop cap when the <codeph>epub.drop.caps</codeph> parameter is enabled. This enhances the visual appeal of the opening text in each chapter.</p>
+    <p>This chapter serves as a visual and structural test for every content element the plugin transforms. If you are reading a well-formatted EPUB, each section below should render with the appropriate styling, semantic markup, and accessibility attributes.</p>
 
-    <p>Footnotes are a common requirement in professional publishing. This sentence includes a footnote<fn id="fn-demo1">This is the first footnote, demonstrating inline reference markers with backlinks.</fn> and here is another one<fn id="fn-demo2">A second footnote to show sequential numbering within the same topic.</fn> for testing purposes.</p>
+    <section>
+      <title>Paragraphs and Drop Caps</title>
+      <p>The first paragraph of a chapter can optionally display a decorative <indexterm>drop caps</indexterm>drop cap when the <codeph>epub.drop.caps</codeph> parameter is set to <codeph>yes</codeph>. Drop caps are automatically suppressed for CJK languages (Japanese, Chinese, Korean) where they are typographically inappropriate.</p>
+      <p>Subsequent paragraphs render normally. The default stylesheet uses a system font stack with 16px base size, 1.6 line-height, and orphan/widow control to prevent single lines from appearing alone at the top or bottom of a page.</p>
+    </section>
 
-    <fig id="fig-demo">
-      <title>Sample Figure with Auto-Numbering</title>
-      <image href="../cover.svg" alt="Sample figure demonstrating automatic numbering" placement="break"/>
-    </fig>
+    <section>
+      <title>Inline Formatting</title>
+      <p>The plugin supports the standard DITA inline elements: <b>bold text</b> renders as <codeph>&lt;strong&gt;</codeph>, <i>italic text</i> renders as <codeph>&lt;em&gt;</codeph>, and <codeph>code phrases</codeph> render as <codeph>&lt;code&gt;</codeph> with a light gray background and monospace font.</p>
+      <p>Inline quotations use the <codeph>&lt;q&gt;</codeph> element. With the default settings, they render using the browser's built-in quotation marks: <q>like this</q>. When <codeph>epub.locale.quotes=yes</codeph>, the plugin substitutes locale-aware quotation marks — for example, French <q>guillemets</q> or German <q>Anführungszeichen</q>.</p>
+    </section>
 
-    <p>The figure above demonstrates automatic figure numbering. When <codeph>epub.figure.numbering</codeph> is set to <codeph>global</codeph>, each figure receives a sequential label (e.g., "Figure 1.").</p>
+    <section>
+      <title>Footnotes</title>
+      <p><indexterm>footnotes</indexterm>Footnotes are a critical feature for academic and professional publishing. This paragraph contains a footnote<fn id="fn-typo-1">This is the first footnote in the typography showcase. Note that it appears as a superscript number in the text, with the full note collected at the end of the topic in an endnotes section.</fn> to demonstrate inline reference markers. Here is a second<fn id="fn-typo-2">Second footnotes demonstrate sequential numbering. Each footnote includes a backlink (the ↩ symbol) that returns the reader to the reference point in the text.</fn> for testing sequential numbering.</p>
+      <p>A third footnote<fn id="fn-typo-3">This footnote appears in a separate paragraph to verify that numbering continues correctly across paragraph boundaries within the same topic.</fn> later in the text verifies that numbering continues correctly across the entire topic.</p>
+    </section>
 
-    <table id="table-demo">
-      <title>Feature Comparison Table</title>
-      <tgroup cols="3">
-        <colspec colname="c1" colnum="1" align="left"/>
-        <colspec colname="c2" colnum="2" align="center"/>
-        <colspec colname="c3" colnum="3" align="right"/>
-        <thead>
-          <row>
-            <entry>Feature</entry>
-            <entry>Status</entry>
-            <entry>Version</entry>
-          </row>
-        </thead>
-        <tbody>
-          <row>
-            <entry>Custom CSS</entry>
-            <entry>Complete</entry>
-            <entry>1.3.0</entry>
-          </row>
-          <row>
-            <entry>Font CSS</entry>
-            <entry>Complete</entry>
-            <entry>1.3.0</entry>
-          </row>
-          <row>
-            <entry>Footnotes</entry>
-            <entry>Complete</entry>
-            <entry>1.3.0</entry>
-          </row>
-          <row>
-            <entry namest="c1" nameend="c2">Spanning two columns</entry>
-            <entry>1.3.0</entry>
-          </row>
-          <row>
-            <entry morerows="1">Rowspan demo</entry>
-            <entry>Row 1</entry>
-            <entry>Value A</entry>
-          </row>
-          <row>
-            <entry>Row 2</entry>
-            <entry>Value B</entry>
-          </row>
-        </tbody>
-      </tgroup>
-    </table>
+    <section>
+      <title>Figures and Images</title>
+      <p>Figures wrap images in a semantic <codeph>&lt;figure&gt;</codeph> element with a <codeph>&lt;figcaption&gt;</codeph>. When <codeph>epub.figure.numbering=global</codeph>, each figure receives an auto-generated label (<q>Figure 1.</q>, <q>Figure 2.</q>, etc.) in the reader's language:</p>
+      <fig id="fig-showcase">
+        <title>The DITA to EPUB Transformation Pipeline</title>
+        <image href="../sample-diagram.svg" alt="Workflow diagram showing DITA source files passing through XSLT transformation to produce EPUB 3 output including XHTML, OPF, and navigation documents" placement="break"/>
+      </fig>
+      <p>The figure above uses an SVG image, which renders crisply at any zoom level. The plugin also supports PNG, JPEG, GIF, and WebP formats.</p>
+    </section>
 
-    <p>The following code block demonstrates language class annotation and optional line numbering:</p>
+    <section>
+      <title>Tables</title>
+      <p><indexterm>tables<indexterm>rendering</indexterm></indexterm>Tables demonstrate several features: header row styling, column alignment, zebra striping, and column/row spanning.</p>
+      <table id="table-showcase">
+        <title>Plugin Feature Matrix</title>
+        <tgroup cols="4">
+          <colspec colname="feature" colnum="1" align="left"/>
+          <colspec colname="status" colnum="2" align="center"/>
+          <colspec colname="version" colnum="3" align="center"/>
+          <colspec colname="notes" colnum="4" align="left"/>
+          <thead>
+            <row>
+              <entry>Feature</entry>
+              <entry>Status</entry>
+              <entry>Since</entry>
+              <entry>Notes</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Basic EPUB 3 output</entry>
+              <entry>Complete</entry>
+              <entry>1.0</entry>
+              <entry>Chapters, navigation, OPF</entry>
+            </row>
+            <row>
+              <entry>Cover page generation</entry>
+              <entry>Complete</entry>
+              <entry>1.2</entry>
+              <entry>SVG, PNG, JPEG</entry>
+            </row>
+            <row>
+              <entry>Font embedding</entry>
+              <entry>Complete</entry>
+              <entry>1.3</entry>
+              <entry>TTF, OTF, WOFF, WOFF2</entry>
+            </row>
+            <row>
+              <entry namest="feature" nameend="status">Spanning two columns</entry>
+              <entry>1.3</entry>
+              <entry>Demonstrates <codeph>@namest</codeph>/<codeph>@nameend</codeph></entry>
+            </row>
+            <row>
+              <entry morerows="1">Row spanning</entry>
+              <entry>Row A</entry>
+              <entry>1.4</entry>
+              <entry>Demonstrates <codeph>@morerows</codeph></entry>
+            </row>
+            <row>
+              <entry>Row B</entry>
+              <entry>1.4</entry>
+              <entry>Second row of the span</entry>
+            </row>
+            <row>
+              <entry>Image optimization</entry>
+              <entry>Complete</entry>
+              <entry>1.5</entry>
+              <entry>JPEG quality, max width, recursive</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
 
-    <codeblock outputclass="language-java">public class HelloWorld {
+    <section>
+      <title>Code Blocks</title>
+      <p><indexterm>code blocks</indexterm>Code blocks render in a monospace font with a light background. The <codeph>@outputclass</codeph> attribute specifies the language for syntax highlighting classes:</p>
+      <codeblock outputclass="language-java">/**
+ * Example: generating an EPUB from DITA.
+ * This code demonstrates the plugin's Java utilities.
+ */
+public class EpubExample {
     public static void main(String[] args) {
-        System.out.println("Hello, EPUB!");
-        int count = 42;
-        // This is a comment
-        for (int i = 0; i &lt; count; i++) {
-            process(i);
+        String input = "mybook.ditamap";
+        String output = "mybook.epub";
+
+        // The transformation is handled by DITA-OT
+        System.out.println("Transforming: " + input);
+        System.out.println("Output: " + output);
+
+        for (int i = 0; i &lt; 3; i++) {
+            processChapter(i);
         }
     }
 }</codeblock>
 
-    <lq href="https://www.w3.org/publishing/">Digital publishing transforms how we create, distribute, and consume written content. The transition to standards-based formats ensures long-term preservation and universal accessibility.</lq>
+      <p>Shell commands use a different language class:</p>
+      <codeblock outputclass="language-bash">## Build and validate an EPUB
+dita --input=book.ditamap --format=epub3 --epub.validate=yes
+
+## Check the result manually
+java -jar epubcheck.jar out/book.epub</codeblock>
+    </section>
+
+    <section>
+      <title>Blockquotes</title>
+      <p>The DITA <codeph>&lt;lq&gt;</codeph> element renders as a styled blockquote with an optional source attribution:</p>
+      <lq href="https://www.w3.org/publishing/" reftitle="W3C Publishing Activity">Digital publishing transforms how we create, distribute, and consume written content. The transition to standards-based formats ensures long-term preservation and universal accessibility.</lq>
+      <p>The <codeph>@reftitle</codeph> attribute provides a human-readable label for the source link.</p>
+    </section>
 
     <section outputclass="sidebar">
       <title>Did You Know?</title>
-      <p>EPUB 3.3 became a W3C Recommendation in May 2023, ensuring the format's continued evolution under open web standards governance.</p>
+      <p><indexterm>EPUB 3.3</indexterm>EPUB 3.3 became a W3C Recommendation on 25 May 2023, making it the first version of the EPUB specification published under W3C governance. This milestone ensures the format's continued evolution under the same organization that maintains HTML, CSS, and other core web standards.</p>
     </section>
 
-    <p>Notes are now displayed with language-aware labels:</p>
+    <section>
+      <title>Notes and Admonitions</title>
+      <p>The plugin renders all six DITA <indexterm>note types</indexterm>note types with distinct visual styling and localized labels:</p>
 
-    <note type="tip">This tip note uses the correct label for the document's language.</note>
+      <note>A generic note provides supplementary information that may be useful but is not essential.</note>
 
-    <note type="warning">This warning demonstrates the internationalized label system.</note>
+      <note type="tip">A tip note offers a shortcut, best practice, or time-saving suggestion.</note>
 
-    <note type="important">Important notes are styled with a red left border and appropriate label.</note>
+      <note type="important">An important note highlights critical information that the reader should not overlook.</note>
 
-    <p>A third footnote<fn id="fn-demo3">This demonstrates that footnote numbering continues sequentially across the entire topic content.</fn> appears later in the text to verify sequential numbering.</p>
+      <note type="warning">A warning note alerts the reader to a potential problem or common mistake that could cause incorrect results.</note>
+
+      <note type="caution">A caution note indicates a risk of data loss, performance degradation, or other negative consequences if the advice is not followed.</note>
+
+      <note type="danger">A danger note signals a severe risk. In technical documentation, this typically means irreversible data loss, security vulnerabilities, or system instability.</note>
+    </section>
+
+    <section>
+      <title>Definition Lists</title>
+      <p>Definition lists are useful for glossary-style content within a topic:</p>
+      <dl>
+        <dlentry>
+          <dt>Reflowable</dt>
+          <dd>Content that adapts to the reader's screen size, font preferences, and accessibility settings. This is the default and recommended EPUB content model.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Fixed-layout</dt>
+          <dd>Content with a fixed page size and position, similar to PDF. Not supported by this plugin.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Spine</dt>
+          <dd>The ordered list of content documents in an EPUB, defining the default reading order from cover to index.</dd>
+        </dlentry>
+      </dl>
+    </section>
   </body>
 </topic>

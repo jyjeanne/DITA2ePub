@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="introduction" xml:lang="en">
+  <title>Introduction</title>
+  <shortdesc>What the dita2epub plugin is, what problem it solves, and what you can expect from it.</shortdesc>
+  <body>
+    <p>The <indexterm>dita2epub plugin<indexterm>overview</indexterm></indexterm>dita2epub plugin is a transformation for the DITA Open Toolkit that converts DITA content into production-quality EPUB 3 publications. It handles every aspect of the process: structural mapping, metadata extraction, navigation generation, accessibility compliance, font embedding, image optimization, and standards validation.</p>
+
+    <p>Unlike minimal proof-of-concept transformations, dita2epub is designed for <b>commercial publishing</b>. It produces output that passes EPUBCheck validation, conforms to WCAG 2.1 AA accessibility guidelines, and renders correctly across major reading systems. The goal is simple: you should be able to take a well-authored DITA bookmap and produce an EPUB that is ready for distribution — to an app store, a corporate intranet, or a reader's bookshelf — without manual post-processing.</p>
+
+    <section>
+      <title>The Problem</title>
+      <p>DITA is excellent for structured authoring. Its topic-based architecture, strong typing system, and reuse mechanisms make it the standard for enterprise technical documentation. But DITA was designed for <i>authoring</i>, not for <i>reading</i>. The gap between a well-structured DITA bookmap and a polished digital book is significant:</p>
+      <ul>
+        <li>DITA elements must be mapped to their HTML5/XHTML equivalents, respecting EPUB's content model restrictions.</li>
+        <li>Metadata from the bookmap (title, author, ISBN, copyright, series) must be extracted and expressed in Dublin Core and EPUB-specific OPF properties.</li>
+        <li>A navigation document must be generated with a table of contents, landmark navigation, and optionally a page list.</li>
+        <li>Accessibility requirements demand ARIA roles, <codeph>epub:type</codeph> attributes, proper heading hierarchy, and alt text validation.</li>
+        <li>The output must be packaged as a valid ZIP archive with strict ordering requirements (the <codeph>mimetype</codeph> file must be first, uncompressed, at byte offset zero).</li>
+      </ul>
+      <p>The dita2epub plugin handles all of this automatically.</p>
+    </section>
+
+    <section>
+      <title>Key Capabilities</title>
+      <p>At a high level, the plugin provides:</p>
+      <ol>
+        <li><b>Complete bookmap support</b> — front matter, chapters, parts, and back matter, with proper DPUB-ARIA role assignment for each section type.</li>
+        <li><b>Automatic page generation</b> — cover page, title page, copyright page, table of contents, list of figures, list of tables, consolidated glossary, and back-of-book index, all generated from standard DITA markup.</li>
+        <li><b>Rich content transformation</b> — notes with localized labels, tables with column spans and zebra striping, figures with auto-numbering, footnotes with backlinks, code blocks with syntax classes, and blockquotes with attribution.</li>
+        <li><b>Professional typography</b> — drop caps, locale-aware quotation marks, CSS hyphenation, and configurable numbering scopes for figures and tables.</li>
+        <li><b>Font embedding</b> — with automatic <codeph>@font-face</codeph> CSS generation, weight/style detection from filenames, and optional IDPF obfuscation.</li>
+        <li><b>Image optimization</b> — JPEG quality adjustment, maximum width scaling, and recursive directory scanning.</li>
+        <li><b>Internationalization</b> — eleven languages supported for labels, navigation headings, and note types, with full right-to-left support for Arabic and Hebrew.</li>
+        <li><b>Standards compliance</b> — EPUB 3.3, WCAG 2.1 AA, and optional EPUBCheck validation built into the build pipeline.</li>
+      </ol>
+    </section>
+
+    <section>
+      <title>A Note on Scope</title>
+      <p>This plugin focuses on <b>reflowable</b> EPUB content. It does not produce fixed-layout EPUBs, nor does it support embedded audio, video, or JavaScript interactivity. These are deliberate constraints: the vast majority of technical documentation is text-centric and benefits most from the reflowable model, where content adapts to the reader's screen size, font preferences, and accessibility settings.</p>
+      <note type="important">The plugin requires DITA-OT 4.4 or later and Java 17 or later. Earlier versions may work but are not tested or supported.</note>
+    </section>
+  </body>
+</topic>

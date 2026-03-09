@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="appendix-b-supported-elements" xml:lang="en">
+  <title>Supported DITA Elements</title>
+  <shortdesc>A comprehensive list of DITA elements supported by the dita2epub transformation.</shortdesc>
+  <body>
+    <section>
+      <title>Block Elements</title>
+      <table id="table-block-elements">
+        <title>Supported Block Elements</title>
+        <tgroup cols="3">
+          <colspec colname="dita" colnum="1" align="left"/>
+          <colspec colname="html" colnum="2" align="left"/>
+          <colspec colname="notes" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>DITA Element</entry>
+              <entry>EPUB Output</entry>
+              <entry>Notes</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>p element</indexterm><codeph>p</codeph></entry>
+              <entry><codeph>&lt;p&gt;</codeph></entry>
+              <entry>Paragraph with optional language attribute</entry>
+            </row>
+            <row>
+              <entry><indexterm>section element</indexterm><codeph>section</codeph></entry>
+              <entry><codeph>&lt;section&gt;</codeph></entry>
+              <entry>Semantic section with heading</entry>
+            </row>
+            <row>
+              <entry><indexterm>fig element</indexterm><codeph>fig</codeph></entry>
+              <entry><codeph>&lt;figure&gt;</codeph></entry>
+              <entry>With optional auto-numbering and figcaption</entry>
+            </row>
+            <row>
+              <entry><indexterm>table element</indexterm><codeph>table</codeph></entry>
+              <entry><codeph>&lt;table&gt;</codeph></entry>
+              <entry>With colspan, rowspan, zebra striping</entry>
+            </row>
+            <row>
+              <entry><indexterm>codeblock element</indexterm><codeph>codeblock</codeph></entry>
+              <entry><codeph>&lt;pre&gt;&lt;code&gt;</codeph></entry>
+              <entry>With language classes and optional line numbers</entry>
+            </row>
+            <row>
+              <entry><indexterm>note element</indexterm><codeph>note</codeph></entry>
+              <entry><codeph>&lt;aside&gt;</codeph></entry>
+              <entry>With i18n labels (tip, warning, important, caution, danger)</entry>
+            </row>
+            <row>
+              <entry><indexterm>lq element</indexterm><codeph>lq</codeph></entry>
+              <entry><codeph>&lt;blockquote&gt;</codeph></entry>
+              <entry>Long quote with optional attribution link</entry>
+            </row>
+            <row>
+              <entry><indexterm>dl element</indexterm><codeph>dl</codeph></entry>
+              <entry><codeph>&lt;dl&gt;</codeph></entry>
+              <entry>Definition list with dt/dd pairs</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Inline Elements</title>
+      <table id="table-inline-elements">
+        <title>Supported Inline Elements</title>
+        <tgroup cols="3">
+          <colspec colname="dita" colnum="1" align="left"/>
+          <colspec colname="html" colnum="2" align="left"/>
+          <colspec colname="notes" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>DITA Element</entry>
+              <entry>EPUB Output</entry>
+              <entry>Notes</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>b element</indexterm><codeph>b</codeph></entry>
+              <entry><codeph>&lt;strong&gt;</codeph></entry>
+              <entry>Bold/strong emphasis</entry>
+            </row>
+            <row>
+              <entry><indexterm>i element</indexterm><codeph>i</codeph></entry>
+              <entry><codeph>&lt;em&gt;</codeph></entry>
+              <entry>Italic/emphasis</entry>
+            </row>
+            <row>
+              <entry><indexterm>codeph element</indexterm><codeph>codeph</codeph></entry>
+              <entry><codeph>&lt;code&gt;</codeph></entry>
+              <entry>Inline code phrase</entry>
+            </row>
+            <row>
+              <entry><indexterm>xref element</indexterm><codeph>xref</codeph></entry>
+              <entry><codeph>&lt;a&gt;</codeph></entry>
+              <entry>Cross-reference (internal and external)</entry>
+            </row>
+            <row>
+              <entry><indexterm>fn element</indexterm><codeph>fn</codeph></entry>
+              <entry>Superscript + endnote</entry>
+              <entry>Footnote with backlink</entry>
+            </row>
+            <row>
+              <entry><indexterm>q element</indexterm><codeph>q</codeph></entry>
+              <entry><codeph>&lt;q&gt;</codeph> or locale marks</entry>
+              <entry>Inline quotation with locale-aware marks</entry>
+            </row>
+            <row>
+              <entry><indexterm>indexterm element</indexterm><codeph>indexterm</codeph></entry>
+              <entry><codeph>&lt;span&gt;</codeph> anchor</entry>
+              <entry>Index entry with anchor for back-of-book index</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+  </body>
+</topic>

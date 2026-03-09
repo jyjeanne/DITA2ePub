@@ -1,30 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-<topic id="section1-1">
-  <title>1.1 Getting Started</title>
+<topic id="section1-1" xml:lang="en">
+  <title>Getting Started</title>
+  <shortdesc>Installing the plugin, running your first transformation, and understanding the output.</shortdesc>
   <body>
-    <p>This section covers the basics of getting started with DITA and EPUB transformation.</p>
-
     <section>
       <title>Prerequisites</title>
-      <p>Before you begin, ensure you have:</p>
+      <p>Before installing the plugin, ensure your environment meets the following requirements:</p>
       <ul>
-        <li>DITA Open Toolkit 4.3.5 or later</li>
-        <li>Java 17 or later</li>
-        <li>Basic understanding of XML</li>
+        <li><indexterm>DITA-OT<indexterm>installation</indexterm></indexterm><b>DITA Open Toolkit 4.4 or later.</b> The plugin uses features introduced in DITA-OT 4.x, including the updated plugin installation mechanism and Gradle-based build system.</li>
+        <li><indexterm>Java<indexterm>requirements</indexterm></indexterm><b>Java 17 or later.</b> Required for the DITA-OT runtime and for the plugin's Java utilities (EPUB packaging, font obfuscation, image optimization).</li>
+        <li><b>Sufficient disk space.</b> A typical transformation produces an EPUB file of 500 KB to 5 MB, depending on image and font content. The temporary working directory may require up to 10x the final file size during processing.</li>
       </ul>
+      <note type="caution">The plugin has not been tested with Java versions earlier than 17. If you encounter <codeph>UnsupportedClassVersionError</codeph> exceptions, upgrade your Java installation.</note>
     </section>
 
     <section>
       <title>Installation</title>
-      <p>Follow these steps to install the Dita2epub plugin:</p>
-      <ol>
-        <li>Download the plugin</li>
-        <li>Extract to your DITA-OT plugins directory</li>
-        <li>Run <codeph>dita install</codeph></li>
-      </ol>
+      <p>The <indexterm>dita2epub plugin<indexterm>installation</indexterm></indexterm>plugin can be installed from a local ZIP file or from the DITA-OT plugin registry:</p>
+      <codeblock outputclass="language-bash">## Install from a local ZIP archive
+dita install dita2epub-1.5.0.zip
+
+## Or install from the plugin registry
+dita install io.github.jyjeanne.dita2epub</codeblock>
+      <p>After installation, verify that the <codeph>epub3</codeph> transtype is available:</p>
+      <codeblock outputclass="language-bash">dita transtypes | grep epub3</codeblock>
+      <p>You should see <codeph>epub3</codeph> listed among the available transformation types.</p>
     </section>
 
-    <note type="important">Make sure your DITA-OT installation is properly configured before adding plugins.</note>
+    <section>
+      <title>Your First Transformation</title>
+      <p>Run a basic transformation with the following command<fn id="fn-first-run">The <codeph>--input</codeph> flag accepts both <codeph>.ditamap</codeph> and <codeph>.bookmap</codeph> files. The plugin detects the map type automatically.</fn>:</p>
+      <codeblock outputclass="language-bash">dita --input=mybook.ditamap \
+     --format=epub3 \
+     --output=out/ \
+     --epub.cover.image=images/cover.png</codeblock>
+      <p>This produces an EPUB file in the <codeph>out/</codeph> directory. The filename is derived from the map filename, with a <codeph>.epub</codeph> extension.</p>
+      <p>For a more complete transformation with all features enabled:</p>
+      <codeblock outputclass="language-bash">dita --input=mybook.ditamap \
+     --format=epub3 \
+     --output=out/ \
+     --epub.cover.image=images/cover.png \
+     --epub.embed.fonts=fonts/ \
+     --epub.obfuscate.fonts=yes \
+     --epub.optimize.images=yes \
+     --epub.drop.caps=yes \
+     --epub.generate.index=yes \
+     --epub.generate.glossary=yes \
+     --epub.generate.lof=yes \
+     --epub.generate.lot=yes</codeblock>
+      <note type="important">Always test the output with <indexterm>EPUBCheck</indexterm>EPUBCheck after your first transformation. The plugin runs EPUBCheck automatically by default (<codeph>epub.validate=yes</codeph>), but you can also run it manually: <codeph>java -jar epubcheck.jar mybook.epub</codeph>.</note>
+    </section>
+
+    <section>
+      <title>Understanding the Output</title>
+      <p>A successful transformation produces a single <codeph>.epub</codeph> file. Inside, the structure mirrors the EPUB 3 architecture described earlier:</p>
+      <table id="table-output-structure">
+        <title>EPUB Output Directory Structure</title>
+        <tgroup cols="2">
+          <colspec colname="path" colnum="1" align="left"/>
+          <colspec colname="desc" colnum="2" align="left"/>
+          <thead>
+            <row>
+              <entry>Path</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>mimetype</codeph></entry>
+              <entry>EPUB media type identifier (uncompressed)</entry>
+            </row>
+            <row>
+              <entry><codeph>META-INF/container.xml</codeph></entry>
+              <entry>Points to the OPF package document</entry>
+            </row>
+            <row>
+              <entry><codeph>content/content.opf</codeph></entry>
+              <entry>Package document with metadata, manifest, and spine</entry>
+            </row>
+            <row>
+              <entry><codeph>content/nav.xhtml</codeph></entry>
+              <entry>Navigation document (TOC + landmarks)</entry>
+            </row>
+            <row>
+              <entry><codeph>content/cover.xhtml</codeph></entry>
+              <entry>Cover page (if cover image provided)</entry>
+            </row>
+            <row>
+              <entry><codeph>content/titlepage.xhtml</codeph></entry>
+              <entry>Title page with author, subtitle, copyright</entry>
+            </row>
+            <row>
+              <entry><codeph>content/*.xhtml</codeph></entry>
+              <entry>One file per topic from the bookmap</entry>
+            </row>
+            <row>
+              <entry><codeph>styles/epub-default.css</codeph></entry>
+              <entry>Default stylesheet</entry>
+            </row>
+            <row>
+              <entry><codeph>images/*</codeph></entry>
+              <entry>All referenced images</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
   </body>
 </topic>

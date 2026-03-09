@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-wcag" xml:lang="en">
+  <glossterm>WCAG</glossterm>
+  <glossdef>Web Content Accessibility Guidelines — a set of recommendations published by the W3C for making web content more accessible. EPUB accessibility conformance is measured against WCAG levels A, AA, and AAA.</glossdef>
+</glossentry>

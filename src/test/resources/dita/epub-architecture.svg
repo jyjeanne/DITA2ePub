@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="360" viewBox="0 0 520 360">
+  <rect width="520" height="360" fill="#fafafa" rx="6"/>
+
+  <text x="260" y="28" text-anchor="middle" fill="#333" font-family="Arial, sans-serif" font-size="15" font-weight="bold">EPUB 3 Container Architecture</text>
+
+  <!-- mimetype -->
+  <rect x="20" y="50" width="480" height="30" rx="3" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+  <text x="260" y="70" text-anchor="middle" fill="#1565c0" font-family="monospace" font-size="12">mimetype  (application/epub+zip — uncompressed)</text>
+
+  <!-- META-INF -->
+  <rect x="20" y="90" width="480" height="50" rx="3" fill="#fff3e0" stroke="#ffcc80" stroke-width="1"/>
+  <text x="30" y="108" fill="#e65100" font-family="Arial, sans-serif" font-size="12" font-weight="bold">META-INF/</text>
+  <text x="30" y="128" fill="#555" font-family="monospace" font-size="11">container.xml    encryption.xml (optional)</text>
+
+  <!-- Content directory -->
+  <rect x="20" y="150" width="480" height="190" rx="3" fill="#e8f5e9" stroke="#a5d6a7" stroke-width="1"/>
+  <text x="30" y="170" fill="#2e7d32" font-family="Arial, sans-serif" font-size="12" font-weight="bold">content/</text>
+
+  <!-- OPF -->
+  <rect x="35" y="180" width="140" height="65" rx="3" fill="#c8e6c9" stroke="#81c784" stroke-width="1"/>
+  <text x="105" y="198" text-anchor="middle" fill="#1b5e20" font-family="monospace" font-size="11">content.opf</text>
+  <text x="105" y="214" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">metadata</text>
+  <text x="105" y="228" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">manifest + spine</text>
+  <text x="105" y="242" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">guide</text>
+
+  <!-- Nav -->
+  <rect x="190" y="180" width="140" height="65" rx="3" fill="#c8e6c9" stroke="#81c784" stroke-width="1"/>
+  <text x="260" y="198" text-anchor="middle" fill="#1b5e20" font-family="monospace" font-size="11">nav.xhtml</text>
+  <text x="260" y="214" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">table of contents</text>
+  <text x="260" y="228" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">landmarks</text>
+  <text x="260" y="242" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">page list</text>
+
+  <!-- Topics -->
+  <rect x="345" y="180" width="140" height="65" rx="3" fill="#c8e6c9" stroke="#81c784" stroke-width="1"/>
+  <text x="415" y="198" text-anchor="middle" fill="#1b5e20" font-family="monospace" font-size="11">*.xhtml</text>
+  <text x="415" y="214" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">cover, title page</text>
+  <text x="415" y="228" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">chapters, sections</text>
+  <text x="415" y="242" text-anchor="middle" fill="#555" font-family="Arial, sans-serif" font-size="10">glossary, index</text>
+
+  <!-- Styles and fonts -->
+  <rect x="35" y="258" width="220" height="35" rx="3" fill="#c8e6c9" stroke="#81c784" stroke-width="1"/>
+  <text x="145" y="280" text-anchor="middle" fill="#1b5e20" font-family="monospace" font-size="11">styles/  fonts/  images/</text>
+
+  <!-- NCX -->
+  <rect x="270" y="258" width="215" height="35" rx="3" fill="#fff9c4" stroke="#fff176" stroke-width="1"/>
+  <text x="377" y="280" text-anchor="middle" fill="#f57f17" font-family="monospace" font-size="11">toc.ncx (EPUB 2 compat)</text>
+
+  <!-- ZIP label -->
+  <text x="260" y="352" text-anchor="middle" fill="#888" font-family="Arial, sans-serif" font-size="11" font-style="italic">All packaged as a ZIP archive with .epub extension</text>
+</svg>

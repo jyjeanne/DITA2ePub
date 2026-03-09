@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="appendix-a-parameters" xml:lang="en">
+  <title>Plugin Parameters Reference</title>
+  <shortdesc>Complete reference of all configurable parameters for the dita2epub plugin.</shortdesc>
+  <body>
+    <section>
+      <title>EPUB Configuration</title>
+      <table id="table-epub-config">
+        <title>EPUB Configuration Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.version</indexterm><codeph>epub.version</codeph></entry>
+              <entry>3.3</entry>
+              <entry>EPUB specification version</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.generate.cover.page</indexterm><codeph>epub.generate.cover.page</codeph></entry>
+              <entry>yes</entry>
+              <entry>Generate a cover page from the cover image</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.cover.image</indexterm><codeph>epub.cover.image</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Path to cover image file (SVG, PNG, or JPEG)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.toc.depth</indexterm><codeph>epub.toc.depth</codeph></entry>
+              <entry>5</entry>
+              <entry>Maximum depth of the table of contents</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.language</indexterm><codeph>epub.language</codeph></entry>
+              <entry>en</entry>
+              <entry>Publication language (BCP 47 tag)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Accessibility</title>
+      <table id="table-a11y-params">
+        <title>Accessibility Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.accessibility</indexterm><codeph>epub.accessibility</codeph></entry>
+              <entry>wcag-aa</entry>
+              <entry>Target WCAG conformance level</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.aria.landmarks</indexterm><codeph>epub.aria.landmarks</codeph></entry>
+              <entry>yes</entry>
+              <entry>Generate ARIA landmark navigation</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.skip.nav</indexterm><codeph>epub.skip.nav</codeph></entry>
+              <entry>yes</entry>
+              <entry>Add skip navigation link for accessibility</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Typography</title>
+      <table id="table-typography-params">
+        <title>Typography Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.drop.caps</indexterm><codeph>epub.drop.caps</codeph></entry>
+              <entry>no</entry>
+              <entry>Enable decorative drop caps on chapter openings</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.hyphenation</indexterm><codeph>epub.hyphenation</codeph></entry>
+              <entry>auto</entry>
+              <entry>CSS hyphenation mode (auto, manual, none)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.locale.quotes</indexterm><codeph>epub.locale.quotes</codeph></entry>
+              <entry>no</entry>
+              <entry>Use locale-aware quotation marks</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.figure.numbering</indexterm><codeph>epub.figure.numbering</codeph></entry>
+              <entry>global</entry>
+              <entry>Figure numbering scope (global or chapter)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+  </body>
+</topic>

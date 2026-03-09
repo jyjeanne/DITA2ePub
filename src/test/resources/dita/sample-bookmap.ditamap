@@ -2,66 +2,150 @@
 <!DOCTYPE bookmap PUBLIC "-//OASIS//DTD DITA BookMap//EN" "bookmap.dtd">
 <bookmap id="sample-bookmap" xml:lang="en">
   <booktitle>
-    <mainbooktitle>Sample EPUB Book</mainbooktitle>
-    <booktitlealt>A Test Publication for Dita2epub</booktitlealt>
+    <mainbooktitle>The DITA to EPUB Handbook</mainbooktitle>
+    <booktitlealt>A Complete Guide to Digital Publishing with dita2epub</booktitlealt>
   </booktitle>
 
   <bookmeta>
-    <author>John Doe</author>
+    <authorinformation>
+      <personinfo>
+        <namedetails>
+          <personname>
+            <firstname>Jeremy</firstname>
+            <lastname>Jeanne</lastname>
+          </personname>
+        </namedetails>
+      </personinfo>
+    </authorinformation>
+
     <publisherinformation>
       <organization>Sample Publisher</organization>
+      <published>
+        <completed>
+          <year>2026</year>
+          <month>03</month>
+          <day>08</day>
+        </completed>
+      </published>
     </publisherinformation>
+
     <keywords>
       <keyword>DITA</keyword>
       <keyword>EPUB3</keyword>
       <keyword>Publishing</keyword>
+      <keyword>Digital Books</keyword>
+      <keyword>Accessibility</keyword>
+      <keyword>XSLT</keyword>
     </keywords>
+
     <bookid>
-      <isbn>978-0-123456-78-9</isbn>
+      <edition>Second Edition</edition>
+      <isbn>978-0-13-468599-1</isbn>
     </bookid>
+
     <bookrights>
       <copyrfirst>
         <year>2025</year>
       </copyrfirst>
+      <copyrlast>
+        <year>2026</year>
+      </copyrlast>
       <bookowner>
         <organization>Sample Publisher</organization>
       </bookowner>
     </bookrights>
+
+    <!-- Series metadata -->
     <data name="series" value="DITA Publishing Guides"/>
     <data name="series-position" value="1"/>
+
+    <!-- BISAC subject codes -->
     <data name="bisac" value="COM051360"/>
     <data name="bisac" value="COM060160"/>
+
+    <!-- Translator (for testing localized title page) -->
+    <data name="translator" value="Pierre Dupont"/>
+    <data name="translator-url" value="https://example.com/translator"/>
+
+    <!-- License (for testing title page license display) -->
+    <data name="license" value="Creative Commons Attribution 4.0"/>
+    <data name="license-url" value="https://creativecommons.org/licenses/by/4.0/"/>
   </bookmeta>
 
+  <!-- ============================================== -->
+  <!-- FRONT MATTER                                   -->
+  <!-- (Cover page and title page auto-generated)     -->
+  <!-- ============================================== -->
   <frontmatter>
-    <topicref href="topics/dedication.dita" navtitle="Dedication" type="dedication"/>
-    <topicref href="topics/preface.dita" navtitle="Preface"/>
+    <topicref href="topics/dedication.dita" type="dedication"/>
+    <topicref href="topics/foreword.dita"/>
+    <topicref href="topics/preface.dita" type="preface"/>
+    <topicref href="topics/acknowledgments.dita"/>
+    <topicref href="topics/introduction.dita"/>
   </frontmatter>
 
-  <chapter href="topics/chapter1.dita" navtitle="Chapter 1: Introduction">
-    <topicref href="topics/section1-1.dita" navtitle="1.1 Getting Started"/>
-    <topicref href="topics/section1-2.dita" navtitle="1.2 Basic Concepts"/>
+  <!-- ============================================== -->
+  <!-- BODY: CHAPTERS                                 -->
+  <!-- ============================================== -->
+
+  <!-- Part I: Getting Started -->
+  <chapter href="topics/chapter1.dita">
+    <topicref href="topics/section1-1.dita"/>
+    <topicref href="topics/section1-2.dita"/>
   </chapter>
 
-  <chapter href="topics/chapter2.dita" navtitle="Chapter 2: Advanced Topics">
-    <topicref href="topics/section2-1.dita" navtitle="2.1 Advanced Features"/>
-    <topicref href="topics/section2-2.dita" navtitle="2.2 Best Practices"/>
+  <!-- Part II: Advanced Topics -->
+  <chapter href="topics/chapter2.dita">
+    <topicref href="topics/section2-1.dita"/>
+    <topicref href="topics/section2-2.dita"/>
   </chapter>
 
-  <chapter href="topics/typography-showcase.dita" navtitle="Chapter 3: Typography Showcase"/>
+  <!-- Part III: Typography Showcase -->
+  <chapter href="topics/typography-showcase.dita"/>
 
+  <!-- ============================================== -->
+  <!-- APPENDICES                                     -->
+  <!-- ============================================== -->
+  <appendices>
+    <appendix href="topics/appendix-a-parameters.dita"/>
+    <appendix href="topics/appendix-b-supported-elements.dita"/>
+  </appendices>
+
+  <!-- ============================================== -->
+  <!-- BACK MATTER                                    -->
+  <!-- ============================================== -->
   <backmatter>
-    <topicref href="topics/appendix.dita" navtitle="Appendix"/>
-    <topicref href="topics/colophon.dita" navtitle="Colophon" type="colophon"/>
+
+    <!-- Afterword -->
+    <topicref href="topics/afterword.dita"/>
+
+    <!-- Release Notes -->
+    <topicref href="topics/notes.dita"/>
+
+    <!-- Bibliography -->
+    <topicref href="topics/bibliography.dita"/>
+
+    <!-- Colophon -->
+    <topicref href="topics/colophon.dita" type="colophon"/>
+
+    <!-- Book lists: Glossary, Index, LOF, LOT -->
     <booklists>
+      <toc/>
+      <figurelist/>
+      <tablelist/>
       <glossarylist>
+        <topicref href="topics/glossary/glossary-a11y.dita" keys="gl-a11y"/>
+        <topicref href="topics/glossary/glossary-bookmap.dita" keys="gl-bookmap"/>
         <topicref href="topics/glossary/glossary-dita.dita" keys="gl-dita"/>
         <topicref href="topics/glossary/glossary-epub.dita" keys="gl-epub"/>
+        <topicref href="topics/glossary/glossary-ncx.dita" keys="gl-ncx"/>
         <topicref href="topics/glossary/glossary-opf.dita" keys="gl-opf"/>
         <topicref href="topics/glossary/glossary-ssv.dita" keys="gl-ssv"/>
+        <topicref href="topics/glossary/glossary-wcag.dita" keys="gl-wcag"/>
         <topicref href="topics/glossary/glossary-xhtml.dita" keys="gl-xhtml"/>
         <topicref href="topics/glossary/glossary-xslt.dita" keys="gl-xslt"/>
       </glossarylist>
+      <indexlist/>
     </booklists>
   </backmatter>
 </bookmap>

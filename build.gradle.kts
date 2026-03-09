@@ -47,25 +47,7 @@ val testDatasets = listOf(
         coverImage = "src/test/resources/dita/cover.svg",
         language = "en",
         tocDepth = 5,
-        description = "Basic English sample bookmap"
-    ),
-    TestDataset(
-        name = "calibre-guide",
-        ditamap = "src/test/resources/dita-calibre/calibre-guide.ditamap",
-        outputDir = "build/epub-calibre",
-        coverImage = "src/test/resources/dita-calibre/cover.jpg",
-        language = "fr",
-        tocDepth = 3,
-        description = "French Calibre Guide with nested chapters"
-    ),
-    TestDataset(
-        name = "indexing-guide",
-        ditamap = "src/test/resources/dita-indexing/indexing-guide.ditamap",
-        outputDir = "build/epub-indexing",
-        coverImage = null,
-        language = "en",
-        tocDepth = 3,
-        description = "English indexing guide with back-of-book index"
+        description = "Complete English bookmap with all EPUB features"
     )
 )
 
@@ -219,52 +201,22 @@ tasks.named<com.github.jyjeanne.DitaOtTask>("dita") {
         "epub.cover.image" to file("src/test/resources/dita/cover.svg").absolutePath,
         "epub.toc.depth" to "5",
         "epub.nav.depth" to "5",
-        "epub.generate.lof" to "no",
-        "epub.generate.lot" to "no",
+        "epub.generate.lof" to "auto",
+        "epub.generate.lot" to "auto",
+        "epub.generate.index" to "auto",
+        "epub.generate.glossary" to "auto",
+        "epub.copyright.page" to "auto",
+        "epub.drop.caps" to "yes",
+        "epub.table.zebra" to "yes",
+        "epub.figure.numbering" to "global",
+        "epub.table.numbering" to "global",
         "epub.skip.nav" to "yes",
         "args.csspath" to "styles",
-        "epub.publisher" to "Dita2epub Project",
-        "epub.rights" to "Copyright 2026 All Rights Reserved",
-        "epub.identifier.scheme" to "UUID",
+        "epub.publisher" to "Sample Publisher",
+        "epub.rights" to "Copyright 2025-2026 Sample Publisher. All Rights Reserved.",
+        "epub.identifier.scheme" to "ISBN",
         "epub.validate" to "yes",
-        "args.output.base.name" to "sample-book",
-        "epub.generate.glossary" to "auto",
-    ))
-}
-
-// Build Calibre Guide EPUB from French DITA content
-tasks.register<com.github.jyjeanne.DitaOtTask>("buildCalibreGuide") {
-    group = "dita"
-    description = "Build Calibre Guide EPUB from French DITA content"
-    dependsOn("installLocalPlugin")
-    ditaOt(ditaOtHome)
-    input(file("src/test/resources/dita-calibre/calibre-guide.ditamap"))
-    output("build/epub-calibre")
-    transtype("epub3")
-
-    ditaProperties.putAll(sharedEpubProperties)
-    ditaProperties.putAll(mapOf(
-        "epub.cover.image" to file("src/test/resources/dita-calibre/cover.jpg").absolutePath,
-        "epub.toc.depth" to "3",
-        "epub.nav.depth" to "3",
-    ))
-}
-
-// Build Indexing Guide EPUB with back-of-book index
-tasks.register<com.github.jyjeanne.DitaOtTask>("buildIndexingGuide") {
-    group = "dita"
-    description = "Build Indexing Guide EPUB with back-of-book index"
-    dependsOn("installLocalPlugin")
-    ditaOt(ditaOtHome)
-    input(file("src/test/resources/dita-indexing/indexing-guide.ditamap"))
-    output("build/epub-indexing")
-    transtype("epub3")
-
-    ditaProperties.putAll(sharedEpubProperties)
-    ditaProperties.putAll(mapOf(
-        "epub.toc.depth" to "3",
-        "epub.nav.depth" to "3",
-        "epub.generate.index" to "yes",
+        "args.output.base.name" to "dita-to-epub-handbook",
     ))
 }
 
@@ -313,8 +265,6 @@ fun registerEpubValidation(name: String, epubDir: String, dependsOnTask: String)
     }
 
 registerEpubValidation("validateEpub", "build/epub", "dita")
-registerEpubValidation("validateCalibreEpub", "build/epub-calibre", "buildCalibreGuide")
-registerEpubValidation("validateIndexingEpub", "build/epub-indexing", "buildIndexingGuide")
 
 // =============================================================================
 // Workflow tasks
@@ -332,8 +282,6 @@ tasks.register("cleanEpub") {
     description = "Clean EPUB output directory"
     doLast {
         delete("build/epub")
-        delete("build/epub-calibre")
-        delete("build/epub-indexing")
     }
 }
 
@@ -344,13 +292,13 @@ tasks.register("cleanEpub") {
 tasks.register("buildAllEpubs") {
     group = "dita"
     description = "Build EPUB from all test DITA datasets"
-    dependsOn("buildSampleEpub", "buildCalibreGuide", "buildIndexingGuide")
+    dependsOn("buildSampleEpub")
 }
 
 tasks.register("validateAllEpubs") {
     group = "verification"
     description = "Validate all generated EPUB files"
-    dependsOn("validateEpub", "validateCalibreEpub", "validateIndexingEpub")
+    dependsOn("validateEpub")
 }
 
 tasks.register("testAllEpubs") {

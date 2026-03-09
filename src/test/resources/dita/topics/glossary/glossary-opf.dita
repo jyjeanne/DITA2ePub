@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
-<glossentry id="gl-opf">
+<glossentry id="gl-opf" xml:lang="en">
   <glossterm>OPF</glossterm>
   <glossdef>Open Packaging Format — the package document format that describes the contents and metadata of an EPUB publication.</glossdef>
   <glossBody>

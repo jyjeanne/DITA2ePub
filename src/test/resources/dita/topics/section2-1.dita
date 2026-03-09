@@ -1,8 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-<topic id="section2-1">
-  <title>2.1 Advanced Features</title>
+<topic id="section2-1" xml:lang="en">
+  <title>Advanced Features</title>
+  <shortdesc>Font embedding with obfuscation, image optimization, and cover page generation in detail.</shortdesc>
   <body>
-    <p>Exploring advanced EPUB3 features and capabilities.</p>
+    <section>
+      <title>Font Embedding</title>
+      <p>Custom fonts are essential for brand consistency and professional typography. The plugin supports four <indexterm>font embedding<indexterm>formats</indexterm></indexterm>font formats: <indexterm>TTF</indexterm>TrueType (<codeph>.ttf</codeph>), <indexterm>OTF</indexterm>OpenType (<codeph>.otf</codeph>), <indexterm>WOFF</indexterm>Web Open Font Format (<codeph>.woff</codeph>), and <indexterm>WOFF2</indexterm>WOFF2 (<codeph>.woff2</codeph>).</p>
+
+      <p>To embed fonts, point the <codeph>epub.embed.fonts</codeph> parameter at a directory containing your font files:</p>
+      <codeblock outputclass="language-bash">dita --input=mybook.ditamap --format=epub3 \
+     --epub.embed.fonts=./fonts \
+     --epub.generate.font.css=yes \
+     --epub.obfuscate.fonts=yes</codeblock>
+
+      <p>The plugin automatically performs three operations:</p>
+      <fig id="fig-font-pipeline">
+        <title>Font Embedding Pipeline</title>
+        <image href="../font-pipeline.svg" alt="Four-step font pipeline: discover font files, detect family/weight/style from filenames, generate @font-face CSS and OPF manifest entries, and obfuscate with the IDPF XOR algorithm" placement="break"/>
+      </fig>
+
+      <ol>
+        <li><b>Discovery</b> — scans the directory for files with <codeph>.ttf</codeph>, <codeph>.otf</codeph>, <codeph>.woff</codeph>, or <codeph>.woff2</codeph> extensions.</li>
+        <li><b>Detection</b> — parses filenames to determine the font family, weight (Thin through Black, 100–900), and style (normal, italic, oblique). For example, <codeph>Merriweather-BoldItalic.woff2</codeph> is detected as family <q>Merriweather</q>, weight 700, style italic<fn id="fn-font-detect">The detection algorithm strips common suffixes like <codeph>-Regular</codeph>, <codeph>-Bold</codeph>, <codeph>-Italic</codeph>, <codeph>-Light</codeph>, etc. If your font files use non-standard naming, you may need to rename them.</fn>.</li>
+        <li><b>CSS generation</b> — produces <codeph>@font-face</codeph> rules in <codeph>styles/epub-fonts.css</codeph>, automatically linked from all content documents.</li>
+        <li><b>Obfuscation</b> — if enabled, applies the <indexterm>font obfuscation<indexterm>IDPF algorithm</indexterm></indexterm>IDPF obfuscation algorithm (per EPUB OCF 3.3 Section 4.2), XORing the first 1,040 bytes of each font file with a SHA-1 key derived from the publication identifier. An <codeph>encryption.xml</codeph> file is generated in <codeph>META-INF/</codeph>.</li>
+      </ol>
+
+      <note type="danger">Font obfuscation is <b>not</b> encryption. It provides a minimal level of protection that satisfies most font licensing agreements, but it is trivially reversible by anyone with the publication identifier. Do not rely on it for DRM.</note>
+    </section>
+
+    <section>
+      <title>Image Optimization</title>
+      <p>Large images are the primary contributor to EPUB file size. The plugin's <indexterm>image optimization<indexterm>configuration</indexterm></indexterm>image optimization pipeline can significantly reduce file sizes without visible quality loss:</p>
+      <codeblock outputclass="language-bash">dita --input=mybook.ditamap --format=epub3 \
+     --epub.optimize.images=yes \
+     --epub.image.jpeg.quality=0.75 \
+     --epub.image.max.width=1200</codeblock>
+
+      <p>The optimizer processes JPEG and PNG files recursively in the images directory:</p>
+      <ul>
+        <li><b>JPEG files</b> are re-encoded at the specified quality level (0.0–1.0, default 0.8). Images with alpha channels are automatically converted to RGB before encoding.</li>
+        <li><b>PNG files</b> are re-encoded to strip non-essential metadata (color profiles, text chunks, timestamps).</li>
+        <li><b>Small files</b> below 50 KB are skipped, as the savings would be negligible.</li>
+        <li><b>Oversized images</b> are scaled down to the specified maximum width while preserving aspect ratio.</li>
+      </ul>
+      <p>Only files that become smaller after optimization are replaced; the originals are preserved if re-encoding would increase the size.</p>
+    </section>
+
+    <section>
+      <title>Cover Page Generation</title>
+      <p>When you provide a cover image via <codeph>epub.cover.image</codeph>, the plugin generates a <indexterm>cover page<indexterm>generation</indexterm></indexterm>cover page (<codeph>cover.xhtml</codeph>) as the first item in the spine. The cover image is also registered in the OPF manifest with the <codeph>cover-image</codeph> property, which reading systems use for library thumbnails.</p>
+      <p>Supported image formats include SVG, PNG, JPEG, and WebP. For best results across reading systems, use an image with a 2:3 aspect ratio (e.g., 1200 × 1800 pixels for raster formats).</p>
+      <note type="tip">SVG covers render crisply at any resolution and produce smaller file sizes than raster equivalents. They are ideal for text-heavy covers that do not require photographic imagery.</note>
+    </section>
   </body>
 </topic>

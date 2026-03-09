@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="release-notes" xml:lang="en">
+  <title>Release Notes</title>
+  <body>
+    <section>
+      <title>Version 1.5.0</title>
+      <p>Released March 2026.</p>
+      <ul>
+        <li>Added font obfuscation support (<indexterm>font obfuscation<indexterm>IDPF algorithm</indexterm></indexterm>IDPF algorithm per OCF 3.3 Section 4.2)</li>
+        <li>Added image optimization pipeline (JPEG quality, max width, metadata stripping)</li>
+        <li>Fixed title page subtitle rendering</li>
+        <li>Fixed copyright year extraction from bookmap metadata</li>
+        <li>Fixed file extension handling for non-DITA source files</li>
+        <li>Improved accessibility metadata generation</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Version 1.4.0</title>
+      <p>Released January 2026.</p>
+      <ul>
+        <li>Added back-of-book <indexterm>index<indexterm>generation</indexterm></indexterm>index generation from indexterm elements</li>
+        <li>Added List of Figures and List of Tables generation</li>
+        <li>Added consolidated <indexterm>glossary<indexterm>generation</indexterm></indexterm>glossary generation from glossentry topics</li>
+        <li>Added series metadata support (belongs-to-collection)</li>
+        <li>Added BISAC subject code support</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Version 1.3.0</title>
+      <p>Released October 2025.</p>
+      <ul>
+        <li>Added <indexterm>footnotes</indexterm>footnote support with backlinks</li>
+        <li>Added <indexterm>drop caps</indexterm>drop caps for chapter openings</li>
+        <li>Added locale-aware quotation marks</li>
+        <li>Added internationalized note labels (eleven languages)</li>
+        <li>Added figure and table auto-numbering</li>
+        <li>Added custom CSS support</li>
+        <li>Added font embedding with @font-face CSS generation</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Version 1.2.0</title>
+      <p>Released July 2025.</p>
+      <ul>
+        <li>Added EPUB 3.3 compliance</li>
+        <li>Added NCX generation for backward compatibility</li>
+        <li>Added EPUBCheck validation integration</li>
+        <li>Added cover page generation</li>
+        <li>Added <indexterm>accessibility<indexterm>WCAG compliance</indexterm></indexterm>WCAG-AA accessibility metadata</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Version 1.0.0</title>
+      <p>Released March 2025. Initial release.</p>
+      <ul>
+        <li>Basic DITA to EPUB 3 transformation</li>
+        <li>Bookmap support (chapters, front/back matter)</li>
+        <li>Navigation document generation</li>
+        <li>OPF package document generation</li>
+      </ul>
+    </section>
+  </body>
+</topic>

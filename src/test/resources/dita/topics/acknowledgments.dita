@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="acknowledgments" xml:lang="en">
+  <title>Acknowledgments</title>
+  <body>
+    <p>No software project is truly a solo effort, and this one is no exception.</p>
+
+    <p>First and foremost, my thanks go to the <indexterm>DITA-OT<indexterm>community</indexterm></indexterm>DITA Open Toolkit development team. Their decision to build an open, extensible transformation framework is what makes plugins like this one possible. The DITA-OT Gradle plugin, in particular, dramatically simplified the build and release process.</p>
+
+    <p>I am equally indebted to the <indexterm>W3C<indexterm>Publishing Working Group</indexterm></indexterm>W3C Publishing Working Group, whose work on the EPUB 3.3 specification provided a clear, testable standard to implement against. The accompanying EPUBCheck tool made it possible to catch conformance issues early and often.</p>
+
+    <p>Several individuals contributed directly to the quality of this plugin through testing, code review, and thoughtful feedback:</p>
+    <ul>
+      <li><b>Dr. Maria Rodriguez</b> performed accessibility audits against WCAG 2.1 AA and tested the output with NVDA, VoiceOver, and Thorium Reader's accessibility mode.</li>
+      <li><b>Thomas Weber</b> reviewed the German localization strings, tested right-to-left rendering with Arabic content, and identified several edge cases in the bidirectional text handling.</li>
+      <li><b>Yuki Tanaka</b> tested CJK typography, validated the Japanese localization, and confirmed that drop caps are correctly suppressed for ideographic scripts.</li>
+      <li><b>Sarah Chen</b> ran integration tests across fourteen EPUB reading systems, from Apple Books and Google Play Books to Calibre and Readium, cataloging rendering differences and filing detailed bug reports.</li>
+    </ul>
+
+    <p>Thanks also to the broader open-source community. Every bug report filed on GitHub, every question asked in the discussion forums, and every pull request submitted has helped shape this tool. Open source thrives on participation, and yours has been invaluable.</p>
+
+    <p>Finally, a personal thank-you to my family for their patience during the many evenings and weekends spent debugging XSLT edge cases. Your support made this possible.</p>
+  </body>
+</topic>

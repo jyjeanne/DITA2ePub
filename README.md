@@ -19,53 +19,57 @@
 
 ---
 
-## 📖 About
+## About
 
 **Dita2epub** is a production-ready DITA-OT plugin that transforms DITA content into standards-compliant EPUB 3.3 publications. Built for technical writers, documentation teams, and publishers who demand professional-quality e-books with modern features and accessibility compliance.
 
 ### Why Dita2epub?
 
-- **📚 Standards-Compliant**: Full EPUB 3.3 specification compliance with WCAG 2.1 accessibility
-- **🎨 Professional Output**: Custom cover pages, embedded fonts, and optimized images
-- **⚡ Production-Ready**: 41 comprehensive tests, CI/CD automation, and multi-platform support
-- **🔧 Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
-- **🚀 Modern Stack**: Built on DITA-OT 4.4, Java 17+, and latest web standards
+- **Standards-Compliant**: Full EPUB 3.3 specification compliance with WCAG 2.1 accessibility
+- **Professional Output**: Custom cover pages, embedded fonts, optimized images, and typographic features
+- **Production-Ready**: 41 comprehensive tests, EPUBCheck validation with zero errors, CI/CD automation
+- **Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
+- **Modern Stack**: Built on DITA-OT 4.4, Java 17+, and latest web standards
 
-### What's New in v1.4.0?
+### What's New in v1.5.0?
 
-- **ISBN/ASIN Identifier Support** - Extract ISBN from bookmap or override via `epub.isbn` parameter, with ONIX codelist5 refinement
-- **Series Metadata** - `belongs-to-collection` with collection-type and group-position for series/boxed sets
-- **Multiple Contributor Roles** - MARC relator codes for editor, translator, illustrator, and 7 more roles
-- **BISAC/ONIX Subject Classifications** - Comma-separated BISAC codes for retailer cataloging
-- **Frontmatter/Backmatter epub:type Expansion** - dedication, colophon, copyright-page, errata, acknowledgments, halftitlepage, introduction, epilogue
-- **Extended Landmarks Navigation** - Conditional entries for preface, dedication, appendix, colophon, copyright page (i18n)
-- **Auto-Generated Copyright Page** - `copyright.xhtml` with title, copyright notice, publisher, license, ISBN
+- **Font obfuscation** — IDPF XOR algorithm per OCF 3.3 Section 4.2
+- **Image optimization pipeline** — JPEG quality control, ARGB-to-RGB conversion, recursive directory scanning
+- **Back-of-book index** — Automatic generation from `<indexterm>` elements with alphabetical grouping and anchor links
+- **Consolidated glossary** — Alphabetically grouped glossary page from `<glossentry>` topics
+- **List of Figures / List of Tables** — Auto-generated from bookmap when `<figurelist/>` or `<tablelist/>` is present
+- **Auto-generated copyright page** — From bookmap metadata (title, copyright, publisher, ISBN, license)
+- **Drop caps** — Decorative initial capitals on chapter openings (suppressed for CJK)
+- **Improved accessibility** — Correct `epub:type` semantics, skip-navigation links, WCAG-AA metadata
+- **Bug fixes** — Title/subtitle swap, copyright year extraction, double file extensions, JPEG ARGB corruption, XML injection in font paths, and more
 
 ### Previous Releases
 
-- **v1.3.0**: Custom CSS, footnotes, figure/table numbering, drop caps, pull quotes, sidebars
-- **v1.2.0**: Font obfuscation, image optimization, 10-language i18n
-- **v1.1.0**: Back-of-book index, consolidated glossary, EPUB 3.3 SSV compliance
-- **v1.0.0**: Initial release with EPUB 3.3 generation, cover pages, font embedding
+- **v1.4.0**: ISBN/ASIN identifiers, series metadata, BISAC codes, contributor roles, copyright page, landmarks
+- **v1.3.0**: Custom CSS, footnotes with backlinks, figure/table numbering, pull quotes, sidebars
+- **v1.2.0**: EPUB 3.3 compliance, NCX generation, EPUBCheck integration, cover pages, WCAG-AA metadata
+- **v1.1.0**: Internationalized note labels (eleven languages), locale-aware quotation marks
+- **v1.0.0**: Initial release with EPUB 3.3 generation, font embedding, navigation
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 ### Core Capabilities
 - **EPUB 3.3 Standard**: Full compliance with latest EPUB specification and Structural Semantics Vocabulary (SSV)
 - **DITA-OT 4.4 Integration**: Seamless plugin architecture
 - **XHTML5 Output**: Modern, semantic HTML content with proper `epub:type` annotations
-- **Accessibility Built-in**: WCAG 2.1 AA/AAA metadata and ARIA support
+- **Accessibility Built-in**: WCAG 2.1 AA/AAA metadata, skip-navigation links, alt text validation
 - **Navigation**: Automatic TOC, landmarks, and NCX generation
 
 ### Advanced Features
-- **Back-of-Book Index**: Automatic index generation from `<indexterm>` elements with alphabetical grouping, nested entries, cross-references (`See`/`See also`), and precise anchor links
-- **Consolidated Glossary**: Automatic glossary generation from `<glossentry>` topics with alphabetical grouping and `<dl epub:type="glossary">` semantic markup
+- **Back-of-Book Index**: Automatic index from `<indexterm>` elements with nested entries, cross-references, and anchor links
+- **Consolidated Glossary**: Automatic glossary from `<glossentry>` topics with alphabetical grouping
 - **Cover Page Generation**: Automatic HTML cover pages with customizable styles
-- **Font Embedding**: Embed custom fonts (TTF, OTF, WOFF, WOFF2)
-- **Image Support**: Automatic image copying and manifest generation
-- **EPUBCheck 5.3.0 Integration**: Built-in validation with zero errors on all test EPUBs
+- **Font Embedding & Obfuscation**: Embed custom fonts (TTF, OTF, WOFF, WOFF2) with IDPF obfuscation
+- **Image Optimization**: JPEG quality control, max-width resizing, recursive directory scanning
+- **Typography**: Drop caps, zebra-striped tables, figure/table numbering, locale-aware quotation marks
+- **EPUBCheck 5.3.0 Integration**: Built-in validation with zero errors
 - **Comprehensive Testing**: 41 tests across 6 test classes
 
 ### Developer Experience
@@ -76,11 +80,11 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [About](#-about) - Why Dita2epub? What's new?
-- [Key Features](#-key-features) - Core capabilities and advanced features
-- [Requirements](#-requirements) - System requirements
+- [About](#about) - Why Dita2epub? What's new?
+- [Key Features](#key-features) - Core capabilities and advanced features
+- [Requirements](#requirements) - System requirements
 - [Quick Start](#-quick-start) - Installation and first EPUB
 - [Usage](#-usage) - Examples and use cases
   - [Basic Transformation](#basic-transformation)
@@ -97,7 +101,7 @@
 
 ---
 
-## 📦 Requirements
+## Requirements
 
 | Component | Version | Notes |
 |-----------|---------|-------|
@@ -111,7 +115,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Installation
 
@@ -138,7 +142,7 @@ bin/dita install
 dita --plugins | grep epub
 
 # Expected output:
-# io.github.jyjeanne.dita2epub@1.1.0
+# io.github.jyjeanne.dita2epub@1.5.0
 ```
 
 ### 3. Generate Your First EPUB
@@ -147,7 +151,7 @@ dita --plugins | grep epub
 dita --input=mybook.ditamap --format=epub3 --output=output
 ```
 
-✅ **Done!** Your EPUB will be in `output/mybook.epub`
+**Done!** Your EPUB will be in `output/mybook.epub`
 
 ### Build Commands Reference
 
@@ -157,15 +161,11 @@ dita --input=mybook.ditamap --format=epub3 --output=output
 ./gradlew test                   # Unit tests only (no DITA-OT needed)
 
 # EPUB generation (downloads DITA-OT 4.4 on first run)
-./gradlew buildSampleEpub        # Build + validate sample EPUB (English)
-./gradlew buildCalibreGuide      # Build Calibre Guide EPUB (French)
-./gradlew buildIndexingGuide     # Build Indexing Guide EPUB (with back-of-book index)
-./gradlew buildAllEpubs          # Build all 3 test datasets
+./gradlew buildSampleEpub        # Build + validate sample EPUB
+./gradlew buildAllEpubs          # Build all test datasets
 
 # Validation
-./gradlew validateEpub           # EPUBCheck on sample
-./gradlew validateCalibreEpub    # EPUBCheck on Calibre guide
-./gradlew validateIndexingEpub   # EPUBCheck on Indexing guide
+./gradlew validateEpub           # EPUBCheck on sample EPUB
 ./gradlew validateAllEpubs       # EPUBCheck on all outputs
 
 # Full CI pipeline
@@ -174,7 +174,7 @@ dita --input=mybook.ditamap --format=epub3 --output=output
 
 ---
 
-## 💡 Usage
+## Usage
 
 ### Basic Transformation
 
@@ -335,7 +335,7 @@ dita --input=mybook.ditamap \
 
 ---
 
-## ⚙️ Configuration Parameters
+## Configuration Parameters
 
 ### Core Parameters
 
@@ -375,7 +375,7 @@ When set to `auto`, glossary generation triggers automatically when a `<glossary
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `epub.embed.fonts` | path | `(none)` | Directory containing fonts to embed |
-| `epub.obfuscate.fonts` | boolean | `no` | Enable Adobe/IDPF font obfuscation |
+| `epub.obfuscate.fonts` | boolean | `no` | Enable IDPF font obfuscation |
 
 ### Image Optimization Parameters
 
@@ -423,17 +423,17 @@ When set to `auto`, glossary generation triggers automatically when a `<glossary
 |-----------|------|---------|-------------|
 | `epub.validate` | boolean | `yes` | Run EPUBCheck validation (if available) |
 
-**📘 Complete Reference**: See [SPECIFICATION.md](docs/SPECIFICATION.md) for all parameters
+**Complete Reference**: See [SPECIFICATION.md](docs/SPECIFICATION.md) for all parameters
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 dita2epub/
 ├── src/
 │   ├── main/
-│   │   ├── java/               # Java utilities (packaging, validation)
+│   │   ├── java/               # Java utilities (packaging, font obfuscation, image optimization)
 │   │   ├── xsl/                # XSLT 3.0 transformation modules
 │   │   │   ├── map2epub3.xsl          # Main entry point
 │   │   │   ├── epub3-params.xsl       # Parameter definitions
@@ -451,9 +451,7 @@ dita2epub/
 │   └── test/
 │       ├── java/               # Test classes (41 tests)
 │       └── resources/
-│           ├── dita/           # English sample bookmap
-│           ├── dita-calibre/   # French Calibre Guide
-│           ├── dita-indexing/  # Indexing Guide (with back-of-book index)
+│           ├── dita/           # Complete English bookmap (18 topics, 10 glossary entries)
 │           └── epub/           # Reference EPUB for validation
 ├── plugin.xml                  # DITA-OT plugin descriptor
 ├── build-epub3.xml             # Ant build integration
@@ -473,14 +471,14 @@ dita2epub/
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Test Suite Overview
 
 - **41 test methods** across 6 test classes
 - **100% unit test pass rate**
-- **3 test datasets**: English sample, French Calibre Guide, Indexing Guide
-- **0 EPUBCheck errors** on all 3 generated EPUBs
+- **1 comprehensive test dataset**: Complete English bookmap with all EPUB features
+- **0 EPUBCheck errors** on generated EPUB
 
 ### Running Tests
 
@@ -495,6 +493,21 @@ dita2epub/
 open build/reports/tests/test/index.html
 ```
 
+### Test Dataset
+
+The sample dataset at `src/test/resources/dita/` is a complete bookmap exercising every plugin feature:
+
+| Element | Count | Description |
+|---------|-------|-------------|
+| Topics | 18 | Frontmatter, chapters, appendices, backmatter |
+| Glossary entries | 10 | Alphabetically grouped |
+| Index terms | 100+ | Two-level with cross-references |
+| Figures | 4 | SVG diagrams with alt text |
+| Tables | 6 | With zebra striping and captions |
+| Footnotes | 8 | With backlinks |
+| Note types | 6 | Default, tip, important, warning, caution, danger |
+| Bookmap features | All | Cover, title page, copyright, TOC, LOF, LOT, glossary, index |
+
 ### Test Coverage
 
 | Feature | Tests | Status |
@@ -506,13 +519,13 @@ open build/reports/tests/test/index.html
 | Validation | 8 | Complete (0 EPUBCheck errors) |
 | Integration | 4 | Complete |
 
-**📊 Detailed Report**: See [TEST_COVERAGE.md](docs/TEST_COVERAGE.md)
+**Detailed Report**: See [TEST_COVERAGE.md](docs/TEST_COVERAGE.md)
 
 ---
 
-## 📚 Documentation Hub
+## Documentation Hub
 
-### 🚀 Getting Started
+### Getting Started
 
 | Document | Description | For |
 |----------|-------------|-----|
@@ -521,21 +534,21 @@ open build/reports/tests/test/index.html
 | **[ANATOMY_EPUB_THREE.md](docs/ANATOMY_EPUB_THREE.md)** | EPUB 3 file structure and SSV reference | Developers |
 | **[PROJECT_STATUS.md](docs/PROJECT_STATUS.md)** | Current status, roadmap, and metrics | Project overview |
 
-### 📖 User Documentation
+### User Documentation
 
 | Document | Description | Details |
 |----------|-------------|---------|
 | **[Font Embedding Guide](src/main/resources/fonts/README.md)** | Font setup and configuration | 200+ lines with examples |
 | **[RELEASE_NOTES.md](docs/RELEASE_NOTES.md)** | Version history and changelog | v1.0.1 release details |
 
-### 🧪 Testing & Quality
+### Testing & Quality
 
 | Document | Description | Coverage |
 |----------|-------------|----------|
 | **[TEST_COVERAGE.md](docs/TEST_COVERAGE.md)** | Detailed test documentation | 41 tests across 6 classes |
 | **[TEST_SUMMARY.md](docs/TEST_SUMMARY.md)** | Executive test summary | 100% unit test pass rate |
 
-### 🔧 Development & CI/CD
+### Development & CI/CD
 
 | Document | Description | Content |
 |----------|-------------|---------|
@@ -543,25 +556,17 @@ open build/reports/tests/test/index.html
 | **[.github/README.md](.github/README.md)** | CI/CD documentation | Complete GitHub Actions guide |
 | **[.github/ACTIONS_SETUP.md](.github/ACTIONS_SETUP.md)** | CI/CD setup summary | Workflow descriptions |
 
-### 🔗 External Resources
+### External Resources
 
 - **[GitHub Repository](https://github.com/jyjeanne/dita2epub)** - Source code and releases
 - **[GitHub Issues](https://github.com/jyjeanne/dita2epub/issues)** - Bug reports and feature requests
 - **[GitHub Discussions](https://github.com/jyjeanne/dita2epub/discussions)** - Community discussions
-- **[GitHub Actions](https://github.com/jyjeanne/dita2epub/actions)** - CI/CD workflow runs
 - **[DITA-OT Documentation](https://www.dita-ot.org/)** - DITA Open Toolkit docs
 - **[EPUB 3.3 Specification](https://www.w3.org/publishing/epub3/)** - W3C EPUB standard
 
-### 📊 Quick Links
-
-- [Installation Guide](#1-installation)
-- [Configuration Parameters](#-configuration-parameters)
-- [Test Reports](#-testing)
-- [Project Structure](#-project-structure)
-
 ---
 
-## 🎯 Use Cases
+## Use Cases
 
 ### Technical Documentation
 ```bash
@@ -590,37 +595,34 @@ dita --input=training.ditamap \
 
 ---
 
-## 🔄 Current Status
+## Current Status
 
-### Completed Features (v1.4.0)
-- **All v1.3 features** plus book structure and retail distribution readiness:
-- ISBN/ASIN identifier support with ONIX codelist5 refinement
-- Series metadata (`belongs-to-collection`) with collection-type and group-position
-- Multiple contributor roles with MARC relator codes (10 roles)
-- BISAC/ONIX subject classifications for retailer cataloging
-- Expanded frontmatter/backmatter `epub:type` (dedication, colophon, copyright-page, errata, etc.)
-- Extended landmarks navigation (preface, dedication, appendix, colophon, copyright page)
+### Completed Features (v1.5.0)
+- **All v1.4 features** plus production-hardened transformation:
+- Font obfuscation (IDPF algorithm per OCF 3.3 Section 4.2)
+- Image optimization pipeline (JPEG quality, max width, recursive scanning)
+- Back-of-book index with nested entries and anchor links
+- Consolidated glossary with alphabetical grouping
+- List of Figures and List of Tables generation
 - Auto-generated copyright page from bookmap metadata
-- 0 EPUBCheck errors on all test EPUBs
+- Drop caps, zebra-striped tables, figure/table numbering
+- Internationalized note labels (eleven languages)
+- Skip-navigation links for accessibility
+- 0 EPUBCheck errors on generated EPUB
 
 ### Roadmap
-
-**v1.5 — Accessibility & Internationalization**
-- Full ARIA `doc-*` roles for accessibility compliance
-- RTL language support (Arabic, Hebrew)
-- Hyphenation per language, List of Figures/Tables generation
-- Language-specific typography (CJK, locale-aware quotes)
 
 **v2.0 — Theme System & Platform Variants**
 - Built-in themes (academic, fiction, technical, training)
 - Retailer-specific build profiles (KDP, Apple Books, Kobo)
 - Fixed Layout EPUB, DITA 2.0 support, MathML rendering
+- RTL language support (Arabic, Hebrew)
 
 See [SPECIFICATION.md](docs/SPECIFICATION.md#roadmap) for the detailed roadmap.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for:
 - Code of conduct
@@ -642,7 +644,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
 
@@ -658,7 +660,7 @@ You may obtain a copy of the License at
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 ### Built With
 - [DITA Open Toolkit 4.4](https://www.dita-ot.org/)
@@ -674,7 +676,7 @@ You may obtain a copy of the License at
 
 ---
 
-## 📞 Support & Contact
+## Support & Contact
 
 - **Issues**: [GitHub Issues](https://github.com/jyjeanne/dita2epub/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/jyjeanne/dita2epub/discussions)
@@ -682,23 +684,23 @@ You may obtain a copy of the License at
 
 ---
 
-## 🎖️ Project Status
+## Project Status
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue)
+![Version](https://img.shields.io/badge/version-1.5.0-blue)
 ![Build](https://img.shields.io/badge/build-passing-success)
 ![Coverage](https://img.shields.io/badge/coverage-70%25-green)
 ![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
 
-**Last Updated**: March 5, 2026
-**Version**: 1.4.0
-**Status**: ✅ Production Ready
+**Last Updated**: March 9, 2026
+**Version**: 1.5.0
+**Status**: Production Ready
 
 ---
 
 <div align="center">
 
-**[⬆ Back to Top](#dita2epub---modern-epub3-transformation-plugin)**
+**[Back to Top](#dita2epub---modern-epub3-transformation-plugin)**
 
-Made with ❤️ for the DITA community
+Made with care for the DITA community
 
 </div>

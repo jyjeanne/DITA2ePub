@@ -178,9 +178,18 @@
                   media-type="application/xhtml+xml"/>
           </xsl:if>
 
-          <!-- Add images referenced in topics - use relative path from content/ directory -->
-          <xsl:variable name="all-images" select="$map//*[contains(@class, ' topic/image ')]/@href"/>
-          <xsl:for-each select="distinct-values($all-images)">
+          <!-- Add images referenced in topics - load each topic document and scan for image elements -->
+          <xsl:variable name="all-image-hrefs" as="xs:string*">
+            <xsl:for-each select="$all-topicrefs[@href]">
+              <xsl:variable name="topic-doc" select="document(@href, .)"/>
+              <xsl:if test="$topic-doc">
+                <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/image ')]/@href">
+                  <xsl:sequence select="string(.)"/>
+                </xsl:for-each>
+              </xsl:if>
+            </xsl:for-each>
+          </xsl:variable>
+          <xsl:for-each select="distinct-values($all-image-hrefs)">
             <xsl:variable name="image-filename" select="tokenize(., '/')[last()]"/>
             <xsl:variable name="image-id" select="concat('image-', replace($image-filename, '[\.\s]', '-'))"/>
             <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', $image-filename))"/>

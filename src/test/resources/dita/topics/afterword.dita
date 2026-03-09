@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="afterword" xml:lang="en">
+  <title>Afterword</title>
+  <body>
+    <p>As we close this book, it is worth reflecting on the broader trajectory of digital publishing and where the tools we use today fit into that story.</p>
+
+    <p>The <indexterm>EPUB<indexterm>future</indexterm></indexterm>EPUB format has proven remarkably resilient. From its origins as a successor to the Open eBook Publication Structure, through the major revisions of EPUB 2 (2007) and EPUB 3 (2011), and into the W3C era with EPUB 3.3 (2023), the format has adapted to the changing needs of publishers and readers alike. It survived the rise and plateau of dedicated e-readers, the shift to smartphone and tablet reading, and the growing demand for accessible content. Few file formats can claim such longevity in such a fast-moving landscape.</p>
+
+    <p>Meanwhile, <indexterm>DITA<indexterm>future</indexterm></indexterm>DITA continues to evolve. The <indexterm>Lightweight DITA</indexterm>Lightweight DITA initiative promises to lower the barrier to entry for teams that find full DITA too complex, while the core specification remains the gold standard for enterprise content management. The DITA Open Toolkit's plugin architecture has enabled a vibrant ecosystem of transformations, of which dita2epub is just one example.</p>
+
+    <p>The plugin described in this book sits at the intersection of these two standards — transforming structured, reusable content into accessible, well-crafted digital books. As both DITA and EPUB continue to evolve, so will this tool. New EPUB features (such as the emerging EPUB Accessibility specification updates), new DITA capabilities (such as improved multimedia handling), and new reading system behaviors will all present opportunities to improve the output.</p>
+
+    <p>If you have read this far, you know that the book you are holding is also the test suite that validates the tool. Every footnote, every index entry, every figure caption, every note label in this publication was generated automatically from DITA source. If the output looks good, the plugin works. If it does not, there is a bug to fix — and bug reports are always welcome.</p>
+
+    <p>Thank you for reading. I hope this book has been both informative and useful, and I look forward to seeing what you build with it.</p>
+
+    <p>— <i>Jeremy Jeanne, March 2026</i></p>
+  </body>
+</topic>

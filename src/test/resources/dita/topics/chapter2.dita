@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-<topic id="chapter2">
-  <title>Chapter 2: Advanced Topics</title>
+<topic id="chapter2" xml:lang="en">
+  <title>Advanced Topics</title>
+  <shortdesc>Font embedding, accessibility, image optimization, and internationalization — the features that separate a functional EPUB from a professional one.</shortdesc>
   <body>
-    <p>This chapter explores advanced features and techniques.</p>
+    <p>The previous chapter covered the fundamentals: installation, basic transformation, and the structural mapping between DITA and EPUB. This chapter goes deeper into the features that matter for commercial-quality output.</p>
+
+    <p>A minimal EPUB — one with valid structure and correct content — is achievable with almost any transformation tool. What distinguishes a professional EPUB is the attention to detail: <indexterm>font embedding</indexterm>custom fonts that match your brand, <indexterm>image optimization</indexterm>optimized images that keep file sizes manageable, <indexterm>accessibility<indexterm>overview</indexterm></indexterm>accessibility metadata that makes the publication usable by everyone, and <indexterm>internationalization</indexterm>localization that respects the reader's language.</p>
+
+    <p>The dita2epub plugin provides all of these capabilities through a set of configuration parameters. This chapter explains each one, with examples and recommended settings for common scenarios.</p>
+
+    <note type="warning">The features described in this chapter require careful testing with multiple EPUB reading systems. Not all readers support all features equally — font embedding behavior, in particular, varies significantly across platforms. Always test with your target readers before publishing.</note>
   </body>
 </topic>

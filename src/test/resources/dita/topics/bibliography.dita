@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="bibliography" xml:lang="en">
+  <title>Bibliography</title>
+  <body>
+    <section>
+      <title>Standards and Specifications</title>
+      <ol>
+        <li><indexterm>EPUB 3.3<indexterm>specification</indexterm></indexterm><b>EPUB 3.3.</b> W3C Recommendation, 25 May 2023. <xref href="https://www.w3.org/TR/epub-33/" scope="external" format="html">https://www.w3.org/TR/epub-33/</xref></li>
+        <li><indexterm>EPUB Accessibility<indexterm>specification</indexterm></indexterm><b>EPUB Accessibility 1.1.</b> W3C Recommendation, 25 May 2023. <xref href="https://www.w3.org/TR/epub-a11y-11/" scope="external" format="html">https://www.w3.org/TR/epub-a11y-11/</xref></li>
+        <li><indexterm>DITA<indexterm>specification</indexterm></indexterm><b>Darwin Information Typing Architecture (DITA) Version 1.3.</b> OASIS Standard, 17 December 2015. <xref href="https://docs.oasis-open.org/dita/dita/v1.3/dita-v1.3-part0-overview.html" scope="external" format="html">https://docs.oasis-open.org/dita/dita/v1.3/</xref></li>
+        <li><b>Open Container Format (OCF) 3.3.</b> W3C Recommendation, 25 May 2023. <xref href="https://www.w3.org/TR/epub-33/#sec-ocf" scope="external" format="html">https://www.w3.org/TR/epub-33/#sec-ocf</xref></li>
+      </ol>
+    </section>
+
+    <section>
+      <title>Books and Articles</title>
+      <ol>
+        <li><b>Garrish, Matt.</b> <i>EPUB 3 Best Practices.</i> O'Reilly Media, 2013. ISBN 978-1-4493-2914-0.</li>
+        <li><b>Garrish, Matt and Markus Gylling.</b> <i>Accessible EPUB 3.</i> O'Reilly Media, 2012. ISBN 978-1-4493-2801-3.</li>
+        <li><indexterm>DITA-OT<indexterm>documentation</indexterm></indexterm><b>DITA Open Toolkit Project.</b> <i>DITA-OT Documentation.</i> <xref href="https://www.dita-ot.org/dev/" scope="external" format="html">https://www.dita-ot.org/dev/</xref></li>
+        <li><b>Kimber, Eliot.</b> <i>DITA for Practitioners Volume 1: Architecture and Technology.</i> XML Press, 2012. ISBN 978-1-937434-06-1.</li>
+      </ol>
+    </section>
+
+    <section>
+      <title>Tools and Software</title>
+      <ol>
+        <li><indexterm>EPUBCheck</indexterm><b>EPUBCheck.</b> W3C/DAISY Consortium. <xref href="https://www.w3.org/publishing/epubcheck/" scope="external" format="html">https://www.w3.org/publishing/epubcheck/</xref></li>
+        <li><b>DITA Open Toolkit.</b> <xref href="https://www.dita-ot.org/" scope="external" format="html">https://www.dita-ot.org/</xref></li>
+        <li><b>Calibre.</b> E-book management. <xref href="https://calibre-ebook.com/" scope="external" format="html">https://calibre-ebook.com/</xref></li>
+      </ol>
+    </section>
+  </body>
+</topic>

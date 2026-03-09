@@ -179,25 +179,9 @@
         </xsl:choose>
       </xsl:variable>
       <xsl:attribute name="epub:type" select="$epub-type"/>
-      <!-- DPUB-ARIA role derived from epub:type -->
-      <xsl:variable name="doc-role" select="
-        if ($epub-type = 'chapter') then 'doc-chapter'
-        else if ($epub-type = 'appendix') then 'doc-appendix'
-        else if ($epub-type = 'foreword') then 'doc-foreword'
-        else if ($epub-type = 'preface') then 'doc-preface'
-        else if ($epub-type = 'dedication') then 'doc-dedication'
-        else if ($epub-type = 'colophon') then 'doc-colophon'
-        else if ($epub-type = 'copyright-page') then 'doc-copyright'
-        else if ($epub-type = 'errata') then 'doc-errata'
-        else if ($epub-type = 'glossary') then 'doc-glossary'
-        else if ($epub-type = 'acknowledgments') then 'doc-acknowledgments'
-        else if ($epub-type = 'introduction') then 'doc-introduction'
-        else if ($epub-type = 'epilogue') then 'doc-epilogue'
-        else ''
-      "/>
-      <xsl:if test="$doc-role != ''">
-        <xsl:attribute name="role" select="$doc-role"/>
-      </xsl:if>
+      <!-- DPUB-ARIA roles are not valid on <article> per HTML-ARIA spec.
+           epub:type provides the semantic information for EPUB reading systems.
+           Only set role="doc-..." on elements where HTML-ARIA allows it. -->
       <xsl:choose>
         <xsl:when test="$topic">
           <!-- Process actual topic content -->
@@ -208,7 +192,7 @@
           <!-- Collect footnotes from this topic -->
           <xsl:variable name="footnotes" select="$topic//*[contains(@class, ' topic/fn ')]"/>
           <xsl:if test="count($footnotes) > 0">
-            <aside xmlns="http://www.w3.org/1999/xhtml" epub:type="footnotes" class="footnotes" role="doc-endnotes">
+            <aside xmlns="http://www.w3.org/1999/xhtml" epub:type="footnotes" class="footnotes">
               <hr class="fn-separator"/>
               <ol class="fn-list">
                 <xsl:for-each select="$footnotes">
@@ -787,14 +771,13 @@
       <xsl:apply-templates select="node()" mode="topic-content"/>
       <xsl:if test="@href or *[contains(@class, ' topic/longquoteref ')]">
         <footer class="quote-attribution">
-          <xsl:choose>
-            <xsl:when test="@href">
-              <cite><xsl:value-of select="@href"/></cite>
-            </xsl:when>
-            <xsl:when test="*[contains(@class, ' topic/longquoteref ')]/@href">
-              <cite><xsl:value-of select="*[contains(@class, ' topic/longquoteref ')]/@href"/></cite>
-            </xsl:when>
-          </xsl:choose>
+          <xsl:variable name="source-href" select="(@href, *[contains(@class, ' topic/longquoteref ')]/@href)[1]"/>
+          <xsl:variable name="source-label" select="if (@reftitle and string-length(@reftitle) > 0) then @reftitle else $source-href"/>
+          <cite>
+            <a href="{$source-href}" rel="noopener noreferrer">
+              <xsl:value-of select="$source-label"/>
+            </a>
+          </cite>
         </footer>
       </xsl:if>
     </blockquote>

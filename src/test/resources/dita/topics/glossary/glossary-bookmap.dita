@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-bookmap" xml:lang="en">
+  <glossterm>Bookmap</glossterm>
+  <glossdef>A specialized DITA map type designed for book-like publications. It provides elements for front matter, chapters, parts, and back matter, as well as metadata elements for ISBN, copyright, publisher, and series information.</glossdef>
+</glossentry>

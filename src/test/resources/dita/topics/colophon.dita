@@ -3,8 +3,16 @@
 <topic id="colophon" xml:lang="en">
   <title>Colophon</title>
   <body>
-    <p>This book was produced using DITA-OT 4.4 with the dita2epub plugin.</p>
-    <p>Body text is set in the default system serif font. Code samples use the default monospace font.</p>
-    <p>The EPUB was generated to comply with EPUB 3.3 specification and validated with EPUBCheck.</p>
+    <p>This book was produced entirely from <indexterm>DITA<indexterm>source format</indexterm></indexterm>DITA XML source files using the <indexterm>dita2epub plugin<indexterm>version</indexterm></indexterm>dita2epub plugin (version 1.5.0) for <indexterm>DITA-OT</indexterm>DITA Open Toolkit 4.4.</p>
+
+    <p>The transformation from DITA to <indexterm>EPUB 3.3</indexterm>EPUB 3.3 was performed by XSLT 3.0 stylesheets processing a bookmap with eighteen topics, ten glossary entries, and approximately one hundred index terms. Java utilities handled font obfuscation, image optimization, and EPUB packaging.</p>
+
+    <p>The cover was designed as a scalable vector graphic (SVG) for resolution independence. Body text is set in the reading system's default serif font. Code samples use the default monospace font. Headings use the system sans-serif stack.</p>
+
+    <p>The default stylesheet provides responsive typography with a 16px base size, 1.6 line-height, and CSS hyphenation. Color-coded admonitions, zebra-striped tables, numbered figures, and footnotes with backlinks are all handled automatically.</p>
+
+    <p>The EPUB was validated with <indexterm>EPUBCheck</indexterm>EPUBCheck and conforms to the EPUB 3.3 specification and WCAG 2.1 AA accessibility guidelines.</p>
+
+    <p>Source code and issue tracker: <xref href="https://github.com/jyjeanne/dita2epub" scope="external" format="html">github.com/jyjeanne/dita2epub</xref></p>
   </body>
 </topic>

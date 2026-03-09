@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-ncx" xml:lang="en">
+  <glossterm>NCX</glossterm>
+  <glossdef>Navigation Control file for XML — a navigation document format from EPUB 2, retained in EPUB 3 for backward compatibility. It provides a hierarchical table of contents for older reading systems that do not support the EPUB 3 Navigation Document.</glossdef>
+</glossentry>

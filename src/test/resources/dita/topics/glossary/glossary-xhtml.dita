@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
-<glossentry id="gl-xhtml">
+<glossentry id="gl-xhtml" xml:lang="en">
   <glossterm>XHTML</glossterm>
   <glossdef>Extensible HyperText Markup Language — the XML-based content document format used within EPUB publications.</glossdef>
   <glossBody>

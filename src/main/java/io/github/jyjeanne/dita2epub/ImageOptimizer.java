@@ -37,7 +37,7 @@ public class ImageOptimizer {
     }
 
     private static void printUsage() {
-        System.err.println("Usage: ImageOptimizer <imagesDir> [--jpeg-quality=0.8] [--max-width=0] [--strip-metadata] [--verbose]");
+        System.err.println("Usage: ImageOptimizer <imagesDir> [--jpeg-quality=0.8] [--max-width=0] [--verbose]");
     }
 
     private static void run(String[] args) throws Exception {

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-a11y" xml:lang="en">
+  <glossterm>Accessibility</glossterm>
+  <glossdef>The practice of designing content and technology so that people with disabilities can perceive, understand, navigate, and interact with it effectively. In EPUB, this includes support for screen readers, alternative text, semantic markup, and WCAG compliance.</glossdef>
+</glossentry>

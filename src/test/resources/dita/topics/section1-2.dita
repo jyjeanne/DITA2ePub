@@ -1,9 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-<topic id="section1-2">
-  <title>1.2 Basic Concepts</title>
+<topic id="section1-2" xml:lang="en">
+  <title>Core Concepts</title>
+  <shortdesc>Bookmaps, topic types, metadata mapping, and the transformation pipeline.</shortdesc>
   <body>
-    <p>Understanding the basic concepts of DITA to EPUB transformation.</p>
-    <p>Key concepts include topic types, map structures, and metadata handling.</p>
+    <section>
+      <title>The Bookmap</title>
+      <p>A <indexterm>bookmap<indexterm>structure</indexterm></indexterm>bookmap is a specialized DITA map designed for book-like publications. It provides structural elements that map directly to the sections of a printed or digital book:</p>
+      <dl>
+        <dlentry>
+          <dt><codeph>&lt;frontmatter&gt;</codeph></dt>
+          <dd>Contains the <indexterm>preface</indexterm>preface, <indexterm>foreword</indexterm>foreword, <indexterm>dedication</indexterm>dedication, acknowledgments, and other introductory material. Each topicref in the frontmatter can carry a <codeph>type</codeph> attribute (<codeph>preface</codeph>, <codeph>dedication</codeph>, etc.) that the plugin uses to assign the correct DPUB-ARIA role.</dd>
+        </dlentry>
+        <dlentry>
+          <dt><codeph>&lt;chapter&gt;</codeph></dt>
+          <dd>The main body content. Chapters can contain nested topicrefs for sections and sub-sections. The plugin generates a hierarchical table of contents from this structure.</dd>
+        </dlentry>
+        <dlentry>
+          <dt><codeph>&lt;backmatter&gt;</codeph></dt>
+          <dd>Contains <indexterm>appendix<indexterm>structure</indexterm></indexterm>appendices (via <codeph>&lt;appendices&gt;</codeph> and <codeph>&lt;appendix&gt;</codeph>), the colophon, and the <codeph>&lt;booklists&gt;</codeph> element, which triggers generation of the <indexterm>glossary<indexterm>generation</indexterm></indexterm>glossary, <indexterm>index<indexterm>generation</indexterm></indexterm>index, list of figures, and list of tables.</dd>
+        </dlentry>
+      </dl>
+    </section>
+
+    <section>
+      <title>Topic Types</title>
+      <p>The plugin supports all standard <indexterm>topic types</indexterm>DITA topic types. Each is rendered with the same XHTML template, but the topic's specialization is reflected in the <codeph>epub:type</codeph> and <codeph>role</codeph> attributes of the output:</p>
+      <ul>
+        <li><b>Topic</b> — the generic base type, suitable for any content.</li>
+        <li><b>Concept</b> — conceptual information, background, and overviews.</li>
+        <li><b>Task</b> — step-by-step procedures.</li>
+        <li><b>Reference</b> — lookup material such as API documentation, parameter tables, or command references.</li>
+        <li><b>Glossentry</b> — a term/definition pair. Glossentries referenced from a <codeph>&lt;glossarylist&gt;</codeph> are consolidated into a single alphabetized glossary page.</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Metadata Mapping</title>
+      <p>The plugin extracts <indexterm>metadata<indexterm>mapping</indexterm></indexterm>metadata from the bookmap's <codeph>&lt;bookmeta&gt;</codeph> element and maps it to EPUB's Dublin Core and OPF metadata properties:</p>
+      <table id="table-metadata-mapping">
+        <title>DITA to EPUB Metadata Mapping</title>
+        <tgroup cols="3">
+          <colspec colname="dita" colnum="1" align="left"/>
+          <colspec colname="epub" colnum="2" align="left"/>
+          <colspec colname="notes" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>DITA Source</entry>
+              <entry>EPUB Property</entry>
+              <entry>Notes</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>mainbooktitle</codeph></entry>
+              <entry><codeph>dc:title</codeph></entry>
+              <entry>Falls back to map <codeph>@title</codeph> or first topic title</entry>
+            </row>
+            <row>
+              <entry><codeph>author</codeph> / <codeph>personname</codeph></entry>
+              <entry><codeph>dc:creator</codeph></entry>
+              <entry>With MARC relator code <codeph>aut</codeph></entry>
+            </row>
+            <row>
+              <entry><codeph>isbn</codeph></entry>
+              <entry><codeph>dc:identifier</codeph></entry>
+              <entry><indexterm>ISBN</indexterm>Auto-detected as ISBN-13 or ISBN-10</entry>
+            </row>
+            <row>
+              <entry><codeph>bookrights</codeph></entry>
+              <entry><codeph>dc:rights</codeph></entry>
+              <entry>Copyright holder, year range</entry>
+            </row>
+            <row>
+              <entry><codeph>keyword</codeph></entry>
+              <entry><codeph>dc:subject</codeph></entry>
+              <entry>One entry per keyword</entry>
+            </row>
+            <row>
+              <entry><codeph>data[@name='series']</codeph></entry>
+              <entry><codeph>belongs-to-collection</codeph></entry>
+              <entry><indexterm>series metadata</indexterm>With group-position</entry>
+            </row>
+            <row>
+              <entry><codeph>data[@name='bisac']</codeph></entry>
+              <entry><codeph>dc:subject</codeph></entry>
+              <entry><indexterm>BISAC codes</indexterm>Industry classification codes</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>The Transformation Pipeline</title>
+      <p>The transformation proceeds in four phases:</p>
+      <ol>
+        <li><b>Pre-processing</b> — DITA-OT resolves conrefs, keyrefs, and conditional attributes, producing a resolved temporary directory.</li>
+        <li><b>XSLT transformation</b> — the plugin's XSLT 3.0 stylesheets process the resolved map and topics, generating OPF, navigation, and XHTML content documents.</li>
+        <li><b>Post-processing</b> — Java utilities handle font obfuscation, image optimization, and CSS copying.</li>
+        <li><b>Packaging and validation</b> — the output directory is packaged into a standards-compliant EPUB ZIP archive and optionally validated with EPUBCheck.</li>
+      </ol>
+      <note type="tip">You can inspect the intermediate output by adding <codeph>--clean-temp=no</codeph> to the command line. The resolved DITA files will remain in the temporary directory.</note>
+    </section>
   </body>
 </topic>
