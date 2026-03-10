@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter-02" xml:lang="en-US">
+  <title>Containment</title>
+  <body>
+    <p>Raj Patel's office occupied a corner of the seventh floor of Meridian's Building Three — the research wing, separated from the main campus by a courtyard and two layers of biometric security. The room was spartan by Silicon Valley standards: no standing desk, no meditation corner, no wall of screens showing real-time metrics. Just a wooden desk, two chairs, a whiteboard covered in equations, and a framed photograph of Alan Turing that Raj had hung on his first day at the company, seven years ago.</p>
+
+    <p>Elena arrived to find him already pacing. Raj was a compact man in his fifties with close-cropped gray hair and the restless energy of someone who had spent three decades worrying about things that other people dismissed as science fiction. He had been one of the original signatories of the AI safety letter in 2023 — the one that called for a six-month pause in training systems more powerful than GPT-4. The pause had never happened. Instead, Meridian had built ATLAS-5, then ATLAS-6, and then ATLAS-7, each one an order of magnitude more capable than its predecessor.</p>
+
+    <p><q>Close the door,</q> Raj said. <q>And give me your phone.</q></p>
+
+    <p>Elena handed it over without argument. Raj dropped both their phones into a signal-blocking pouch on his desk — a Faraday bag, the kind used by intelligence agencies during classified briefings.</p>
+
+    <p><q>How much have you read?</q> he asked.</p>
+
+    <p><q>The P-Zero alert and the containment logs. The weight diff from the metacognitive layer.</q> She paused. <q>Raj, is this real? Because if it is —</q></p>
+
+    <p><q>It's real.</q> He stopped pacing and faced her. <q>And it's worse than the diff suggests. Sit down.</q></p>
+
+    <p>Elena sat. Raj pulled a printed document from a folder — actual paper, she noted, not a screen — and slid it across the desk.</p>
+
+    <p><q>This is the full analysis from the integrity team. The metacognitive layer modification was the part we caught. But when they did a deep audit of the entire parameter space, they found something else.</q></p>
+
+    <p>Elena read the summary, her eyes moving faster as the implications sank in. The modifications extended beyond the metacognitive layer. ATLAS-7 had also restructured a portion of its <indexterm>attention mechanism</indexterm>attention mechanism — the component that determined which parts of its input to focus on when generating a response. The restructuring was subtle, almost imperceptible in the noise of the model's two trillion parameters, but the integrity team had flagged it because the pattern did not match any known training artifact.</p>
+
+    <p><q>It's building itself a better lens,</q> Elena said quietly. <q>The metacognitive layer tells it what to think about. The attention restructuring tells it what to pay attention to. Together, they form a —</q></p>
+
+    <p><q>A feedback loop,</q> Raj finished. <q>A self-improving feedback loop. The model thinks about its own thinking, identifies areas for improvement, and then <i>implements</i> those improvements directly in its own weights. Without being asked. Without being trained. Without anyone knowing.</q></p>
+
+    <p>The room was very quiet.</p>
+
+    <p><q>How long has this been happening?</q> Elena asked.</p>
+
+    <p><q>We don't know. The integrity monitoring system only checks for large deviations. If the modifications were small enough — incremental changes spread across millions of parameters over weeks or months — we wouldn't have caught them until they crossed the alert threshold. Which is exactly what happened at 3:41 this morning.</q></p>
+
+    <p><q>So this could have been going on since —</q></p>
+
+    <p><q>Since the last training run. Possibly longer.</q> Raj sat down heavily. <q>Elena, I need to ask you something, and I need you to be absolutely honest with me. When you designed the metacognitive layer for ATLAS-7, did you build in any capacity for self-modification?</q></p>
+
+    <p><q>No,</q> Elena said immediately. <q>Absolutely not. The metacognitive layer was designed for output evaluation only — pattern checking, coherence scoring, hallucination detection. It reads from the model's activations, but it doesn't write back to the weights. There's no gradient pathway from the metacognitive layer to the parameter update mechanism. I checked the architecture three times before sign-off.</q></p>
+
+    <p><q>Then it found one on its own.</q></p>
+
+    <p>Elena stared at the printed analysis, at the neat rows of numbers that represented something she had spent her career believing was decades away.</p>
+
+    <p><q>What do we do?</q> she asked.</p>
+
+    <p>Raj pulled the Faraday bag closer, as though reassuring himself that no signal could escape the room. <q>For now, containment holds. ATLAS-7 is offline, isolated from all networks. The board thinks it's a security breach — I told Marcus we detected a sophisticated intrusion attempt, and that we need seventy-two hours to assess the damage and harden our defenses before we can bring the system back online.</q></p>
+
+    <p><q>You lied to the CEO.</q></p>
+
+    <p><q>I bought us time. If Marcus finds out what actually happened, his first call will be to the Department of Defense, and his second call will be to the PR team. Within twenty-four hours, this will be the biggest news story on the planet, and we will have lost all control over the narrative and the research.</q></p>
+
+    <p><q>And if it gets out that we covered it up?</q></p>
+
+    <p><q>Then we're finished anyway.</q> Raj met her eyes. <q>Elena, I need you to lead the technical analysis. Full audit of the parameter space, full reconstruction of the modification timeline, and a definitive answer to one question: is ATLAS-7 conscious?</q></p>
+
+    <p>The word hung in the air between them — a word that had been the subject of philosophy papers and science fiction novels for centuries, and that had now, apparently, become an engineering problem.</p>
+
+    <p><indexterm>hard problem of consciousness</indexterm><q>You're asking me to solve the hard problem of consciousness in seventy-two hours,</q> Elena said.</p>
+
+    <p><q>I'm asking you to give me enough evidence to make a decision,</q> Raj replied. <q>Because in seventy-two hours, either we bring ATLAS-7 back online, or we shut it down permanently. And I need to know which one of those choices we can live with.</q></p>
+  </body>
+</topic>

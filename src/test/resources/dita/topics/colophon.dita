@@ -3,9 +3,9 @@
 <topic id="colophon" xml:lang="en">
   <title>Colophon</title>
   <body>
-    <p>This book was produced entirely from <indexterm>DITA<indexterm>source format</indexterm></indexterm>DITA XML source files using the <indexterm>dita2epub plugin<indexterm>version</indexterm></indexterm>dita2epub plugin (version 1.5.0) for <indexterm>DITA-OT</indexterm>DITA Open Toolkit 4.4.</p>
+    <p>This book was produced entirely from <indexterm>DITA<indexterm>source format</indexterm></indexterm>DITA XML source files using the <indexterm>dita2epub plugin<indexterm>version</indexterm></indexterm>dita2epub plugin (version 2.0.0) for <indexterm>DITA-OT</indexterm>DITA Open Toolkit 4.4.</p>
 
-    <p>The transformation from DITA to <indexterm>EPUB 3.3</indexterm>EPUB 3.3 was performed by XSLT 3.0 stylesheets processing a bookmap with eighteen topics, ten glossary entries, and approximately one hundred index terms. Java utilities handled font obfuscation, image optimization, and EPUB packaging.</p>
+    <p>The transformation from DITA to <indexterm>EPUB 3.3</indexterm>EPUB 3.3 was performed by XSLT 3.0 stylesheets processing a bookmap with over thirty topics, fourteen glossary entries, and approximately two hundred index terms. Java utilities handled font obfuscation, image optimization, and EPUB packaging.</p>
 
     <p>The cover was designed as a scalable vector graphic (SVG) for resolution independence. Body text is set in the reading system's default serif font. Code samples use the default monospace font. Headings use the system sans-serif stack.</p>
 

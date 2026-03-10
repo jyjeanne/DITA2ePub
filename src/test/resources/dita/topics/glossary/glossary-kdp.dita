@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-kdp" xml:lang="en">
+  <glossterm>KDP</glossterm>
+  <glossdef>Kindle Direct Publishing — Amazon's self-publishing platform for eBooks and paperbacks. KDP has specific EPUB requirements including mandatory NCX navigation, an OPF guide element, JPEG cover images (2560×1600px recommended), and ISBN-13 identifiers for paperback editions. The dita2epub plugin supports KDP-specific output via the <codeph>epub.platform=kdp</codeph> parameter.</glossdef>
+</glossentry>

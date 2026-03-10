@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="dedication" xml:lang="en-US">
+  <title>Dedication</title>
+  <body>
+    <p><i>For David, who taught me that the most dangerous code is the code that works too well.</i></p>
+    <p><i>And for Anika, who reminded me that the best stories are the ones we never meant to tell.</i></p>
+  </body>
+</topic>

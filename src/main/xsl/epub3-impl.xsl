@@ -193,7 +193,7 @@
                 media-type="application/xhtml+xml"/>
 
           <!-- Copyright page (if generated) -->
-          <xsl:if test="$epub.copyright.page = 'yes' or ($epub.copyright.page = 'auto' and $map//*[contains(@class, ' bookmap/bookrights ')])">
+          <xsl:if test="epub:is-true($epub.copyright.page) or ($epub.copyright.page = 'auto' and $map//*[contains(@class, ' bookmap/bookrights ')])">
             <item id="copyright"
                   href="copyright.xhtml"
                   media-type="application/xhtml+xml"/>
@@ -281,7 +281,7 @@
           <itemref idref="titlepage"/>
 
           <!-- Copyright page -->
-          <xsl:if test="$epub.copyright.page = 'yes' or ($epub.copyright.page = 'auto' and $map//*[contains(@class, ' bookmap/bookrights ')])">
+          <xsl:if test="epub:is-true($epub.copyright.page) or ($epub.copyright.page = 'auto' and $map//*[contains(@class, ' bookmap/bookrights ')])">
             <itemref idref="copyright"/>
           </xsl:if>
 
@@ -638,7 +638,7 @@
                   </li>
                 </xsl:if>
                 <!-- Copyright page landmark (when auto-generated) -->
-                <xsl:if test="$epub.copyright.page = 'yes' or ($epub.copyright.page = 'auto' and $map//*[contains(@class, ' bookmap/bookrights ')])">
+                <xsl:if test="epub:is-true($epub.copyright.page) or ($epub.copyright.page = 'auto' and $map//*[contains(@class, ' bookmap/bookrights ')])">
                   <li>
                     <a epub:type="copyright-page" href="copyright.xhtml">
                       <xsl:choose>
@@ -1118,7 +1118,7 @@
 
     <!-- Guard: only generate if epub.copyright.page is 'yes' or ('auto' and bookmap has copyright info) -->
     <xsl:variable name="should-generate" select="
-      $epub.copyright.page = 'yes' or
+      epub:is-true($epub.copyright.page) or
       ($epub.copyright.page = 'auto' and $map//*[contains(@class, ' bookmap/bookrights ')])
     "/>
 

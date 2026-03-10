@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section4-1" xml:lang="en">
+  <title>Book Metadata</title>
+  <body>
+    <section>
+      <title>Identifiers</title>
+      <p>Every EPUB requires a <indexterm>unique identifier</indexterm>unique identifier. The plugin resolves identifiers using the following precedence:</p>
+      <ol>
+        <li>The <codeph>epub.isbn</codeph> parameter (highest priority)</li>
+        <li>The <codeph>&lt;isbn&gt;</codeph> element inside <codeph>&lt;bookid&gt;</codeph> in the bookmap</li>
+        <li>An auto-generated RFC 4122 v4 UUID (fallback)</li>
+      </ol>
+
+      <p>The plugin automatically detects the identifier type and emits the appropriate ONIX codelist5 refinement:</p>
+      <table id="table-identifier-types">
+        <title>Identifier Type Detection</title>
+        <tgroup cols="3">
+          <colspec colname="pattern" colnum="1" align="left"/>
+          <colspec colname="type" colnum="2" align="left"/>
+          <colspec colname="code" colnum="3" align="center"/>
+          <thead>
+            <row>
+              <entry>Pattern</entry>
+              <entry>Type</entry>
+              <entry>ONIX Code</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>978-1-940521-07-3</codeph></entry>
+              <entry>ISBN-13</entry>
+              <entry>15</entry>
+            </row>
+            <row>
+              <entry><codeph>1-940521-07-X</codeph></entry>
+              <entry>ISBN-10</entry>
+              <entry>02</entry>
+            </row>
+            <row>
+              <entry><codeph>B0DEXAMPLE1</codeph></entry>
+              <entry>ASIN</entry>
+              <entry>01</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Titles and Series</title>
+      <p>The plugin extracts <indexterm>title metadata</indexterm>titles from the bookmap's <codeph>&lt;booktitle&gt;</codeph> element:</p>
+      <ul>
+        <li><codeph>&lt;mainbooktitle&gt;</codeph> becomes <codeph>dc:title</codeph> with <codeph>id="title"</codeph></li>
+        <li><codeph>&lt;booktitlealt&gt;</codeph> becomes a second <codeph>dc:title</codeph> refined as <codeph>title-type: subtitle</codeph></li>
+      </ul>
+
+      <p><indexterm>series metadata</indexterm>Series metadata is specified either via parameters or bookmap <codeph>&lt;data&gt;</codeph> elements:</p>
+      <codeblock outputclass="language-bash"># Via parameters
+-Depub.series.name="Meridian Systems"
+-Depub.series.position=1</codeblock>
+      <codeblock outputclass="language-xml">&lt;!-- Via bookmap --&gt;
+&lt;data name="series" value="Meridian Systems"/&gt;
+&lt;data name="series-position" value="1"/&gt;</codeblock>
+      <p>This generates the EPUB 3 <codeph>belongs-to-collection</codeph> metadata with <codeph>collection-type: series</codeph> and the appropriate <codeph>group-position</codeph>.</p>
+    </section>
+
+    <section>
+      <title>Creators and Contributors</title>
+      <p>Authors are extracted from the bookmap's <codeph>&lt;authorinformation&gt;</codeph> element. <indexterm>MARC relator codes</indexterm>Additional contributors are specified via <codeph>&lt;data&gt;</codeph> elements with role-based names:</p>
+      <codeblock outputclass="language-xml">&lt;data name="editor" value="James Hargrove"/&gt;
+&lt;data name="translator" value="Pierre Dupont"/&gt;</codeblock>
+
+      <p>The plugin maps roles to standard MARC relator codes:</p>
+      <ul>
+        <li><codeph>author</codeph> → <codeph>aut</codeph></li>
+        <li><codeph>editor</codeph> → <codeph>edt</codeph></li>
+        <li><codeph>translator</codeph> → <codeph>trl</codeph></li>
+        <li><codeph>illustrator</codeph> → <codeph>ill</codeph></li>
+        <li><codeph>narrator</codeph> → <codeph>nrt</codeph></li>
+        <li><codeph>photographer</codeph> → <codeph>pht</codeph></li>
+        <li><codeph>designer</codeph> → <codeph>bkd</codeph></li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Publisher, Date, and Rights</title>
+      <p>These fields support both parameter and bookmap sources:</p>
+      <table id="table-pub-metadata">
+        <title>Publishing Metadata Sources</title>
+        <tgroup cols="3">
+          <colspec colname="field" colnum="1" align="left"/>
+          <colspec colname="param" colnum="2" align="left"/>
+          <colspec colname="bookmap" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Field</entry>
+              <entry>Parameter</entry>
+              <entry>Bookmap Source</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Publisher</entry>
+              <entry><codeph>epub.publisher</codeph></entry>
+              <entry><codeph>&lt;organization&gt;</codeph> in <codeph>&lt;publisherinformation&gt;</codeph></entry>
+            </row>
+            <row>
+              <entry>Date</entry>
+              <entry><i>(none)</i></entry>
+              <entry><codeph>&lt;completed&gt;</codeph> with <codeph>&lt;year&gt;</codeph>, <codeph>&lt;month&gt;</codeph>, <codeph>&lt;day&gt;</codeph></entry>
+            </row>
+            <row>
+              <entry>Rights</entry>
+              <entry><codeph>epub.rights</codeph></entry>
+              <entry><codeph>&lt;bookrights&gt;</codeph> with <codeph>&lt;copyrfirst&gt;</codeph> and <codeph>&lt;bookowner&gt;</codeph></entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <p>If no publication date is found in the bookmap, the plugin falls back to the current date. Rights are formatted as <q>Copyright © YEAR HOLDER</q> when extracted from the bookmap.</p>
+    </section>
+  </body>
+</topic>

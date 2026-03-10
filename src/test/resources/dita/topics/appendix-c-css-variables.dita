@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="appendix-c-css-variables" xml:lang="en">
+  <title>CSS Variables Reference</title>
+  <shortdesc>Complete reference of CSS custom properties available for theme customization.</shortdesc>
+  <body>
+    <p>All <indexterm>CSS variables<indexterm>reference</indexterm></indexterm>CSS custom properties are defined on the <codeph>:root</codeph> selector and can be overridden in a custom stylesheet. Override only the variables you need — all others retain their theme defaults.</p>
+
+    <section>
+      <title>Typography Variables</title>
+      <table id="table-css-typography">
+        <title>Typography CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--font-body</codeph></entry>
+              <entry>-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif</entry>
+              <entry>Body text font stack</entry>
+            </row>
+            <row>
+              <entry><codeph>--font-heading</codeph></entry>
+              <entry>inherit</entry>
+              <entry>Heading font stack (inherits from body by default)</entry>
+            </row>
+            <row>
+              <entry><codeph>--font-mono</codeph></entry>
+              <entry>"Courier New", Courier, monospace</entry>
+              <entry>Code and preformatted text font</entry>
+            </row>
+            <row>
+              <entry><codeph>--font-size-base</codeph></entry>
+              <entry>16px</entry>
+              <entry>Base font size for body text</entry>
+            </row>
+            <row>
+              <entry><codeph>--line-height-base</codeph></entry>
+              <entry>1.6</entry>
+              <entry>Body text line height</entry>
+            </row>
+            <row>
+              <entry><codeph>--line-height-heading</codeph></entry>
+              <entry>1.3</entry>
+              <entry>Heading line height</entry>
+            </row>
+            <row>
+              <entry><codeph>--font-weight-heading</codeph></entry>
+              <entry>600</entry>
+              <entry>Heading font weight</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Color Variables</title>
+      <table id="table-css-colors">
+        <title>Color CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--color-text</codeph></entry>
+              <entry>#333</entry>
+              <entry>Primary text color</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-text-heading</codeph></entry>
+              <entry>#222</entry>
+              <entry>Heading text color</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-text-muted</codeph></entry>
+              <entry>#666</entry>
+              <entry>Secondary/muted text color</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-background</codeph></entry>
+              <entry>#fff</entry>
+              <entry>Page background color</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-link</codeph></entry>
+              <entry>#0066cc</entry>
+              <entry>Hyperlink color</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-border</codeph></entry>
+              <entry>#ddd</entry>
+              <entry>Default border color</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-border-heavy</codeph></entry>
+              <entry>#bbb</entry>
+              <entry>Heavy border color (table frames, separators)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Code Block Variables</title>
+      <table id="table-css-code">
+        <title>Code Block CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--color-background-code</codeph></entry>
+              <entry>#f5f5f5</entry>
+              <entry>Code block background</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-text-code</codeph></entry>
+              <entry>#333</entry>
+              <entry>Code block text color</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-syntax-keyword</codeph></entry>
+              <entry>#0033b3</entry>
+              <entry>Syntax highlighting: keywords</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-syntax-string</codeph></entry>
+              <entry>#067d17</entry>
+              <entry>Syntax highlighting: strings</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-syntax-comment</codeph></entry>
+              <entry>#8c8c8c</entry>
+              <entry>Syntax highlighting: comments</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-syntax-number</codeph></entry>
+              <entry>#1750eb</entry>
+              <entry>Syntax highlighting: numbers</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Table Variables</title>
+      <table id="table-css-tables">
+        <title>Table CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--color-zebra-even</codeph></entry>
+              <entry>#f8f8f8</entry>
+              <entry>Even row background (zebra striping)</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-zebra-odd</codeph></entry>
+              <entry>#fff</entry>
+              <entry>Odd row background (zebra striping)</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-background-th</codeph></entry>
+              <entry>#f5f5f5</entry>
+              <entry>Table header row background</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Note and Admonition Variables</title>
+      <table id="table-css-notes">
+        <title>Note CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--color-note-bg</codeph></entry>
+              <entry>#f9f9f9</entry>
+              <entry>Default note background</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-note</codeph></entry>
+              <entry>#0066cc</entry>
+              <entry>Default note accent color</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-warning-bg</codeph></entry>
+              <entry>#fff3e0</entry>
+              <entry>Warning note background</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-tip-bg</codeph></entry>
+              <entry>#e8f5e9</entry>
+              <entry>Tip note background</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-caution-bg</codeph></entry>
+              <entry>#fffde7</entry>
+              <entry>Caution note background</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-danger-bg</codeph></entry>
+              <entry>#fce4ec</entry>
+              <entry>Danger note background</entry>
+            </row>
+            <row>
+              <entry><codeph>--color-important-bg</codeph></entry>
+              <entry>#ffebee</entry>
+              <entry>Important note background</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Drop Cap Variables</title>
+      <table id="table-css-dropcap">
+        <title>Drop Cap CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--drop-cap-size</codeph></entry>
+              <entry>3.2em</entry>
+              <entry>Size of the drop cap letter</entry>
+            </row>
+            <row>
+              <entry><codeph>--drop-cap-line-height</codeph></entry>
+              <entry>0.8</entry>
+              <entry>Drop cap line height</entry>
+            </row>
+            <row>
+              <entry><codeph>--drop-cap-color</codeph></entry>
+              <entry>#222</entry>
+              <entry>Drop cap letter color</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Blockquote Variables</title>
+      <table id="table-css-blockquote">
+        <title>Blockquote CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--blockquote-border-color</codeph></entry>
+              <entry>#0066cc</entry>
+              <entry>Blockquote left border accent</entry>
+            </row>
+            <row>
+              <entry><codeph>--blockquote-font-size</codeph></entry>
+              <entry>1.1em</entry>
+              <entry>Blockquote text size</entry>
+            </row>
+            <row>
+              <entry><codeph>--blockquote-text-color</codeph></entry>
+              <entry>#444</entry>
+              <entry>Blockquote text color</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Generated Page Variables</title>
+      <table id="table-css-generated-pages">
+        <title>Generated Page CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--cover-background</codeph></entry>
+              <entry>#fff</entry>
+              <entry>Cover page background color</entry>
+            </row>
+            <row>
+              <entry><codeph>--titlepage-font-size-title</codeph></entry>
+              <entry>2em</entry>
+              <entry>Title page: main title size</entry>
+            </row>
+            <row>
+              <entry><codeph>--titlepage-font-size-subtitle</codeph></entry>
+              <entry>1.2em</entry>
+              <entry>Title page: subtitle size</entry>
+            </row>
+            <row>
+              <entry><codeph>--titlepage-font-size-author</codeph></entry>
+              <entry>1.1em</entry>
+              <entry>Title page: author name size</entry>
+            </row>
+            <row>
+              <entry><codeph>--titlepage-font-size-meta</codeph></entry>
+              <entry>0.9em</entry>
+              <entry>Title page: metadata text size (publisher, edition)</entry>
+            </row>
+            <row>
+              <entry><codeph>--titlepage-padding</codeph></entry>
+              <entry>2em</entry>
+              <entry>Title page padding</entry>
+            </row>
+            <row>
+              <entry><codeph>--copyright-font-size</codeph></entry>
+              <entry>0.85em</entry>
+              <entry>Copyright page body text size</entry>
+            </row>
+            <row>
+              <entry><codeph>--copyright-font-size-title</codeph></entry>
+              <entry>1.4em</entry>
+              <entry>Copyright page title size</entry>
+            </row>
+            <row>
+              <entry><codeph>--copyright-padding</codeph></entry>
+              <entry>2em</entry>
+              <entry>Copyright page padding</entry>
+            </row>
+            <row>
+              <entry><codeph>--footnote-font-size</codeph></entry>
+              <entry>0.85em</entry>
+              <entry>Footnote text size</entry>
+            </row>
+            <row>
+              <entry><codeph>--footnote-separator-color</codeph></entry>
+              <entry>#ccc</entry>
+              <entry>Footnote separator line color</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Spacing Variables</title>
+      <table id="table-css-spacing">
+        <title>Spacing CSS Variables</title>
+        <tgroup cols="3">
+          <colspec colname="var" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="left"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Variable</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>--spacing-body</codeph></entry>
+              <entry>1em</entry>
+              <entry>Body margin</entry>
+            </row>
+            <row>
+              <entry><codeph>--spacing-paragraph</codeph></entry>
+              <entry>0.75em</entry>
+              <entry>Paragraph bottom margin</entry>
+            </row>
+            <row>
+              <entry><codeph>--spacing-heading-top</codeph></entry>
+              <entry>1.5em</entry>
+              <entry>Heading top margin</entry>
+            </row>
+            <row>
+              <entry><codeph>--spacing-heading-bottom</codeph></entry>
+              <entry>0.5em</entry>
+              <entry>Heading bottom margin</entry>
+            </row>
+            <row>
+              <entry><codeph>--spacing-section</codeph></entry>
+              <entry>2em</entry>
+              <entry>Section separator spacing</entry>
+            </row>
+            <row>
+              <entry><codeph>--spacing-list-indent</codeph></entry>
+              <entry>2em</entry>
+              <entry>List indentation</entry>
+            </row>
+            <row>
+              <entry><codeph>--spacing-figure</codeph></entry>
+              <entry>1.5em</entry>
+              <entry>Figure top and bottom margin</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+  </body>
+</topic>

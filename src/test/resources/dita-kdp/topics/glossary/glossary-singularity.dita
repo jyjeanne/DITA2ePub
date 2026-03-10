@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="glossary-singularity" xml:lang="en-US">
+  <glossterm>Technological Singularity</glossterm>
+  <glossdef>A hypothetical future point at which technological growth becomes uncontrollable and irreversible, typically associated with the creation of superintelligent AI that can recursively improve itself. The concept was popularized by mathematician Vernor Vinge and futurist Ray Kurzweil. ATLAS-7's self-modification loop represents what some researchers consider a precursor to such an event.</glossdef>
+</glossentry>

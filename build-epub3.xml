@@ -50,6 +50,9 @@
     <property name="epub.isbn" value=""/>
     <property name="epub.series.name" value=""/>
     <property name="epub.series.position" value=""/>
+    <property name="epub.publisher" value=""/>
+    <property name="epub.rights" value=""/>
+    <property name="epub.language" value="en"/>
     <property name="epub.bisac.codes" value=""/>
     <property name="epub.copyright.page" value="auto"/>
     <property name="epub.generate.lof" value="no"/>
@@ -66,6 +69,27 @@
     <property name="epub.fxl.height" value="768"/>
     <property name="epub.fxl.orientation" value="auto"/>
     <property name="epub.fxl.spread" value="auto"/>
+
+    <!-- Normalize enum-style properties to lowercase for case-insensitive matching.
+         XSLT uses lower-case(normalize-space()) but Ant property values are used
+         directly in filenames (e.g. epub-theme-${epub.theme.norm}.css), so they
+         must be pre-normalized to avoid case-sensitive filesystem mismatches. -->
+    <condition property="epub.theme.norm" value="academic">
+      <matches pattern="(?i)^academic$" string="${epub.theme}"/>
+    </condition>
+    <condition property="epub.theme.norm" value="fiction">
+      <matches pattern="(?i)^fiction$" string="${epub.theme}"/>
+    </condition>
+    <condition property="epub.theme.norm" value="technical">
+      <matches pattern="(?i)^technical$" string="${epub.theme}"/>
+    </condition>
+    <condition property="epub.theme.norm" value="training">
+      <matches pattern="(?i)^training$" string="${epub.theme}"/>
+    </condition>
+    <condition property="epub.theme.norm" value="default">
+      <matches pattern="(?i)^default$" string="${epub.theme}"/>
+    </condition>
+    <property name="epub.theme.norm" value="${epub.theme}"/>
 
     <!-- Create output directories -->
     <mkdir dir="${output.dir}/${epub.topics.dir}"/>
@@ -206,6 +230,9 @@
       <param name="epub.code.line.numbers" expression="${epub.code.line.numbers}"/>
       <param name="epub.code.syntax.classes" expression="${epub.code.syntax.classes}"/>
       <param name="epub.drop.caps" expression="${epub.drop.caps}"/>
+      <param name="epub.publisher" expression="${epub.publisher}"/>
+      <param name="epub.rights" expression="${epub.rights}"/>
+      <param name="epub.language" expression="${epub.language}"/>
       <param name="epub.isbn" expression="${epub.isbn}"/>
       <param name="epub.series.name" expression="${epub.series.name}"/>
       <param name="epub.series.position" expression="${epub.series.position}"/>
@@ -258,9 +285,9 @@
   <target name="epub3.copy.theme.css.check">
     <condition property="has.theme.css">
       <and>
-        <isset property="epub.theme"/>
-        <not><equals arg1="${epub.theme}" arg2="default"/></not>
-        <length string="${epub.theme}" when="greater" length="0"/>
+        <isset property="epub.theme.norm"/>
+        <not><equals arg1="${epub.theme.norm}" arg2="default"/></not>
+        <length string="${epub.theme.norm}" when="greater" length="0"/>
       </and>
     </condition>
   </target>
@@ -269,16 +296,16 @@
   <target name="epub3.copy.theme.css"
           depends="epub3.copy.theme.css.check"
           if="has.theme.css">
-    <copy file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/src/main/resources/css/epub-theme-${epub.theme}.css"
+    <copy file="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/src/main/resources/css/epub-theme-${epub.theme.norm}.css"
           todir="${output.dir}/${epub.css.dir}"
           failonerror="true"/>
-    <echo message="Theme CSS copied: epub-theme-${epub.theme}.css"/>
+    <echo message="Theme CSS copied: epub-theme-${epub.theme.norm}.css"/>
   </target>
 
   <!-- Resolve platform CSS availability -->
   <target name="epub3.copy.platform.css.check">
     <condition property="has.platform.css">
-      <equals arg1="${epub.platform}" arg2="kdp"/>
+      <equals arg1="${epub.platform}" arg2="kdp" casesensitive="false"/>
     </condition>
   </target>
 
@@ -434,7 +461,7 @@
 
     <condition property="should.optimize.images">
       <and>
-        <equals arg1="${epub.optimize.images}" arg2="yes"/>
+        <equals arg1="${epub.optimize.images}" arg2="yes" casesensitive="false"/>
         <available file="${output.dir}/${epub.images.dir}" type="dir"/>
       </and>
     </condition>
@@ -465,7 +492,7 @@
 
     <condition property="should.obfuscate.fonts">
       <and>
-        <equals arg1="${epub.obfuscate.fonts}" arg2="yes"/>
+        <equals arg1="${epub.obfuscate.fonts}" arg2="yes" casesensitive="false"/>
         <available file="${output.dir}/${epub.fonts.dir}" type="dir"/>
         <available file="${output.dir}/.epub-identifier" type="file"/>
       </and>

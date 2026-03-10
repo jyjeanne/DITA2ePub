@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter8" xml:lang="en">
+  <title>Fixed Layout EPUB</title>
+  <shortdesc>Creating pre-paginated EPUBs with fixed dimensions for comics, children's books, and highly designed content.</shortdesc>
+  <body>
+    <p>While most EPUBs use the <indexterm>reflowable layout</indexterm>reflowable layout model — where content adapts to the reader's screen size and font preferences — some publications require precise visual control. <indexterm>fixed layout<indexterm>FXL</indexterm></indexterm>Fixed layout (FXL) EPUB provides a pre-paginated format where each page has exact pixel dimensions, similar to a PDF.</p>
+
+    <section>
+      <title>When to Use Fixed Layout</title>
+      <p>Fixed layout is appropriate for:</p>
+      <ul>
+        <li><b>Comics and graphic novels</b> — where panel layout is integral to the reading experience</li>
+        <li><b>Children's picture books</b> — where text and illustrations have precise spatial relationships</li>
+        <li><b>Highly designed content</b> — cookbooks, art books, magazines where layout <i>is</i> the content</li>
+        <li><b>Technical diagrams</b> — where spatial accuracy matters more than reflowability</li>
+      </ul>
+      <note type="caution">Fixed layout EPUBs do not reflow, so they cannot adapt to different screen sizes, user font preferences, or accessibility zoom settings. This significantly limits their accessibility. Use reflowable layout unless you have a compelling reason not to.</note>
+    </section>
+
+    <section>
+      <title>FXL Parameters</title>
+      <p>Enable fixed layout by setting <codeph>epub.layout=fixed</codeph>:</p>
+      <codeblock outputclass="language-bash">dita --input=bookmap.ditamap --format=epub3 \
+  -Depub.layout=fixed \
+  -Depub.fxl.width=1024 \
+  -Depub.fxl.height=768 \
+  -Depub.fxl.orientation=landscape \
+  -Depub.fxl.spread=both</codeblock>
+
+      <table id="table-fxl-params">
+        <title>Fixed Layout Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><codeph>epub.layout</codeph></entry>
+              <entry>reflowable</entry>
+              <entry>Layout type: <codeph>reflowable</codeph> or <codeph>fixed</codeph></entry>
+            </row>
+            <row>
+              <entry><codeph>epub.fxl.width</codeph></entry>
+              <entry>1024</entry>
+              <entry>Viewport width in pixels</entry>
+            </row>
+            <row>
+              <entry><codeph>epub.fxl.height</codeph></entry>
+              <entry>768</entry>
+              <entry>Viewport height in pixels</entry>
+            </row>
+            <row>
+              <entry><codeph>epub.fxl.orientation</codeph></entry>
+              <entry>auto</entry>
+              <entry>Orientation lock: <codeph>auto</codeph>, <codeph>portrait</codeph>, <codeph>landscape</codeph></entry>
+            </row>
+            <row>
+              <entry><codeph>epub.fxl.spread</codeph></entry>
+              <entry>auto</entry>
+              <entry>Spread mode: <codeph>auto</codeph>, <codeph>both</codeph>, <codeph>landscape</codeph>, <codeph>none</codeph></entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>FXL Output Differences</title>
+      <p>When fixed layout is enabled, the plugin:</p>
+      <ul>
+        <li>Sets <codeph>rendition:layout</codeph> to <codeph>pre-paginated</codeph> in the OPF metadata</li>
+        <li>Adds <codeph>rendition:orientation</codeph> and <codeph>rendition:spread</codeph> metadata</li>
+        <li>Injects a viewport <codeph>&lt;meta&gt;</codeph> tag in every XHTML file: <codeph>&lt;meta name="viewport" content="width=1024, height=768"/&gt;</codeph></li>
+        <li>Includes <codeph>epub-fxl.css</codeph> with layout-constraining styles</li>
+      </ul>
+    </section>
+  </body>
+</topic>

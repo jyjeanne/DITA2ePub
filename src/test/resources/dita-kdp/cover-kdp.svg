@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  KDP Cover Placeholder - 1600x2560px (Amazon KDP recommended dimensions)
+
+  IMPORTANT: Amazon KDP does NOT support SVG covers for marketing images.
+  For actual KDP submission, convert this to JPEG (preferred):
+    - Recommended: 2560px height x 1600px width (this SVG matches)
+    - Minimum shortest side: 500px
+    - Minimum DPI: 300
+    - Maximum file size: 5 MB
+    - Color space: RGB only (sRGB) — CMYK is not supported
+    - Aspect ratio: proportional within ±15%, center-aligned
+    - Light backgrounds require a 3-4 pixel medium gray border
+
+  Content rules:
+    - Must include title and author name
+    - Must not include spine, barcode, back cover, or inside flap
+    - Must not include pricing or promotional offers
+    - Text must be clear, legible, and not blurred or cut off
+
+  This SVG serves as a development/test placeholder only.
+  The plugin's KDP platform warnings will flag this as needing conversion.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2560" width="1600" height="2560">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="40%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e94560"/>
+      <stop offset="100%" style="stop-color:#ff6b6b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="2560" fill="url(#bg)"/>
+
+  <!-- Decorative circuit-board pattern (subtle) -->
+  <g stroke="#ffffff" stroke-opacity="0.05" stroke-width="1" fill="none">
+    <line x1="200" y1="0" x2="200" y2="2560"/>
+    <line x1="400" y1="0" x2="400" y2="2560"/>
+    <line x1="600" y1="0" x2="600" y2="2560"/>
+    <line x1="800" y1="0" x2="800" y2="2560"/>
+    <line x1="1000" y1="0" x2="1000" y2="2560"/>
+    <line x1="1200" y1="0" x2="1200" y2="2560"/>
+    <line x1="1400" y1="0" x2="1400" y2="2560"/>
+    <line x1="0" y1="320" x2="1600" y2="320"/>
+    <line x1="0" y1="640" x2="1600" y2="640"/>
+    <line x1="0" y1="960" x2="1600" y2="960"/>
+    <line x1="0" y1="1280" x2="1600" y2="1280"/>
+    <line x1="0" y1="1600" x2="1600" y2="1600"/>
+    <line x1="0" y1="1920" x2="1600" y2="1920"/>
+    <line x1="0" y1="2240" x2="1600" y2="2240"/>
+    <circle cx="400" cy="640" r="8"/>
+    <circle cx="800" cy="960" r="8"/>
+    <circle cx="1200" cy="640" r="8"/>
+    <circle cx="600" cy="1280" r="8"/>
+    <circle cx="1000" cy="1600" r="8"/>
+  </g>
+
+  <!-- Glowing orb (AI/algorithm motif) -->
+  <circle cx="800" cy="900" r="180" fill="#e94560" fill-opacity="0.15"/>
+  <circle cx="800" cy="900" r="120" fill="#e94560" fill-opacity="0.2"/>
+  <circle cx="800" cy="900" r="60" fill="#e94560" fill-opacity="0.4"/>
+  <circle cx="800" cy="900" r="20" fill="#ffffff" fill-opacity="0.8"/>
+
+  <!-- Accent line -->
+  <rect x="300" y="1150" width="1000" height="4" fill="url(#accent)" rx="2"/>
+
+  <!-- "A Novel" label -->
+  <text x="800" y="550" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="40" font-style="italic"
+        fill="#e94560" letter-spacing="8">A NOVEL</text>
+
+  <!-- Title -->
+  <text x="800" y="1300" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="120" font-weight="bold"
+        fill="#ffffff" letter-spacing="4">THE LAST</text>
+  <text x="800" y="1450" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="120" font-weight="bold"
+        fill="#ffffff" letter-spacing="4">ALGORITHM</text>
+
+  <!-- Subtitle -->
+  <text x="800" y="1560" text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="36" font-style="italic"
+        fill="#cccccc" letter-spacing="2">A Meridian Systems Novel</text>
+
+  <!-- Accent line below subtitle -->
+  <rect x="500" y="1610" width="600" height="2" fill="url(#accent)" rx="1"/>
+
+  <!-- Author name -->
+  <text x="800" y="2200" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="72"
+        fill="#ffffff" letter-spacing="6">SARAH MITCHELL</text>
+
+  <!-- Bestseller badge -->
+  <text x="800" y="2350" text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="28" font-weight="bold"
+        fill="#e94560" letter-spacing="4">NEW YORK TIMES BESTSELLING AUTHOR</text>
+</svg>

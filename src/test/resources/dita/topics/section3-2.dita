@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section3-2" xml:lang="en">
+  <title>Custom CSS and Variables</title>
+  <body>
+    <p>For styling beyond what themes provide, the <indexterm>custom CSS</indexterm><codeph>epub.custom.css</codeph> parameter lets you append your own stylesheet. It is loaded last in the cascade, so it overrides all other styles:</p>
+
+    <codeblock outputclass="language-bash">dita --input=bookmap.ditamap --format=epub3 \
+  -Depub.theme=technical \
+  -Depub.custom.css=/path/to/my-styles.css</codeblock>
+
+    <section>
+      <title>CSS Custom Properties</title>
+      <p>All themes define their visual characteristics through <indexterm>CSS variables</indexterm>CSS custom properties on the <codeph>:root</codeph> selector. This means you can change colors, fonts, and spacing by overriding just the variables you care about, without rewriting entire rule sets.</p>
+
+      <p>For example, to change the accent color and body font across the entire EPUB:</p>
+      <codeblock outputclass="language-css">:root {
+  --color-accent: #2563eb;
+  --color-link: #1d4ed8;
+  --font-body: "Literata", Georgia, serif;
+  --font-heading: "Inter", system-ui, sans-serif;
+  --line-height-body: 1.7;
+}</codeblock>
+
+      <p>Key variable categories include:</p>
+      <ul>
+        <li><b>Typography</b> — <codeph>--font-body</codeph>, <codeph>--font-heading</codeph>, <codeph>--font-mono</codeph>, <codeph>--font-size-base</codeph>, <codeph>--line-height-body</codeph></li>
+        <li><b>Colors</b> — <codeph>--color-text</codeph>, <codeph>--color-bg</codeph>, <codeph>--color-accent</codeph>, <codeph>--color-link</codeph>, <codeph>--color-border</codeph></li>
+        <li><b>Spacing</b> — <codeph>--spacing-section</codeph>, <codeph>--spacing-paragraph</codeph>, <codeph>--margin-body</codeph></li>
+        <li><b>Code blocks</b> — <codeph>--color-code-bg</codeph>, <codeph>--color-code-text</codeph>, <codeph>--color-code-border</codeph></li>
+        <li><b>Tables</b> — <codeph>--color-zebra-even</codeph>, <codeph>--color-zebra-odd</codeph>, <codeph>--color-table-border</codeph></li>
+        <li><b>Notes</b> — <codeph>--color-note-bg</codeph>, <codeph>--color-warning-bg</codeph>, <codeph>--color-tip-bg</codeph>, <codeph>--color-danger-bg</codeph></li>
+        <li><b>Drop caps</b> — <codeph>--drop-cap-size</codeph>, <codeph>--drop-cap-lines</codeph></li>
+      </ul>
+
+      <note type="tip">See <b>Appendix C: CSS Variables Reference</b> for a complete list of all available variables and their default values.</note>
+    </section>
+
+    <section>
+      <title>Sidebars and Pull Quotes</title>
+      <p><indexterm>sidebar<indexterm>outputclass</indexterm></indexterm>Sections with <codeph>outputclass="sidebar"</codeph> are transformed into styled <codeph>&lt;aside&gt;</codeph> elements with a distinct background. This is useful for supplementary content, pull quotes, and "Did You Know?" boxes:</p>
+      <codeblock outputclass="language-xml">&lt;section outputclass="sidebar"&gt;
+  &lt;title&gt;Did You Know?&lt;/title&gt;
+  &lt;p&gt;EPUB 3.3 became a W3C Recommendation in May 2023.&lt;/p&gt;
+&lt;/section&gt;</codeblock>
+      <p>The sidebar background color is controlled by the <codeph>--color-background-sidebar</codeph> CSS variable (default: <codeph>#f5f5f5</codeph>).</p>
+    </section>
+
+    <section>
+      <title>Platform-Specific Considerations</title>
+      <p>Different reading systems have varying levels of CSS support. The <codeph>epub-platform-{name}.css</codeph> stylesheets address known rendering quirks:</p>
+      <ul>
+        <li><b>KDP (Kindle)</b> — Adjusts image maximum widths, reduces margins for smaller Kindle screens, and works around Kindle's limited CSS variable support</li>
+        <li><b>Apple Books</b> — Enables <codeph>-webkit</codeph> prefixed properties for optimal rendering on iOS and macOS</li>
+        <li><b>Generic</b> — No platform-specific overrides; uses only standard EPUB 3.3 CSS</li>
+      </ul>
+    </section>
+  </body>
+</topic>

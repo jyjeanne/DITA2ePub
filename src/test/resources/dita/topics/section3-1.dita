@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section3-1" xml:lang="en">
+  <title>Built-in Themes</title>
+  <body>
+    <p>The plugin ships with five <indexterm>themes<indexterm>built-in</indexterm></indexterm>built-in themes, each designed for a specific publishing context. Set the theme with the <codeph>epub.theme</codeph> parameter:</p>
+
+    <codeblock outputclass="language-bash">dita --input=bookmap.ditamap --format=epub3 -Depub.theme=fiction</codeblock>
+
+    <table id="table-themes">
+      <title>Available CSS Themes</title>
+      <tgroup cols="3">
+        <colspec colname="theme" colnum="1" align="left"/>
+        <colspec colname="usecase" colnum="2" align="left"/>
+        <colspec colname="desc" colnum="3" align="left"/>
+        <thead>
+          <row>
+            <entry>Theme</entry>
+            <entry>Use Case</entry>
+            <entry>Key Characteristics</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry><codeph>default</codeph></entry>
+            <entry>General-purpose</entry>
+            <entry>Neutral palette, balanced typography, suitable for most content types</entry>
+          </row>
+          <row>
+            <entry><codeph>academic</codeph></entry>
+            <entry>Scholarly publications, dissertations, research papers</entry>
+            <entry>Serif fonts, conservative muted palette, tight spacing, footnote and bibliography emphasis, minimal decorative elements</entry>
+          </row>
+          <row>
+            <entry><codeph>fiction</codeph></entry>
+            <entry>Novels, short stories, literary fiction</entry>
+            <entry>Elegant serif body text (Georgia stack), generous margins, refined chapter headings, warm accent colors, optimized for long-form reading with drop cap support</entry>
+          </row>
+          <row>
+            <entry><codeph>technical</codeph></entry>
+            <entry>Software documentation, API references, technical guides</entry>
+            <entry>Code block emphasis with enhanced syntax highlighting colors, monospace prominence, compact tables, cool blue accent palette, optimized for code-heavy content</entry>
+          </row>
+          <row>
+            <entry><codeph>training</codeph></entry>
+            <entry>Educational materials, courses, training manuals</entry>
+            <entry>Clear visual hierarchy, callout styling, exercise and activity boxes, highlighted key terms, step-by-step formatting with numbered procedures</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <p>Theme names are <indexterm>case-insensitive parameters</indexterm>case-insensitive: <codeph>Fiction</codeph>, <codeph>FICTION</codeph>, and <codeph>fiction</codeph> all resolve to the same stylesheet. The plugin normalizes the value internally before matching.</p>
+
+    <note type="important">If no theme is specified or the theme name does not match a built-in theme, only the base <codeph>epub-default.css</codeph> is applied. No error is raised — the plugin simply skips the theme stylesheet.</note>
+  </body>
+</topic>

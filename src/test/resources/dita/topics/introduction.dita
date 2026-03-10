@@ -31,14 +31,14 @@
         <li><b>Professional typography</b> — drop caps, locale-aware quotation marks, CSS hyphenation, and configurable numbering scopes for figures and tables.</li>
         <li><b>Font embedding</b> — with automatic <codeph>@font-face</codeph> CSS generation, weight/style detection from filenames, and optional IDPF obfuscation.</li>
         <li><b>Image optimization</b> — JPEG quality adjustment, maximum width scaling, and recursive directory scanning.</li>
-        <li><b>Internationalization</b> — eleven languages supported for labels, navigation headings, and note types, with full right-to-left support for Arabic and Hebrew.</li>
+        <li><b>Internationalization</b> — twelve languages supported for labels, navigation headings, and note types, with full right-to-left support for Arabic and Hebrew.</li>
         <li><b>Standards compliance</b> — EPUB 3.3, WCAG 2.1 AA, and optional EPUBCheck validation built into the build pipeline.</li>
       </ol>
     </section>
 
     <section>
       <title>A Note on Scope</title>
-      <p>This plugin focuses on <b>reflowable</b> EPUB content. It does not produce fixed-layout EPUBs, nor does it support embedded audio, video, or JavaScript interactivity. These are deliberate constraints: the vast majority of technical documentation is text-centric and benefits most from the reflowable model, where content adapts to the reader's screen size, font preferences, and accessibility settings.</p>
+      <p>This plugin focuses primarily on <b>reflowable</b> EPUB content, which is the best fit for the vast majority of text-centric publications. It also supports <b>fixed layout (FXL)</b> mode for use cases like comics, children's books, and highly designed content where precise visual control is required. The plugin does not support embedded audio, video, or JavaScript interactivity — these are deliberate constraints that keep the output portable across all reading systems.</p>
       <note type="important">The plugin requires DITA-OT 4.4 or later and Java 17 or later. Earlier versions may work but are not tested or supported.</note>
     </section>
   </body>

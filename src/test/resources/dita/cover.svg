@@ -41,6 +41,6 @@
 
   <!-- Version -->
   <text x="50%" y="93%" text-anchor="middle" fill="#c0c0d0" font-family="Arial, sans-serif" font-size="12">
-    dita2epub v1.5.0
+    dita2epub v2.0.0
   </text>
 </svg>

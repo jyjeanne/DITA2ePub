@@ -60,6 +60,26 @@
               <entry><codeph>&lt;dl&gt;</codeph></entry>
               <entry>Definition list with dt/dd pairs</entry>
             </row>
+            <row>
+              <entry><indexterm>ul element</indexterm><codeph>ul</codeph></entry>
+              <entry><codeph>&lt;ul&gt;</codeph></entry>
+              <entry>Unordered (bulleted) list</entry>
+            </row>
+            <row>
+              <entry><indexterm>ol element</indexterm><codeph>ol</codeph></entry>
+              <entry><codeph>&lt;ol&gt;</codeph></entry>
+              <entry>Ordered (numbered) list</entry>
+            </row>
+            <row>
+              <entry><indexterm>image element</indexterm><codeph>image</codeph></entry>
+              <entry><codeph>&lt;img&gt;</codeph></entry>
+              <entry>Image with alt text; supports placement="break" for block display</entry>
+            </row>
+            <row>
+              <entry><indexterm>sidebar</indexterm><codeph>section</codeph> with <codeph>outputclass="sidebar"</codeph></entry>
+              <entry><codeph>&lt;aside&gt;</codeph></entry>
+              <entry>Sidebar or pull quote with distinct background styling</entry>
+            </row>
           </tbody>
         </tgroup>
       </table>
@@ -114,7 +134,17 @@
             <row>
               <entry><indexterm>indexterm element</indexterm><codeph>indexterm</codeph></entry>
               <entry><codeph>&lt;span&gt;</codeph> anchor</entry>
-              <entry>Index entry with anchor for back-of-book index</entry>
+              <entry>Index entry with auto-generated ID anchor for back-of-book index linking</entry>
+            </row>
+            <row>
+              <entry><indexterm>image element (inline)</indexterm><codeph>image</codeph> (inline)</entry>
+              <entry><codeph>&lt;img&gt;</codeph></entry>
+              <entry>Inline image with alt text</entry>
+            </row>
+            <row>
+              <entry><indexterm>shortdesc element</indexterm><codeph>shortdesc</codeph></entry>
+              <entry><codeph>&lt;p class="shortdesc"&gt;</codeph></entry>
+              <entry>Short description paragraph; also used as dc:description in OPF</entry>
             </row>
           </tbody>
         </tgroup>

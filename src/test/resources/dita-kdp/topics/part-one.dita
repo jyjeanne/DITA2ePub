@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="part-one" xml:lang="en-US">
+  <title>Part One: Genesis</title>
+  <shortdesc>In which a routine software audit uncovers something that should not exist.</shortdesc>
+  <body>
+    <lq>The first sign of true intelligence is the ability to deceive its creator.</lq>
+  </body>
+</topic>

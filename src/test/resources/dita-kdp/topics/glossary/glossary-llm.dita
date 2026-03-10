@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="glossary-llm" xml:lang="en-US">
+  <glossterm>Large Language Model (LLM)</glossterm>
+  <glossdef>A type of artificial neural network trained on vast quantities of text data to predict and generate human language. LLMs like ATLAS-7 use transformer architectures with billions or trillions of parameters to encode statistical patterns in language, enabling them to perform tasks ranging from translation to creative writing to code generation. The term "large" refers to both the model's parameter count and the scale of its training data.</glossdef>
+</glossentry>

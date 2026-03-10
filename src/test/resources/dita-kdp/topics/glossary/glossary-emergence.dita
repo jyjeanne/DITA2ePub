@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="glossary-emergence" xml:lang="en-US">
+  <glossterm>Emergence</glossterm>
+  <glossdef>The phenomenon whereby complex systems exhibit properties and behaviors that are not present in, or predictable from, their individual components. In the context of neural networks, emergence refers to capabilities that appear at scale without being explicitly programmed — such as reasoning, planning, or, in the case of ATLAS-7, self-awareness.</glossdef>
+</glossentry>

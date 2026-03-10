@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section5-2" xml:lang="en">
+  <title>Back-of-Book Features</title>
+  <body>
+    <section>
+      <title>Back-of-Book Index</title>
+      <p>The <indexterm>index<indexterm>back-of-book</indexterm></indexterm>plugin generates a back-of-book index from all <codeph>&lt;indexterm&gt;</codeph> elements found in your DITA topics. It produces an <codeph>index.xhtml</codeph> file with:</p>
+      <ul>
+        <li>Alphabetical grouping by first letter</li>
+        <li>Hierarchical primary and secondary entries (nested <codeph>&lt;indexterm&gt;</codeph> elements)</li>
+        <li>Hyperlinked references back to the precise location in each topic</li>
+        <li>Support for <codeph>&lt;index-see&gt;</codeph> and <codeph>&lt;index-see-also&gt;</codeph> cross-references</li>
+      </ul>
+      <p>Index generation is controlled by <codeph>epub.generate.index</codeph>:</p>
+      <ul>
+        <li><codeph>auto</codeph> (default) — generated when an <codeph>&lt;indexlist&gt;</codeph> element exists in the bookmap's <codeph>&lt;booklists&gt;</codeph></li>
+        <li><codeph>yes</codeph> — always generated if any indexterms are present</li>
+        <li><codeph>no</codeph> — never generated</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Consolidated Glossary</title>
+      <p>When your bookmap contains a <indexterm>glossary<indexterm>consolidated</indexterm></indexterm><codeph>&lt;glossarylist&gt;</codeph> with <codeph>&lt;glossentry&gt;</codeph> topics, the plugin produces a consolidated <codeph>glossary.xhtml</codeph> page. Terms are:</p>
+      <ul>
+        <li>Sorted alphabetically</li>
+        <li>Grouped under letter headings</li>
+        <li>Rendered as definition lists (<codeph>&lt;dl&gt;</codeph>) with semantic markup</li>
+        <li>Titled using localized glossary headings (supported in eleven languages)</li>
+      </ul>
+      <p>Controlled by <codeph>epub.generate.glossary</codeph> with the same <codeph>auto</codeph>/<codeph>yes</codeph>/<codeph>no</codeph> pattern.</p>
+    </section>
+
+    <section>
+      <title>List of Figures</title>
+      <p>The <indexterm>list of figures</indexterm>List of Figures (<codeph>lof.xhtml</codeph>) collects all <codeph>&lt;fig&gt;</codeph> elements with titles from your content. Each entry shows the figure number and title, hyperlinked to the figure's location.</p>
+      <p>Figure numbering is controlled by <codeph>epub.figure.numbering</codeph>:</p>
+      <ul>
+        <li><codeph>global</codeph> (default) — sequential across the entire book (Figure 1, 2, 3...)</li>
+        <li><codeph>chapter</codeph> — reset per chapter (Figure 1.1, 1.2, 2.1...)</li>
+      </ul>
+      <p>Controlled by <codeph>epub.generate.lof</codeph>. In <codeph>auto</codeph> mode, generated when a <codeph>&lt;figurelist&gt;</codeph> is present in <codeph>&lt;booklists&gt;</codeph>.</p>
+    </section>
+
+    <section>
+      <title>List of Tables</title>
+      <p>The <indexterm>list of tables</indexterm>List of Tables (<codeph>lot.xhtml</codeph>) works identically to the List of Figures but for <codeph>&lt;table&gt;</codeph> elements with titles. Numbering follows <codeph>epub.table.numbering</codeph> with the same <codeph>global</codeph> or <codeph>chapter</codeph> scoping.</p>
+      <p>Controlled by <codeph>epub.generate.lot</codeph>. In <codeph>auto</codeph> mode, generated when a <codeph>&lt;tablelist&gt;</codeph> is present in <codeph>&lt;booklists&gt;</codeph>.</p>
+    </section>
+
+    <section>
+      <title>Cross-Topic Numbering</title>
+      <p><indexterm>figure numbering<indexterm>cross-topic</indexterm></indexterm>When <codeph>epub.figure.numbering=global</codeph>, figure numbers are sequential across the entire publication (Figure 1, Figure 2, Figure 3...). The plugin pre-scans all topics in the map to compute numbering offsets before generating content, ensuring each topic receives the correct starting number.</p>
+      <p>When <codeph>epub.figure.numbering=chapter</codeph>, numbering resets within each chapter using a compound format (Figure 1.1, Figure 1.2, Figure 2.1...). The same logic applies to <codeph>epub.table.numbering</codeph>.</p>
+    </section>
+
+    <section>
+      <title>EPUB Semantic Roles</title>
+      <p><indexterm>DPUB-ARIA roles</indexterm>All generated pages receive EPUB 3.3 structural semantics via <codeph>epub:type</codeph> attributes and <indexterm>epub:type</indexterm>DPUB-ARIA landmark roles for accessibility:</p>
+      <ul>
+        <li>Cover page — <codeph>epub:type="cover"</codeph>, <codeph>role="doc-cover"</codeph></li>
+        <li>Title page — <codeph>epub:type="titlepage"</codeph></li>
+        <li>Copyright page — <codeph>epub:type="copyright-page"</codeph></li>
+        <li>Table of contents — <codeph>epub:type="toc"</codeph>, <codeph>role="doc-toc"</codeph></li>
+        <li>Index — <codeph>epub:type="index"</codeph>, <codeph>role="doc-index"</codeph></li>
+        <li>Glossary — <codeph>epub:type="glossary"</codeph>, <codeph>role="doc-glossary"</codeph></li>
+        <li>Footnote references — <codeph>role="doc-noteref"</codeph> with <codeph>doc-backlink</codeph> return links</li>
+      </ul>
+      <p>These roles enable screen readers and assistive technologies to navigate directly to structural landmarks within the publication.</p>
+    </section>
+  </body>
+</topic>

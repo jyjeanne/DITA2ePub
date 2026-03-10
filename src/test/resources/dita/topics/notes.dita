@@ -4,8 +4,26 @@
   <title>Release Notes</title>
   <body>
     <section>
+      <title>Version 2.0.0</title>
+      <p>Released March 2026. Major release.</p>
+      <ul>
+        <li>Added <indexterm>CSS themes<indexterm>built-in</indexterm></indexterm>five built-in CSS themes: default, academic, fiction, technical, training</li>
+        <li>Added <indexterm>platform support</indexterm>platform-specific output: Amazon KDP, Apple Books, Kobo, generic</li>
+        <li>Added <indexterm>fixed layout</indexterm>fixed layout (FXL) EPUB support with configurable viewport, orientation, and spread</li>
+        <li>Added BISAC subject code support with automatic deduplication</li>
+        <li>Added series/collection metadata (<codeph>belongs-to-collection</codeph>)</li>
+        <li>Added case-insensitive parameter handling for boolean and enum values</li>
+        <li>Added <codeph>epub.publisher</codeph>, <codeph>epub.rights</codeph>, and <codeph>epub.language</codeph> parameter passthrough</li>
+        <li>Fixed publication date extraction from bookmap (correct DITA class attributes)</li>
+        <li>Fixed copyright/rights extraction from bookmap metadata</li>
+        <li>Fixed copyright page consistency using <codeph>epub:is-true()</codeph> function</li>
+        <li>Comprehensive user guide with documentation of all plugin features</li>
+      </ul>
+    </section>
+
+    <section>
       <title>Version 1.5.0</title>
-      <p>Released March 2026.</p>
+      <p>Released January 2026.</p>
       <ul>
         <li>Added font obfuscation support (<indexterm>font obfuscation<indexterm>IDPF algorithm</indexterm></indexterm>IDPF algorithm per OCF 3.3 Section 4.2)</li>
         <li>Added image optimization pipeline (JPEG quality, max width, metadata stripping)</li>

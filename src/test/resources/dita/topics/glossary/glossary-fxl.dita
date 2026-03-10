@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-fxl" xml:lang="en">
+  <glossterm>Fixed Layout (FXL)</glossterm>
+  <glossdef>An EPUB rendering mode where each page has fixed pixel dimensions, similar to a PDF. Unlike reflowable EPUBs, fixed layout content does not adapt to the reader's screen size or font preferences. Used for comics, children's picture books, and highly designed publications where precise visual layout is essential. Indicated by the <codeph>rendition:layout</codeph> metadata property set to <codeph>pre-paginated</codeph>.</glossdef>
+</glossentry>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-idpf" xml:lang="en">
+  <glossterm>IDPF</glossterm>
+  <glossdef>International Digital Publishing Forum — the trade organization that developed the EPUB standard before merging with the World Wide Web Consortium (W3C) in 2017. The IDPF font obfuscation algorithm, defined in OCF 3.3 Section 4.2, applies a SHA-1-based XOR mask to the first 1040 bytes of a font file to prevent casual extraction while allowing compliant reading systems to deobfuscate and render the font.</glossdef>
+</glossentry>

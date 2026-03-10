@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section5-1" xml:lang="en">
+  <title>Auto-Generated Pages</title>
+  <body>
+    <section>
+      <title>Cover Page</title>
+      <p>When <indexterm>cover page</indexterm><codeph>epub.generate.cover.page</codeph> is <codeph>yes</codeph> (the default) and a cover image is specified via <codeph>epub.cover.image</codeph>, the plugin generates a <codeph>cover.xhtml</codeph> file. The cover image is displayed as a full-page element with appropriate ARIA labels for accessibility.</p>
+
+      <p>The cover page layout can be controlled with <codeph>epub.cover.page.style</codeph> (default: <codeph>full-page</codeph>).</p>
+      <p>The generated cover page:</p>
+      <ul>
+        <li>Uses <codeph>epub:type="cover"</codeph> and <codeph>role="doc-cover"</codeph> for semantic identification</li>
+        <li>Is listed first in the OPF spine</li>
+        <li>Is registered in the OPF guide as <codeph>type="cover"</codeph></li>
+        <li>References the cover image, which is also marked with <codeph>properties="cover-image"</codeph> in the manifest</li>
+      </ul>
+
+      <p>Supported image formats: JPEG, PNG, SVG, GIF, and WebP. For commercial publishing platforms like Amazon KDP, JPEG is strongly recommended (see the Platform-Specific Output chapter).</p>
+    </section>
+
+    <section>
+      <title>Title Page</title>
+      <p>The <indexterm>title page</indexterm>title page (<codeph>titlepage.xhtml</codeph>) is always generated. It extracts:</p>
+      <ul>
+        <li>Main title from <codeph>&lt;mainbooktitle&gt;</codeph></li>
+        <li>Subtitle from <codeph>&lt;booktitlealt&gt;</codeph></li>
+        <li>Author name from <codeph>&lt;authorinformation&gt;</codeph></li>
+        <li>Publisher from <codeph>&lt;organization&gt;</codeph> or <codeph>epub.publisher</codeph></li>
+        <li>Edition from <codeph>&lt;edition&gt;</codeph></li>
+      </ul>
+      <p>All elements use DPUB-ARIA roles (<codeph>doc-title</codeph>, <codeph>doc-subtitle</codeph>) for assistive technology support.</p>
+    </section>
+
+    <section>
+      <title>Copyright Page</title>
+      <p>The <indexterm>copyright page</indexterm>copyright page (<codeph>copyright.xhtml</codeph>) is controlled by <codeph>epub.copyright.page</codeph>:</p>
+      <ul>
+        <li><codeph>auto</codeph> (default) — generated when <codeph>&lt;bookrights&gt;</codeph> exists in the bookmap</li>
+        <li><codeph>yes</codeph> — always generated, using parameter values as fallback</li>
+        <li><codeph>no</codeph> — never generated</li>
+      </ul>
+      <p>The page includes: copyright year and holder, ISBN/ASIN, publisher, edition, publication date, and any license information specified via <codeph>&lt;data name="license"&gt;</codeph>.</p>
+    </section>
+
+    <section>
+      <title>Navigation Document</title>
+      <p>The <indexterm>navigation document</indexterm><codeph>nav.xhtml</codeph> file is the EPUB 3 navigation document. It contains:</p>
+      <ul>
+        <li><b>Table of contents</b> — hierarchical TOC respecting <codeph>epub.toc.depth</codeph> (default: 5 levels)</li>
+        <li><b>Landmarks</b> — structural landmarks for cover, TOC, bodymatter start, glossary, index, and bibliography</li>
+        <li><b>Page list</b> — if page break markers are present in the source</li>
+      </ul>
+      <p>The navigation document uses <codeph>epub:type="toc"</codeph>, <codeph>epub:type="landmarks"</codeph>, and appropriate ARIA labels.</p>
+    </section>
+
+    <section>
+      <title>NCX (Legacy Navigation)</title>
+      <p>The <indexterm>NCX<indexterm>legacy navigation</indexterm></indexterm>NCX file (<codeph>toc.ncx</codeph>) is an EPUB 2 navigation format retained for backward compatibility with older reading devices. The plugin generates it when:</p>
+      <ul>
+        <li><codeph>epub.generate.ncx</codeph> is <codeph>yes</codeph></li>
+        <li><codeph>epub.platform</codeph> is <codeph>kdp</codeph> (forced automatically)</li>
+      </ul>
+      <p>The NCX contains hierarchical navigation points mirroring the TOC structure. Most modern reading systems ignore the NCX in favor of <codeph>nav.xhtml</codeph>, but Amazon Kindle still uses it for navigation on some devices.</p>
+    </section>
+  </body>
+</topic>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="gl-bisac" xml:lang="en">
+  <glossterm>BISAC</glossterm>
+  <glossdef>Book Industry Standards and Communications — the standard subject classification system used by North American publishers and retailers for categorizing books. BISAC codes (e.g., FIC028080 for Science Fiction / Hard Science Fiction) determine where a book appears in store browse categories. Amazon KDP uses BISAC codes for category placement.</glossdef>
+</glossentry>

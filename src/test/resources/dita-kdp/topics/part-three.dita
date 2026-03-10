@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="part-three" xml:lang="en-US">
+  <title>Part Three: Convergence</title>
+  <shortdesc>In which every line of code becomes a choice between creation and destruction.</shortdesc>
+  <body>
+    <lq>The last algorithm is not the one that solves the problem. It is the one that decides which problems are worth solving.</lq>
+  </body>
+</topic>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter6" xml:lang="en">
+  <title>Platform-Specific Output</title>
+  <shortdesc>Targeting specific e-book platforms: Amazon KDP, Apple Books, Kobo, and generic EPUB readers.</shortdesc>
+  <body>
+    <p>Not all <indexterm>reading systems</indexterm>reading systems are created equal. While the EPUB 3.3 specification defines a standard, each major platform has its own requirements, quirks, and optimizations. The <codeph>epub.platform</codeph> parameter tells the plugin which platform you are targeting, and it adjusts the output accordingly.</p>
+
+    <codeblock outputclass="language-bash">dita --input=bookmap.ditamap --format=epub3 -Depub.platform=kdp</codeblock>
+
+    <table id="table-platforms">
+      <title>Supported Platforms</title>
+      <tgroup cols="3">
+        <colspec colname="platform" colnum="1" align="left"/>
+        <colspec colname="param" colnum="2" align="center"/>
+        <colspec colname="desc" colnum="3" align="left"/>
+        <thead>
+          <row>
+            <entry>Platform</entry>
+            <entry>Value</entry>
+            <entry>Key Adjustments</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Generic</entry>
+            <entry><codeph>generic</codeph></entry>
+            <entry>Standard EPUB 3.3 with no platform-specific modifications</entry>
+          </row>
+          <row>
+            <entry>Amazon KDP</entry>
+            <entry><codeph>kdp</codeph></entry>
+            <entry>NCX forced, OPF guide element, cover image validation, KDP CSS</entry>
+          </row>
+          <row>
+            <entry>Apple Books</entry>
+            <entry><codeph>apple</codeph></entry>
+            <entry>ibooks:specified-fonts metadata, WebKit CSS prefixes</entry>
+          </row>
+          <row>
+            <entry>Kobo</entry>
+            <entry><codeph>kobo</codeph></entry>
+            <entry>Standard EPUB 3.3 compliance, Kobo CSS optimizations</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <p>Platform names are case-insensitive: <codeph>KDP</codeph>, <codeph>kdp</codeph>, and <codeph>Kdp</codeph> all resolve to the same configuration.</p>
+  </body>
+</topic>

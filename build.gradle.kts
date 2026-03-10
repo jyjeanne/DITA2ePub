@@ -48,6 +48,15 @@ val testDatasets = listOf(
         language = "en",
         tocDepth = 5,
         description = "Complete English bookmap with all EPUB features"
+    ),
+    TestDataset(
+        name = "kdp-commercial",
+        ditamap = "src/test/resources/dita-kdp/kdp-commercial-bookmap.ditamap",
+        outputDir = "build/epub-kdp",
+        coverImage = "src/test/resources/dita-kdp/cover-kdp.svg",
+        language = "en-US",
+        tocDepth = 3,
+        description = "Commercial fiction novel for Amazon KDP with full metadata"
     )
 )
 
@@ -222,6 +231,51 @@ tasks.named<com.github.jyjeanne.DitaOtTask>("dita") {
 }
 
 // =============================================================================
+// KDP Commercial Book Build (Amazon Kindle Direct Publishing)
+// =============================================================================
+
+tasks.register<com.github.jyjeanne.DitaOtTask>("ditaKdp") {
+    group = "dita"
+    description = "Build KDP-compliant commercial EPUB from fiction novel dataset"
+    dependsOn("installLocalPlugin")
+    ditaOt(ditaOtHome)
+    input(file("src/test/resources/dita-kdp/kdp-commercial-bookmap.ditamap"))
+    output("build/epub-kdp")
+    transtype("epub3")
+
+    ditaProperties.putAll(sharedEpubProperties)
+    ditaProperties.putAll(mapOf(
+        "epub.cover.image" to file("src/test/resources/dita-kdp/cover-kdp.svg").absolutePath,
+        "epub.toc.depth" to "3",
+        "epub.nav.depth" to "3",
+        "epub.generate.glossary" to "auto",
+        "epub.copyright.page" to "auto",
+        "epub.drop.caps" to "yes",
+        "epub.table.zebra" to "yes",
+        "epub.figure.numbering" to "none",
+        "epub.table.numbering" to "none",
+        "epub.skip.nav" to "yes",
+        "args.csspath" to "styles",
+        "epub.publisher" to "Apex Fiction Press",
+        "epub.rights" to "Copyright 2026 Sarah Mitchell. All rights reserved.",
+        "epub.identifier.scheme" to "ISBN",
+        "epub.validate" to "yes",
+        "args.output.base.name" to "the-last-algorithm",
+        // KDP platform: forces NCX, guide element, emits KDP warnings
+        "epub.platform" to "kdp",
+        // Fiction theme for novel styling
+        "epub.theme" to "fiction",
+        // Series metadata
+        "epub.series.name" to "Meridian Systems",
+        "epub.series.position" to "1",
+        // BISAC codes for Amazon category placement
+        "epub.bisac.codes" to "FIC028080,FIC031080,FIC028130",
+    ))
+}
+
+registerEpubValidation("validateEpubKdp", "build/epub-kdp", "ditaKdp")
+
+// =============================================================================
 // DITA source validation and link checking
 // =============================================================================
 
@@ -293,7 +347,7 @@ tasks.register("cleanEpub") {
 tasks.register("buildAllEpubs") {
     group = "dita"
     description = "Build EPUB from all test DITA datasets"
-    dependsOn("buildSampleEpub")
+    dependsOn("buildSampleEpub", "ditaKdp")
 }
 
 tasks.register("validateAllEpubs") {

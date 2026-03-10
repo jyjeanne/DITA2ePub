@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter7" xml:lang="en">
+  <title>Internationalization</title>
+  <shortdesc>Language support, right-to-left text, locale-aware typography, and CJK considerations.</shortdesc>
+  <body>
+    <p>The <indexterm>internationalization</indexterm>dita2epub plugin supports content in multiple languages with features that go beyond simple text translation. The plugin adapts its output based on the <codeph>xml:lang</codeph> attribute in your DITA source, automatically adjusting text direction, quotation marks, and generated labels.</p>
+
+    <section>
+      <title>Language Detection</title>
+      <p>The publication language is determined from three sources, in order:</p>
+      <ol>
+        <li>The <codeph>epub.language</codeph> parameter (highest priority)</li>
+        <li>The <codeph>xml:lang</codeph> attribute on the root bookmap or map element</li>
+        <li>Default: <codeph>en</codeph> (English)</li>
+      </ol>
+      <p>The language affects the <codeph>dc:language</codeph> metadata in the OPF, the <codeph>xml:lang</codeph> attribute on all generated XHTML files, and the text direction of the publication.</p>
+    </section>
+
+    <section>
+      <title>Right-to-Left Support</title>
+      <p><indexterm>right-to-left<indexterm>RTL</indexterm></indexterm>When the publication language is Arabic (<codeph>ar</codeph>), Hebrew (<codeph>he</codeph>), Farsi (<codeph>fa</codeph>), or Urdu (<codeph>ur</codeph>), the plugin automatically:</p>
+      <ul>
+        <li>Sets <codeph>dir="rtl"</codeph> on all generated HTML elements</li>
+        <li>Configures <codeph>page-progression-direction="rtl"</codeph> in the OPF spine</li>
+        <li>Adds appropriate CSS directionality rules</li>
+      </ul>
+      <p>Bidirectional text within a predominantly LTR or RTL document is handled by the Unicode Bidirectional Algorithm, which is implemented by all modern reading systems.</p>
+    </section>
+
+    <section>
+      <title>Localized Labels</title>
+      <p>The plugin generates <indexterm>localized labels</indexterm>human-readable labels for notes, navigation headings, and structural elements. These labels are localized for twelve languages:</p>
+      <table id="table-languages">
+        <title>Supported Languages for Generated Labels</title>
+        <tgroup cols="2">
+          <colspec colname="lang" colnum="1" align="left"/>
+          <colspec colname="example" colnum="2" align="left"/>
+          <thead>
+            <row>
+              <entry>Language</entry>
+              <entry>Example Note Label</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row><entry>English (en)</entry><entry>Note, Warning, Tip, Important</entry></row>
+            <row><entry>French (fr)</entry><entry>Remarque, Avertissement, Conseil</entry></row>
+            <row><entry>German (de)</entry><entry>Hinweis, Warnung, Tipp</entry></row>
+            <row><entry>Spanish (es)</entry><entry>Nota, Advertencia, Consejo</entry></row>
+            <row><entry>Italian (it)</entry><entry>Nota, Avvertenza, Suggerimento</entry></row>
+            <row><entry>Portuguese (pt)</entry><entry>Nota, Aviso, Dica</entry></row>
+            <row><entry>Japanese (ja)</entry><entry>注記, 警告, ヒント</entry></row>
+            <row><entry>Chinese (zh)</entry><entry>注意, 警告, 提示</entry></row>
+            <row><entry>Korean (ko)</entry><entry>참고, 경고, 팁</entry></row>
+            <row><entry>Arabic (ar)</entry><entry>ملاحظة, تحذير, نصيحة</entry></row>
+            <row><entry>Dutch (nl)</entry><entry>Opmerking, Waarschuwing, Tip</entry></row>
+            <row><entry>Hebrew (he)</entry><entry>הערה, אזהרה, טיפ</entry></row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Locale-Aware Quotation Marks</title>
+      <p>When <indexterm>quotation marks<indexterm>locale-aware</indexterm></indexterm><codeph>epub.locale.quotes=yes</codeph>, the plugin transforms straight quotation marks in the output to the typographically correct marks for each language:</p>
+      <ul>
+        <li>English: "double" and 'single'</li>
+        <li>French: «guillemets»</li>
+        <li>German: „Gänsefüßchen"</li>
+        <li>Japanese: 「鉤括弧」</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>CJK Considerations</title>
+      <p><indexterm>CJK<indexterm>drop caps</indexterm></indexterm>Chinese, Japanese, and Korean text has specific typographic requirements. The plugin automatically suppresses drop caps for CJK languages, since the decorative initial-letter effect does not work well with ideographic characters.</p>
+    </section>
+  </body>
+</topic>

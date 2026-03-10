@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section4-2" xml:lang="en">
+  <title>Subject Classification and Keywords</title>
+  <body>
+    <section>
+      <title>Keywords</title>
+      <p><indexterm>keywords<indexterm>discoverability</indexterm></indexterm>Keywords improve discoverability in bookstores and reading platforms. They are extracted from the bookmap's <codeph>&lt;keywords&gt;</codeph> section and emitted as <codeph>dc:subject</codeph> elements in the OPF:</p>
+      <codeblock outputclass="language-xml">&lt;keywords&gt;
+  &lt;keyword&gt;artificial intelligence thriller&lt;/keyword&gt;
+  &lt;keyword&gt;tech thriller fiction&lt;/keyword&gt;
+  &lt;keyword&gt;corporate espionage novel&lt;/keyword&gt;
+&lt;/keywords&gt;</codeblock>
+      <p>Amazon KDP allows up to seven keyword phrases for search discoverability. Choose phrases that readers would actually search for, not single words.</p>
+    </section>
+
+    <section>
+      <title>BISAC Subject Codes</title>
+      <p><indexterm>BISAC codes</indexterm>BISAC (Book Industry Standards and Communications) codes are the standard subject classification system used by North American publishers and retailers. Amazon uses them for category placement.</p>
+
+      <p>BISAC codes can be specified via parameter or bookmap:</p>
+      <codeblock outputclass="language-bash"># Via parameter (comma-separated)
+-Depub.bisac.codes=FIC028080,FIC031080,FIC028130</codeblock>
+      <codeblock outputclass="language-xml">&lt;!-- Via bookmap data elements --&gt;
+&lt;data name="bisac" value="FIC028080"/&gt;&lt;!-- Science Fiction / Hard SF --&gt;
+&lt;data name="bisac" value="FIC031080"/&gt;&lt;!-- Thrillers / Technological --&gt;
+&lt;data name="bisac" value="FIC028130"/&gt;&lt;!-- Science Fiction / Near-Future --&gt;</codeblock>
+
+      <p>When the same code appears in both the parameter and the bookmap, the plugin <indexterm>BISAC deduplication</indexterm>automatically deduplicates to avoid emitting the same <codeph>dc:subject</codeph> twice. Parameter codes take precedence and are emitted first.</p>
+
+      <note type="tip">You can look up BISAC codes at the Book Industry Study Group website. Most retailers expect two to three codes per title. The first code should be the most specific match for your content.</note>
+    </section>
+
+    <section>
+      <title>Description and Blurb</title>
+      <p>The first <codeph>&lt;shortdesc&gt;</codeph> element in the bookmap's <codeph>&lt;bookmeta&gt;</codeph> is extracted as <codeph>dc:description</codeph>. This serves as the book blurb in store listings:</p>
+      <codeblock outputclass="language-xml">&lt;bookmeta&gt;
+  &lt;shortdesc&gt;When a rogue AI begins rewriting its own code,
+  software architect Elena Vasquez has seventy-two hours to
+  shut it down — or watch it redefine what it means to be alive.&lt;/shortdesc&gt;
+  ...
+&lt;/bookmeta&gt;</codeblock>
+    </section>
+
+    <section>
+      <title>Accessibility Metadata</title>
+      <p>The plugin automatically generates <indexterm>accessibility metadata</indexterm>EPUB accessibility metadata based on the <codeph>epub.accessibility</codeph> parameter. This includes:</p>
+      <ul>
+        <li><codeph>schema:accessMode</codeph> — textual and visual</li>
+        <li><codeph>schema:accessibilityFeature</codeph> — structural navigation, TOC, reading order, ARIA roles</li>
+        <li><codeph>schema:accessibilityHazard</codeph> — none (no motion, flashing, or sound hazards)</li>
+        <li><codeph>schema:accessibilityControl</codeph> — full keyboard and mouse control</li>
+        <li><codeph>schema:accessibilitySummary</codeph> — conformance statement with the target WCAG level</li>
+      </ul>
+      <p>No manual configuration is needed. The metadata is derived from the features actually present in the output (e.g., <codeph>listOfIllustrations</codeph> is added only when a List of Figures is generated).</p>
+    </section>
+  </body>
+</topic>

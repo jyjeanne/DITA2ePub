@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter3" xml:lang="en">
+  <title>CSS Themes and Styling</title>
+  <shortdesc>How to use built-in themes, customize CSS variables, and apply platform-specific stylesheets.</shortdesc>
+  <body>
+    <p>The <indexterm>CSS themes</indexterm>dita2epub plugin includes a layered CSS architecture designed for flexibility without complexity. Instead of a single monolithic stylesheet, the plugin uses a cascade of purpose-specific CSS files that are loaded in a defined order. This allows you to change the visual appearance of your EPUB without touching the transformation code.</p>
+
+    <p>The CSS cascade order is:</p>
+    <ol>
+      <li><codeph>epub-default.css</codeph> — base styles that define the structural layout, element spacing, and typographic defaults for all EPUBs</li>
+      <li><codeph>epub-theme-{name}.css</codeph> — theme overrides that adjust colors, fonts, and decorative elements for a specific genre or use case</li>
+      <li><codeph>epub-platform-{name}.css</codeph> — platform-specific tweaks for reading system quirks (e.g., Kindle rendering differences)</li>
+      <li><codeph>epub-fonts.css</codeph> — auto-generated <codeph>@font-face</codeph> declarations when fonts are embedded</li>
+      <li><codeph>epub-fxl.css</codeph> — fixed-layout viewport styles (only when <codeph>epub.layout=fixed</codeph>)</li>
+      <li>Custom CSS — your own stylesheet appended last, with highest specificity</li>
+    </ol>
+
+    <p>This layering means you can switch from a technical documentation theme to a fiction theme by changing a single parameter, and all structural styles remain intact.</p>
+
+    <note type="tip">All themes use <indexterm>CSS custom properties</indexterm>CSS custom properties (variables) for colors, spacing, and typography. You can override any variable in a custom CSS file without duplicating entire rule sets.</note>
+  </body>
+</topic>

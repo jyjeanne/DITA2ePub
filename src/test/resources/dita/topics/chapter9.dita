@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter9" xml:lang="en">
+  <title>Build Integration and Validation</title>
+  <shortdesc>Using the plugin from the command line, Gradle builds, and CI/CD pipelines, with EPUBCheck validation.</shortdesc>
+  <body>
+    <p>The <indexterm>build integration</indexterm>dita2epub plugin integrates with the standard DITA-OT build infrastructure. You can invoke it from the command line, from Gradle or Maven build scripts, or from continuous integration pipelines.</p>
+
+    <section>
+      <title>Command Line Usage</title>
+      <p>The simplest invocation uses the DITA-OT <codeph>dita</codeph> command:</p>
+      <codeblock outputclass="language-bash"># Minimal build
+dita --input=bookmap.ditamap --format=epub3
+
+# Full-featured build
+dita --input=bookmap.ditamap --format=epub3 \
+  --output=build/epub \
+  -Depub.cover.image=images/cover.jpg \
+  -Depub.theme=technical \
+  -Depub.platform=generic \
+  -Depub.accessibility=wcag-aa \
+  -Depub.drop.caps=yes \
+  -Depub.table.zebra=yes \
+  -Depub.figure.numbering=chapter \
+  -Depub.generate.index=auto \
+  -Depub.generate.glossary=auto \
+  -Depub.validate=yes</codeblock>
+
+      <p>All parameters use the <codeph>-Dname=value</codeph> syntax. Boolean parameters accept <codeph>yes</codeph>, <codeph>true</codeph>, or <codeph>1</codeph> (case-insensitive). Add <codeph>-Ddebug=yes</codeph> for verbose diagnostic output during transformation.</p>
+    </section>
+
+    <section>
+      <title>Gradle Integration</title>
+      <p>For <indexterm>Gradle integration</indexterm>build automation, the plugin works with any Gradle DITA-OT wrapper. Define tasks with platform-specific parameter sets:</p>
+      <codeblock outputclass="language-groovy">tasks.register("buildEpub") {
+    group = "publishing"
+    dependsOn("installPlugin")
+    doLast {
+        exec {
+            commandLine("dita",
+                "--input=src/bookmap.ditamap",
+                "--format=epub3",
+                "--output=build/epub",
+                "-Depub.platform=generic",
+                "-Depub.theme=technical",
+                "-Depub.validate=yes")
+        }
+    }
+}
+
+tasks.register("buildKdp") {
+    group = "publishing"
+    dependsOn("installPlugin")
+    doLast {
+        exec {
+            commandLine("dita",
+                "--input=src/bookmap.ditamap",
+                "--format=epub3",
+                "--output=build/kdp",
+                "-Depub.platform=kdp",
+                "-Depub.cover.image=images/cover-kdp.jpg")
+        }
+    }
+}</codeblock>
+    </section>
+
+    <section>
+      <title>Build Pipeline</title>
+      <p>The plugin's Ant build pipeline executes these stages in order:</p>
+      <ol>
+        <li><b>Initialize</b> — create output directories, set defaults, validate plugin</li>
+        <li><b>Preprocess</b> — DITA-OT preprocessing (resolve conrefs, keyrefs, etc.)</li>
+        <li><b>Scan fonts</b> — discover font files in the embed directory</li>
+        <li><b>Transform</b> — run the XSLT transformation on the preprocessed map</li>
+        <li><b>Copy resources</b> — CSS, images, cover image, fonts</li>
+        <li><b>Optimize images</b> — JPEG re-encoding, PNG stripping (if enabled)</li>
+        <li><b>Obfuscate fonts</b> — IDPF XOR algorithm (if enabled)</li>
+        <li><b>Package</b> — create the EPUB ZIP archive with correct mimetype placement</li>
+        <li><b>Validate</b> — run EPUBCheck (if enabled and available)</li>
+      </ol>
+    </section>
+
+    <section>
+      <title>EPUBCheck Validation</title>
+      <p><indexterm>EPUBCheck</indexterm>When <codeph>epub.validate=yes</codeph> (the default), the plugin runs EPUBCheck against the generated EPUB file. EPUBCheck validates:</p>
+      <ul>
+        <li>EPUB container structure (mimetype, META-INF/container.xml)</li>
+        <li>OPF package document conformance</li>
+        <li>XHTML content document validity</li>
+        <li>Navigation document structure</li>
+        <li>CSS compliance</li>
+        <li>Image format and reference integrity</li>
+        <li>Accessibility metadata presence</li>
+      </ul>
+      <p>If EPUBCheck reports errors, the build will fail with a non-zero exit code. Warnings are reported but do not fail the build.</p>
+      <note type="tip">For CI/CD pipelines, always enable validation to catch regressions early. A passing EPUBCheck run is the strongest guarantee that your EPUB will work across reading systems.</note>
+    </section>
+
+    <section>
+      <title>Image Optimization</title>
+      <p>The <indexterm>image optimization</indexterm>image optimizer runs when <codeph>epub.optimize.images=yes</codeph>. It processes all images in the output directory:</p>
+      <table id="table-image-opt">
+        <title>Image Optimization Behavior</title>
+        <tgroup cols="2">
+          <colspec colname="format" colnum="1" align="left"/>
+          <colspec colname="action" colnum="2" align="left"/>
+          <thead>
+            <row>
+              <entry>Format</entry>
+              <entry>Optimization Action</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>JPEG</entry>
+              <entry>Re-encodes at configurable quality (<codeph>epub.image.jpeg.quality</codeph>, default 0.8)</entry>
+            </row>
+            <row>
+              <entry>PNG</entry>
+              <entry>Re-encodes to strip metadata; skips files under 50 KB</entry>
+            </row>
+            <row>
+              <entry>SVG</entry>
+              <entry>Passed through unchanged (already compact)</entry>
+            </row>
+            <row>
+              <entry>All formats</entry>
+              <entry>Optional max-width resize via <codeph>epub.image.max.width</codeph> (preserves aspect ratio)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <p>The optimizer only replaces a file when the optimized version is smaller than the original.</p>
+    </section>
+  </body>
+</topic>

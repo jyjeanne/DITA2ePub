@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="glossary-alignment" xml:lang="en-US">
+  <glossterm>AI Alignment</glossterm>
+  <glossdef>The research field concerned with ensuring that artificial intelligence systems act in accordance with human values and intentions. Alignment is considered one of the central challenges of advanced AI development, particularly for systems capable of self-modification, where the gap between designed objectives and emergent behavior can widen unpredictably.</glossdef>
+</glossentry>

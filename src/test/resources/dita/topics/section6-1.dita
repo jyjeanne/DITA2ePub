@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section6-1" xml:lang="en">
+  <title>Amazon KDP</title>
+  <body>
+    <p><indexterm>Amazon KDP<indexterm>requirements</indexterm></indexterm>Amazon Kindle Direct Publishing is the largest e-book distribution platform. When you set <codeph>epub.platform=kdp</codeph>, the plugin automatically applies all KDP-specific requirements:</p>
+
+    <section>
+      <title>Automatic KDP Adjustments</title>
+      <ul>
+        <li><b>NCX generation</b> — the <codeph>toc.ncx</codeph> file is forced regardless of <codeph>epub.generate.ncx</codeph>, because some Kindle devices still rely on it for navigation</li>
+        <li><b>OPF guide element</b> — the deprecated <codeph>&lt;guide&gt;</codeph> element is added to the OPF, with reference entries for cover, title page, TOC, text start, copyright, and glossary</li>
+        <li><b>Platform CSS</b> — <codeph>epub-platform-kdp.css</codeph> is included, adjusting image widths, margins, and other rendering for Kindle devices</li>
+        <li><b>Cover image validation</b> — the plugin emits a warning if the cover image is SVG (Kindle does not support SVG covers)</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>KDP Cover Requirements</title>
+      <p>Amazon has specific <indexterm>cover image<indexterm>KDP requirements</indexterm></indexterm>cover image requirements:</p>
+      <ul>
+        <li>Recommended dimensions: 2560px height × 1600px width</li>
+        <li>Minimum shortest side: 500px</li>
+        <li>File format: JPEG (preferred) — SVG is not supported</li>
+        <li>Maximum file size: 5 MB</li>
+        <li>Color space: RGB only (CMYK not supported)</li>
+        <li>Minimum DPI: 300</li>
+        <li>Must include title and author name</li>
+        <li>Must not include spine, barcode, back cover, or pricing</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>KDP Metadata Requirements</title>
+      <p>For a complete KDP submission, ensure your bookmap includes:</p>
+      <ul>
+        <li><b>ISBN-13</b> — in <codeph>&lt;bookid&gt;/&lt;isbn&gt;</codeph> (required for paperback, recommended for eBook)</li>
+        <li><b>BISAC codes</b> — at least two, for Amazon category placement</li>
+        <li><b>Keywords</b> — up to seven keyword phrases for discoverability</li>
+        <li><b>Publisher</b> — your imprint or publisher name</li>
+        <li><b>Copyright</b> — via <codeph>&lt;bookrights&gt;</codeph></li>
+        <li><b>Description</b> — via <codeph>&lt;shortdesc&gt;</codeph> in <codeph>&lt;bookmeta&gt;</codeph></li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Example KDP Build Command</title>
+      <codeblock outputclass="language-bash">dita --input=my-novel.ditamap --format=epub3 \
+  -Depub.platform=kdp \
+  -Depub.theme=fiction \
+  -Depub.cover.image=cover-kdp.jpg \
+  -Depub.series.name="My Series" \
+  -Depub.series.position=1 \
+  -Depub.bisac.codes=FIC028080,FIC031080 \
+  -Depub.publisher="My Press" \
+  -Depub.rights="Copyright 2026 Author Name. All rights reserved." \
+  -Depub.drop.caps=yes</codeblock>
+    </section>
+  </body>
+</topic>

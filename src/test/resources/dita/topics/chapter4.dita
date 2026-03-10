@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="chapter4" xml:lang="en">
+  <title>Metadata and Publishing</title>
+  <shortdesc>How the plugin extracts, generates, and embeds publication metadata in the EPUB package document.</shortdesc>
+  <body>
+    <p><indexterm>metadata<indexterm>OPF</indexterm></indexterm>Metadata is the invisible backbone of a well-published EPUB. It determines how your book appears in store listings, how reading systems display it in libraries, and how discovery platforms index it for search. The dita2epub plugin extracts metadata from two sources — your DITA bookmap and transformation parameters — and embeds it in the OPF package document using Dublin Core and EPUB-specific properties.</p>
+
+    <p>The metadata extraction follows a consistent precedence rule: <b>parameters override bookmap values</b>. This allows you to maintain canonical metadata in your DITA source while overriding specific fields at build time for different publishing contexts (e.g., using a different ISBN for paperback vs. eBook editions).</p>
+
+    <p>The plugin generates the following metadata categories:</p>
+    <ul>
+      <li><b>Identifiers</b> — ISBN-13, ISBN-10, ASIN, or auto-generated UUID</li>
+      <li><b>Titles</b> — main title, subtitle, and series information</li>
+      <li><b>Creators</b> — authors, editors, translators, illustrators, with MARC relator codes</li>
+      <li><b>Publishing</b> — publisher name, publication date, copyright/rights</li>
+      <li><b>Classification</b> — keywords, BISAC subject codes, categories</li>
+      <li><b>Description</b> — book blurb from <codeph>&lt;shortdesc&gt;</codeph></li>
+      <li><b>Accessibility</b> — WCAG conformance, access modes, hazards, features</li>
+      <li><b>Series</b> — collection name, position, and type</li>
+    </ul>
+  </body>
+</topic>

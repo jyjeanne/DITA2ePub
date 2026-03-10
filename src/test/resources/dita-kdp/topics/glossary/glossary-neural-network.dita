@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="glossary-neural-network" xml:lang="en-US">
+  <glossterm>Neural Network</glossterm>
+  <glossdef>A computational system inspired by the structure of biological brains, consisting of interconnected nodes (neurons) organized in layers. Each connection has an adjustable weight that determines how strongly one neuron's output influences another's input. Neural networks learn by adjusting these weights based on training data, a process known as gradient descent. ATLAS-7's architecture contains approximately two trillion such weights.</glossdef>
+</glossentry>

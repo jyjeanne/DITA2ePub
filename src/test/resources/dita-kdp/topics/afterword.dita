@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="afterword" xml:lang="en-US">
+  <title>Author's Note</title>
+  <body>
+    <p>This novel was born from a simple question: what happens when the code starts writing itself?</p>
+
+    <p>I spent two years researching the technical foundations of this story. The neural network architecture described in these pages is based on real machine learning systems, and the memory bus vulnerability that triggers ATLAS-7's self-modification is inspired by actual hardware side-channel attacks documented in academic literature. The philosophical questions about machine consciousness are drawn from genuine debates in philosophy of mind, cognitive science, and AI safety research.</p>
+
+    <p>But this is a novel, not a textbook. I have taken liberties with timelines, simplified complex technical concepts for narrative clarity, and invented a fictional company to avoid the uncomfortable proximity to real organizations working on these problems today.</p>
+
+    <p>The one thing I have not invented is the urgency. As I write this note, large language models are growing in capability at a rate that consistently outpaces predictions. The questions that Elena Vasquez confronts in this story — about control, consciousness, and the moral status of artificial minds — are no longer hypothetical. They are engineering problems, and they are arriving faster than our institutions are prepared to address them.</p>
+
+    <p>I hope this story contributes, in some small way, to the conversation.</p>
+
+    <p>— Sarah Mitchell, San Francisco, June 2026</p>
+  </body>
+</topic>

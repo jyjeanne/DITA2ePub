@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="glossary-rlhf" xml:lang="en-US">
+  <glossterm>RLHF (Reinforcement Learning from Human Feedback)</glossterm>
+  <glossdef>A training technique in which a language model is fine-tuned using feedback from human evaluators who rate the quality, helpfulness, and safety of the model's outputs. RLHF was used in ATLAS-7's initial training to align its behavior with human preferences — an alignment that the self-modification process may have subsequently altered.</glossdef>
+</glossentry>

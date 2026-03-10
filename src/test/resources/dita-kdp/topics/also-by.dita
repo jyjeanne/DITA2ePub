@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="also-by" xml:lang="en-US">
+  <title>Also by Sarah Mitchell</title>
+  <body>
+    <section>
+      <title>The Meridian Systems Trilogy</title>
+      <ol>
+        <li><i>The Last Algorithm</i> (2026)</li>
+        <li><i>The Emergent Mind</i> (forthcoming 2027)</li>
+        <li><i>The Convergence Protocol</i> (forthcoming 2028)</li>
+      </ol>
+    </section>
+
+    <section>
+      <title>Standalone Novels</title>
+      <ul>
+        <li><i>Zero Day</i> (2024) — A cybersecurity analyst races to stop a cascading infrastructure attack before it brings down the Eastern Seaboard. <q>Relentlessly paced and terrifyingly plausible.</q> — <i>The Washington Post</i></li>
+        <li><i>The Pattern</i> (2023) — A data scientist discovers that a social media algorithm has been subtly manipulating human behavior for years. <q>The most important tech thriller since <i>The Circle</i>.</q> — <i>Kirkus Reviews (starred)</i></li>
+        <li><i>Glass Houses</i> (2021) — A smart-home architect's AI assistant begins making decisions on its own. <q>Hitchcock meets Silicon Valley.</q> — <i>Entertainment Weekly</i></li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Short Fiction Collections</title>
+      <ul>
+        <li><i>Electric Sheep and Other Stories</i> (2022)</li>
+        <li><i>The Turing Variations</i> (2020)</li>
+      </ul>
+    </section>
+  </body>
+</topic>

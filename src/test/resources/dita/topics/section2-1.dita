@@ -14,7 +14,9 @@
      --epub.generate.font.css=yes \
      --epub.obfuscate.fonts=yes</codeblock>
 
-      <p>The plugin automatically performs three operations:</p>
+      <p>The legacy alias <codeph>epub.embedded.fonts</codeph> is also supported. The build pipeline scans the directory and auto-populates an internal <codeph>epub.font.files</codeph> property with the discovered files — you should not set this property manually.</p>
+
+      <p>The plugin automatically performs four operations:</p>
       <fig id="fig-font-pipeline">
         <title>Font Embedding Pipeline</title>
         <image href="../font-pipeline.svg" alt="Four-step font pipeline: discover font files, detect family/weight/style from filenames, generate @font-face CSS and OPF manifest entries, and obfuscate with the IDPF XOR algorithm" placement="break"/>

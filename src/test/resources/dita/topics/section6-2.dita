@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="section6-2" xml:lang="en">
+  <title>Apple Books and Other Platforms</title>
+  <body>
+    <section>
+      <title>Apple Books</title>
+      <p><indexterm>Apple Books</indexterm>When targeting Apple Books (<codeph>epub.platform=apple</codeph>), the plugin adds:</p>
+      <ul>
+        <li><codeph>ibooks:specified-fonts</codeph> metadata — tells Apple Books to respect embedded fonts rather than using system defaults</li>
+        <li><codeph>ibooks:version</codeph> metadata — declares the iBooks format version</li>
+        <li>WebKit-prefixed CSS properties where needed for iOS/macOS rendering</li>
+      </ul>
+      <p>Apple Books has excellent EPUB 3.3 support and is generally the most standards-compliant major reading system. If your EPUB validates with EPUBCheck and renders well in Apple Books, it will work in most other readers.</p>
+    </section>
+
+    <section>
+      <title>Kobo</title>
+      <p><indexterm>Kobo</indexterm>The Kobo platform (<codeph>epub.platform=kobo</codeph>) uses standard EPUB 3.3 with minor CSS adjustments. Kobo readers have good spec compliance and support CSS custom properties, embedded fonts, and ARIA roles.</p>
+    </section>
+
+    <section>
+      <title>Generic (Default)</title>
+      <p>The <codeph>generic</codeph> platform produces a standards-compliant EPUB 3.3 without any platform-specific modifications. This is the safest choice when distributing to multiple platforms or when you do not know the target reading system.</p>
+      <p>A generic EPUB will work on all compliant reading systems, including:</p>
+      <ul>
+        <li>Thorium Reader (desktop)</li>
+        <li>Calibre (desktop)</li>
+        <li>Google Play Books</li>
+        <li>Readium-based readers</li>
+        <li>Adobe Digital Editions</li>
+      </ul>
+    </section>
+
+    <section>
+      <title>Multi-Platform Publishing</title>
+      <p>For <indexterm>multi-platform publishing</indexterm>authors distributing to multiple platforms, the recommended workflow is to build separate EPUBs with platform-specific parameters while sharing the same DITA source:</p>
+      <codeblock outputclass="language-bash"># Generic distribution
+dita --input=book.ditamap --format=epub3 \
+  --output=build/generic -Depub.platform=generic
+
+# Amazon KDP
+dita --input=book.ditamap --format=epub3 \
+  --output=build/kdp -Depub.platform=kdp \
+  -Depub.cover.image=cover-kdp.jpg
+
+# Apple Books
+dita --input=book.ditamap --format=epub3 \
+  --output=build/apple -Depub.platform=apple</codeblock>
+      <p>This single-source, multi-output approach is one of the core strengths of using DITA for publishing.</p>
+    </section>
+  </body>
+</topic>

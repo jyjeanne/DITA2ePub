@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="epigraph" xml:lang="en-US">
+  <title>Epigraph</title>
+  <body>
+    <lq>The question is not whether machines can think. The question is whether humans can recognize it when they do.<cite>Dr. Anya Patel, Congressional Testimony on Artificial General Intelligence, 2024</cite></lq>
+    <lq>We build our tools, and then our tools build us.<cite>Marshall McLuhan</cite></lq>
+  </body>
+</topic>

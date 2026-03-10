@@ -267,10 +267,10 @@
     <xsl:param name="root" as="element()"/>
 
     <xsl:choose>
-      <xsl:when test="$root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' topic/year ')]">
-        <xsl:variable name="year" select="$root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' topic/year ')][1]"/>
-        <xsl:variable name="month" select="$root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' topic/month ')][1]"/>
-        <xsl:variable name="day" select="$root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' topic/day ')][1]"/>
+      <xsl:when test="$root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' bookmap/year ')]">
+        <xsl:variable name="year" select="($root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' bookmap/year ')])[1]"/>
+        <xsl:variable name="month" select="($root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' bookmap/month ')])[1]"/>
+        <xsl:variable name="day" select="($root//*[contains(@class, ' bookmap/published ')]//*[contains(@class, ' bookmap/completed ')]/*[contains(@class, ' bookmap/day ')])[1]"/>
 
         <xsl:value-of select="concat($year,
           if ($month) then concat('-', format-number(number(normalize-space($month)), '00')) else '',
@@ -296,8 +296,8 @@
           <xsl:value-of select="$epub.rights"/>
         </xsl:when>
         <xsl:when test="$root//*[contains(@class, ' bookmap/bookrights ')]//*[contains(@class, ' bookmap/copyrfirst ')]">
-          <xsl:variable name="year" select="$root//*[contains(@class, ' bookmap/bookrights ')]//*[contains(@class, ' bookmap/copyrfirst ')]/*[contains(@class, ' topic/year ')][1]"/>
-          <xsl:variable name="holder" select="$root//*[contains(@class, ' bookmap/bookrights ')]//*[contains(@class, ' bookmap/bookowner ')]/*[contains(@class, ' topic/organization ')][1]"/>
+          <xsl:variable name="year" select="($root//*[contains(@class, ' bookmap/bookrights ')]//*[contains(@class, ' bookmap/copyrfirst ')]/*[contains(@class, ' bookmap/year ')])[1]"/>
+          <xsl:variable name="holder" select="($root//*[contains(@class, ' bookmap/bookrights ')]//*[contains(@class, ' bookmap/bookowner ')]/*[contains(@class, ' bookmap/organization ')])[1]"/>
           <xsl:value-of select="concat('Copyright © ', $year, ' ', normalize-space($holder))"/>
         </xsl:when>
         <xsl:when test="$root//*[contains(@class, ' topic/copyright ')]">
@@ -340,21 +340,24 @@
       </dc:subject>
     </xsl:for-each>
 
-    <!-- BISAC codes from parameter -->
-    <xsl:for-each select="tokenize($epub.bisac.codes, ',')">
-      <xsl:variable name="code" select="normalize-space(.)"/>
-      <xsl:if test="string-length($code) > 0">
+    <!-- Collect BISAC codes from parameter -->
+    <xsl:variable name="param-bisac-codes" as="xs:string*"
+      select="for $code in tokenize($epub.bisac.codes, ',') return normalize-space($code)[. != '']"/>
+
+    <xsl:for-each select="$param-bisac-codes">
+      <dc:subject>
+        <xsl:value-of select="."/>
+      </dc:subject>
+    </xsl:for-each>
+
+    <!-- BISAC codes from bookmap bookmeta data elements (skip duplicates already emitted from parameter) -->
+    <xsl:for-each select="$root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/data ')][@name='bisac']">
+      <xsl:variable name="code" select="normalize-space(if (@value) then @value else .)"/>
+      <xsl:if test="not($code = $param-bisac-codes)">
         <dc:subject>
           <xsl:value-of select="$code"/>
         </dc:subject>
       </xsl:if>
-    </xsl:for-each>
-
-    <!-- BISAC codes from bookmap bookmeta data elements -->
-    <xsl:for-each select="$root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/data ')][@name='bisac']">
-      <dc:subject>
-        <xsl:value-of select="normalize-space(if (@value) then @value else .)"/>
-      </dc:subject>
     </xsl:for-each>
   </xsl:template>
 

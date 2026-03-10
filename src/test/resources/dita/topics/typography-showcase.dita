@@ -158,6 +158,40 @@ java -jar epubcheck.jar out/book.epub</codeblock>
     </section>
 
     <section>
+      <title>Lists</title>
+      <p><indexterm>lists<indexterm>ordered and unordered</indexterm></indexterm>Unordered lists use bullet points, while ordered lists use sequential numbers. Both support nesting:</p>
+      <ul>
+        <li>First unordered item
+          <ul>
+            <li>Nested unordered item</li>
+            <li>Another nested item</li>
+          </ul>
+        </li>
+        <li>Second unordered item</li>
+      </ul>
+      <ol>
+        <li>First ordered step
+          <ol>
+            <li>Sub-step A</li>
+            <li>Sub-step B</li>
+          </ol>
+        </li>
+        <li>Second ordered step</li>
+        <li>Third ordered step</li>
+      </ol>
+    </section>
+
+    <section>
+      <title>Cross-References</title>
+      <p><indexterm>cross-references</indexterm>Internal cross-references link to other topics in the publication. External cross-references link to URLs:</p>
+      <ul>
+        <li>External link: <xref href="https://www.w3.org/publishing/epub33/" scope="external" format="html">EPUB 3.3 Specification</xref></li>
+        <li>External link: <xref href="https://www.w3.org/TR/dpub-aria-1.0/" scope="external" format="html">DPUB-ARIA 1.0</xref></li>
+      </ul>
+      <p>The plugin renders external links as standard <codeph>&lt;a href="..."&gt;</codeph> elements. Internal links are resolved to the appropriate <codeph>.xhtml</codeph> filename within the EPUB.</p>
+    </section>
+
+    <section>
       <title>Definition Lists</title>
       <p>Definition lists are useful for glossary-style content within a topic:</p>
       <dl>
@@ -167,7 +201,7 @@ java -jar epubcheck.jar out/book.epub</codeblock>
         </dlentry>
         <dlentry>
           <dt>Fixed-layout</dt>
-          <dd>Content with a fixed page size and position, similar to PDF. Not supported by this plugin.</dd>
+          <dd>Content with a fixed page size and position, similar to PDF. Supported via <codeph>epub.layout=fixed</codeph> for comics, picture books, and highly designed content.</dd>
         </dlentry>
         <dlentry>
           <dt>Spine</dt>

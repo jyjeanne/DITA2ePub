@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossentry PUBLIC "-//OASIS//DTD DITA Glossary Entry//EN" "glossentry.dtd">
+<glossentry id="glossary-agi" xml:lang="en-US">
+  <glossterm>Artificial General Intelligence (AGI)</glossterm>
+  <glossdef>A hypothetical form of artificial intelligence that possesses the ability to understand, learn, and apply knowledge across any intellectual task that a human being can perform. Unlike narrow AI systems designed for specific tasks, AGI would exhibit flexible, general-purpose reasoning. As of 2026, no system has been widely accepted as achieving AGI, though ATLAS-7's self-modification capabilities have reignited the debate.</glossdef>
+</glossentry>

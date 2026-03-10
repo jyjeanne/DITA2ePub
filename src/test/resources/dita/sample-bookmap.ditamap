@@ -94,13 +94,46 @@
     <topicref href="topics/section1-2.dita"/>
   </chapter>
 
-  <!-- Part II: Advanced Topics -->
+  <!-- Part II: Advanced Topics (Font Embedding, Accessibility) -->
   <chapter href="topics/chapter2.dita">
     <topicref href="topics/section2-1.dita"/>
     <topicref href="topics/section2-2.dita"/>
   </chapter>
 
-  <!-- Part III: Typography Showcase -->
+  <!-- Part III: CSS Themes and Styling -->
+  <chapter href="topics/chapter3.dita">
+    <topicref href="topics/section3-1.dita"/>
+    <topicref href="topics/section3-2.dita"/>
+  </chapter>
+
+  <!-- Part IV: Metadata and Publishing -->
+  <chapter href="topics/chapter4.dita">
+    <topicref href="topics/section4-1.dita"/>
+    <topicref href="topics/section4-2.dita"/>
+  </chapter>
+
+  <!-- Part V: Content Generation -->
+  <chapter href="topics/chapter5.dita">
+    <topicref href="topics/section5-1.dita"/>
+    <topicref href="topics/section5-2.dita"/>
+  </chapter>
+
+  <!-- Part VI: Platform-Specific Output -->
+  <chapter href="topics/chapter6.dita">
+    <topicref href="topics/section6-1.dita"/>
+    <topicref href="topics/section6-2.dita"/>
+  </chapter>
+
+  <!-- Part VII: Internationalization -->
+  <chapter href="topics/chapter7.dita"/>
+
+  <!-- Part VIII: Fixed Layout EPUB -->
+  <chapter href="topics/chapter8.dita"/>
+
+  <!-- Part IX: Build Integration and Validation -->
+  <chapter href="topics/chapter9.dita"/>
+
+  <!-- Part X: Typography Showcase -->
   <chapter href="topics/typography-showcase.dita"/>
 
   <!-- ============================================== -->
@@ -109,6 +142,7 @@
   <appendices>
     <appendix href="topics/appendix-a-parameters.dita"/>
     <appendix href="topics/appendix-b-supported-elements.dita"/>
+    <appendix href="topics/appendix-c-css-variables.dita"/>
   </appendices>
 
   <!-- ============================================== -->
@@ -135,9 +169,13 @@
       <tablelist/>
       <glossarylist>
         <topicref href="topics/glossary/glossary-a11y.dita" keys="gl-a11y"/>
+        <topicref href="topics/glossary/glossary-bisac.dita" keys="gl-bisac"/>
         <topicref href="topics/glossary/glossary-bookmap.dita" keys="gl-bookmap"/>
         <topicref href="topics/glossary/glossary-dita.dita" keys="gl-dita"/>
         <topicref href="topics/glossary/glossary-epub.dita" keys="gl-epub"/>
+        <topicref href="topics/glossary/glossary-fxl.dita" keys="gl-fxl"/>
+        <topicref href="topics/glossary/glossary-idpf.dita" keys="gl-idpf"/>
+        <topicref href="topics/glossary/glossary-kdp.dita" keys="gl-kdp"/>
         <topicref href="topics/glossary/glossary-ncx.dita" keys="gl-ncx"/>
         <topicref href="topics/glossary/glossary-opf.dita" keys="gl-opf"/>
         <topicref href="topics/glossary/glossary-ssv.dita" keys="gl-ssv"/>

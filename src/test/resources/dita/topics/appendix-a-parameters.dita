@@ -5,9 +5,9 @@
   <shortdesc>Complete reference of all configurable parameters for the dita2epub plugin.</shortdesc>
   <body>
     <section>
-      <title>EPUB Configuration</title>
+      <title>EPUB Core Configuration</title>
       <table id="table-epub-config">
-        <title>EPUB Configuration Parameters</title>
+        <title>Core EPUB Parameters</title>
         <tgroup cols="3">
           <colspec colname="param" colnum="1" align="left"/>
           <colspec colname="default" colnum="2" align="center"/>
@@ -23,27 +23,226 @@
             <row>
               <entry><indexterm>epub.version</indexterm><codeph>epub.version</codeph></entry>
               <entry>3.3</entry>
-              <entry>EPUB specification version</entry>
+              <entry>EPUB specification version (3.0, 3.2, 3.3)</entry>
             </row>
+            <row>
+              <entry><indexterm>epub.language</indexterm><codeph>epub.language</codeph></entry>
+              <entry>en</entry>
+              <entry>Publication language (BCP 47 tag, e.g., en-US, fr, de, ja)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.identifier.scheme</indexterm><codeph>epub.identifier.scheme</codeph></entry>
+              <entry>UUID</entry>
+              <entry>Identifier scheme: UUID, ISBN, or ASIN</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.isbn</indexterm><codeph>epub.isbn</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>ISBN-13, ISBN-10, or ASIN identifier</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.layout</indexterm><codeph>epub.layout</codeph></entry>
+              <entry>reflowable</entry>
+              <entry>Layout type: reflowable or fixed</entry>
+            </row>
+            <row>
+              <entry><indexterm>args.output.base.name</indexterm><codeph>args.output.base.name</codeph></entry>
+              <entry>output</entry>
+              <entry>Base filename for the output EPUB file</entry>
+            </row>
+            <row>
+              <entry><indexterm>debug</indexterm><codeph>debug</codeph></entry>
+              <entry>no</entry>
+              <entry>Enable debug output during transformation (yes/no)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Cover and Page Generation</title>
+      <table id="table-page-gen">
+        <title>Page Generation Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
             <row>
               <entry><indexterm>epub.generate.cover.page</indexterm><codeph>epub.generate.cover.page</codeph></entry>
               <entry>yes</entry>
-              <entry>Generate a cover page from the cover image</entry>
+              <entry>Generate HTML cover page from image</entry>
             </row>
             <row>
               <entry><indexterm>epub.cover.image</indexterm><codeph>epub.cover.image</codeph></entry>
               <entry><i>(none)</i></entry>
-              <entry>Path to cover image file (SVG, PNG, or JPEG)</entry>
+              <entry>Path to cover image file (JPEG, PNG, SVG)</entry>
             </row>
+            <row>
+              <entry><indexterm>epub.cover.page.style</indexterm><codeph>epub.cover.page.style</codeph></entry>
+              <entry>full-page</entry>
+              <entry>Cover page layout style (full-page, centered, custom)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.copyright.page</indexterm><codeph>epub.copyright.page</codeph></entry>
+              <entry>auto</entry>
+              <entry>Generate copyright page: yes, no, or auto (when bookrights exist)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.generate.ncx</indexterm><codeph>epub.generate.ncx</codeph></entry>
+              <entry>no</entry>
+              <entry>Generate legacy NCX navigation (forced for KDP platform)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.include.toc.page</indexterm><codeph>epub.include.toc.page</codeph></entry>
+              <entry>no</entry>
+              <entry>Generate a separate TOC page in addition to nav.xhtml</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Navigation and Structure</title>
+      <table id="table-nav-params">
+        <title>Navigation Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
             <row>
               <entry><indexterm>epub.toc.depth</indexterm><codeph>epub.toc.depth</codeph></entry>
               <entry>5</entry>
               <entry>Maximum depth of the table of contents</entry>
             </row>
             <row>
-              <entry><indexterm>epub.language</indexterm><codeph>epub.language</codeph></entry>
-              <entry>en</entry>
-              <entry>Publication language (BCP 47 tag)</entry>
+              <entry><indexterm>epub.nav.depth</indexterm><codeph>epub.nav.depth</codeph></entry>
+              <entry>5</entry>
+              <entry>Maximum depth of the navigation document</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.topics.dir</indexterm><codeph>epub.topics.dir</codeph></entry>
+              <entry>content</entry>
+              <entry>Output directory for XHTML content files</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.images.dir</indexterm><codeph>epub.images.dir</codeph></entry>
+              <entry>images</entry>
+              <entry>Output directory for images</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.fonts.dir</indexterm><codeph>epub.fonts.dir</codeph></entry>
+              <entry>fonts</entry>
+              <entry>Output directory for embedded fonts</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.css.dir</indexterm><codeph>epub.css.dir</codeph></entry>
+              <entry>styles</entry>
+              <entry>Output directory for CSS stylesheets</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Back-of-Book Generation</title>
+      <table id="table-backbook-params">
+        <title>Back-of-Book Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.generate.index</indexterm><codeph>epub.generate.index</codeph></entry>
+              <entry>auto</entry>
+              <entry>Generate index: yes, no, auto (when indexlist exists)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.generate.glossary</indexterm><codeph>epub.generate.glossary</codeph></entry>
+              <entry>auto</entry>
+              <entry>Generate glossary: yes, no, auto (when glossarylist exists)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.generate.lof</indexterm><codeph>epub.generate.lof</codeph></entry>
+              <entry>no</entry>
+              <entry>Generate List of Figures: yes, no, auto (when figurelist exists)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.generate.lot</indexterm><codeph>epub.generate.lot</codeph></entry>
+              <entry>no</entry>
+              <entry>Generate List of Tables: yes, no, auto (when tablelist exists)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Metadata</title>
+      <table id="table-metadata-params">
+        <title>Metadata Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.publisher</indexterm><codeph>epub.publisher</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Publisher name (overrides bookmap metadata)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.rights</indexterm><codeph>epub.rights</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Copyright/rights statement (overrides bookmap)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.series.name</indexterm><codeph>epub.series.name</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Series or collection name</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.series.position</indexterm><codeph>epub.series.position</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Position in the series (e.g., 1, 2, 3)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.bisac.codes</indexterm><codeph>epub.bisac.codes</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Comma-separated BISAC subject classification codes</entry>
             </row>
           </tbody>
         </tgroup>
@@ -69,17 +268,17 @@
             <row>
               <entry><indexterm>epub.accessibility</indexterm><codeph>epub.accessibility</codeph></entry>
               <entry>wcag-aa</entry>
-              <entry>Target WCAG conformance level</entry>
+              <entry>Target WCAG conformance level (wcag-a, wcag-aa, wcag-aaa)</entry>
             </row>
             <row>
               <entry><indexterm>epub.aria.landmarks</indexterm><codeph>epub.aria.landmarks</codeph></entry>
               <entry>yes</entry>
-              <entry>Generate ARIA landmark navigation</entry>
+              <entry>Generate ARIA landmark roles (doc-*, nav, main)</entry>
             </row>
             <row>
               <entry><indexterm>epub.skip.nav</indexterm><codeph>epub.skip.nav</codeph></entry>
               <entry>yes</entry>
-              <entry>Add skip navigation link for accessibility</entry>
+              <entry>Add skip-to-content navigation link</entry>
             </row>
           </tbody>
         </tgroup>
@@ -87,7 +286,7 @@
     </section>
 
     <section>
-      <title>Typography</title>
+      <title>Typography and Content</title>
       <table id="table-typography-params">
         <title>Typography Parameters</title>
         <tgroup cols="3">
@@ -110,7 +309,7 @@
             <row>
               <entry><indexterm>epub.hyphenation</indexterm><codeph>epub.hyphenation</codeph></entry>
               <entry>auto</entry>
-              <entry>CSS hyphenation mode (auto, manual, none)</entry>
+              <entry>CSS hyphenation mode: auto, manual, none</entry>
             </row>
             <row>
               <entry><indexterm>epub.locale.quotes</indexterm><codeph>epub.locale.quotes</codeph></entry>
@@ -118,9 +317,234 @@
               <entry>Use locale-aware quotation marks</entry>
             </row>
             <row>
+              <entry><indexterm>epub.table.zebra</indexterm><codeph>epub.table.zebra</codeph></entry>
+              <entry>yes</entry>
+              <entry>Enable alternating row colors on tables</entry>
+            </row>
+            <row>
               <entry><indexterm>epub.figure.numbering</indexterm><codeph>epub.figure.numbering</codeph></entry>
               <entry>global</entry>
-              <entry>Figure numbering scope (global or chapter)</entry>
+              <entry>Figure numbering scope: global or chapter</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.table.numbering</indexterm><codeph>epub.table.numbering</codeph></entry>
+              <entry>global</entry>
+              <entry>Table numbering scope: global or chapter</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.code.line.numbers</indexterm><codeph>epub.code.line.numbers</codeph></entry>
+              <entry>no</entry>
+              <entry>Display line numbers in code blocks</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.code.syntax.classes</indexterm><codeph>epub.code.syntax.classes</codeph></entry>
+              <entry>yes</entry>
+              <entry>Generate CSS classes for syntax highlighting</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Themes and Styling</title>
+      <table id="table-theme-params">
+        <title>Theme and CSS Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.theme</indexterm><codeph>epub.theme</codeph></entry>
+              <entry>default</entry>
+              <entry>CSS theme: default, academic, fiction, technical, training</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.platform</indexterm><codeph>epub.platform</codeph></entry>
+              <entry>generic</entry>
+              <entry>Target platform: generic, kdp, apple, kobo</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.custom.css</indexterm><codeph>epub.custom.css</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Path to custom CSS file to append</entry>
+            </row>
+            <row>
+              <entry><indexterm>args.css</indexterm><codeph>args.css</codeph></entry>
+              <entry>epub-default.css</entry>
+              <entry>Base CSS filename</entry>
+            </row>
+            <row>
+              <entry><indexterm>args.copycss</indexterm><codeph>args.copycss</codeph></entry>
+              <entry>yes</entry>
+              <entry>Copy CSS files to output directory</entry>
+            </row>
+            <row>
+              <entry><indexterm>args.csspath</indexterm><codeph>args.csspath</codeph></entry>
+              <entry>styles</entry>
+              <entry>CSS directory path (legacy DITA-OT parameter, same as <codeph>epub.css.dir</codeph>)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Font Embedding</title>
+      <table id="table-font-params">
+        <title>Font Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.embed.fonts</indexterm><codeph>epub.embed.fonts</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Directory containing font files to embed (TTF, OTF, WOFF, WOFF2)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.embedded.fonts</indexterm><codeph>epub.embedded.fonts</codeph></entry>
+              <entry><i>(none)</i></entry>
+              <entry>Legacy alias for <codeph>epub.embed.fonts</codeph> (use <codeph>epub.embed.fonts</codeph> instead)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.obfuscate.fonts</indexterm><codeph>epub.obfuscate.fonts</codeph></entry>
+              <entry>no</entry>
+              <entry>Apply IDPF obfuscation to embedded fonts</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.generate.font.css</indexterm><codeph>epub.generate.font.css</codeph></entry>
+              <entry>yes</entry>
+              <entry>Auto-generate @font-face CSS declarations</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.font.files</indexterm><codeph>epub.font.files</codeph></entry>
+              <entry><i>(auto)</i></entry>
+              <entry>Auto-populated by font scanning; not for manual use</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Image Optimization</title>
+      <table id="table-image-params">
+        <title>Image Optimization Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.optimize.images</indexterm><codeph>epub.optimize.images</codeph></entry>
+              <entry>no</entry>
+              <entry>Optimize images (JPEG re-encoding, PNG metadata strip)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.image.jpeg.quality</indexterm><codeph>epub.image.jpeg.quality</codeph></entry>
+              <entry>0.8</entry>
+              <entry>JPEG quality for optimization (0.0–1.0)</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.image.max.width</indexterm><codeph>epub.image.max.width</codeph></entry>
+              <entry>0</entry>
+              <entry>Maximum image width in pixels (0 = no resize)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Fixed Layout</title>
+      <table id="table-fxl-params">
+        <title>Fixed Layout Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.fxl.width</indexterm><codeph>epub.fxl.width</codeph></entry>
+              <entry>1024</entry>
+              <entry>Viewport width in pixels</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.fxl.height</indexterm><codeph>epub.fxl.height</codeph></entry>
+              <entry>768</entry>
+              <entry>Viewport height in pixels</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.fxl.orientation</indexterm><codeph>epub.fxl.orientation</codeph></entry>
+              <entry>auto</entry>
+              <entry>Orientation lock: auto, portrait, landscape</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.fxl.spread</indexterm><codeph>epub.fxl.spread</codeph></entry>
+              <entry>auto</entry>
+              <entry>Spread mode: auto, both, landscape, none</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Validation</title>
+      <table id="table-validation-params">
+        <title>Validation Parameters</title>
+        <tgroup cols="3">
+          <colspec colname="param" colnum="1" align="left"/>
+          <colspec colname="default" colnum="2" align="center"/>
+          <colspec colname="desc" colnum="3" align="left"/>
+          <thead>
+            <row>
+              <entry>Parameter</entry>
+              <entry>Default</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry><indexterm>epub.validate</indexterm><codeph>epub.validate</codeph></entry>
+              <entry>yes</entry>
+              <entry>Run EPUBCheck validation after packaging</entry>
+            </row>
+            <row>
+              <entry><indexterm>epub.validation.level</indexterm><codeph>epub.validation.level</codeph></entry>
+              <entry>error</entry>
+              <entry>Validation severity: error or warning</entry>
             </row>
           </tbody>
         </tgroup>
