@@ -32,7 +32,7 @@
 
     <section>
       <title>The Transformation Process</title>
-      <p>The Dita2epub plugin transforms DITA content through a multi-stage process:</p>
+      <p>The DITA2ePub plugin transforms DITA content through a multi-stage process:</p>
       <table>
         <title>Transformation Stages</title>
         <tgroup cols="3">

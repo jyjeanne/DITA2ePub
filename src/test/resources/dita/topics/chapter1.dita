@@ -4,7 +4,7 @@
   <title>Foundations</title>
   <shortdesc>The building blocks: DITA as a source format, EPUB as a delivery format, and the transformation that connects them.</shortdesc>
   <body>
-    <p>Before diving into configuration and advanced features, it is worth understanding the two standards that the dita2epub plugin bridges: <indexterm>DITA<indexterm>definition</indexterm></indexterm>DITA on the authoring side and <indexterm>EPUB<indexterm>definition</indexterm></indexterm>EPUB on the delivery side. This chapter introduces both, explains why the combination is powerful, and gives you a mental model for how the transformation works.</p>
+    <p>Before diving into configuration and advanced features, it is worth understanding the two standards that the DITA2ePub plugin bridges: <indexterm>DITA<indexterm>definition</indexterm></indexterm>DITA on the authoring side and <indexterm>EPUB<indexterm>definition</indexterm></indexterm>EPUB on the delivery side. This chapter introduces both, explains why the combination is powerful, and gives you a mental model for how the transformation works.</p>
 
     <section>
       <title>What Is DITA?</title>

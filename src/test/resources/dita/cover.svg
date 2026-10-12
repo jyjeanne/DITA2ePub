@@ -26,7 +26,7 @@
     A Complete Guide to
   </text>
   <text x="50%" y="58%" text-anchor="middle" fill="#e8e8f0" font-family="Arial, sans-serif" font-size="22">
-    Digital Publishing with dita2epub
+    Digital Publishing with DITA2ePub
   </text>
 
   <!-- Author -->
@@ -41,6 +41,6 @@
 
   <!-- Version -->
   <text x="50%" y="93%" text-anchor="middle" fill="#c0c0d0" font-family="Arial, sans-serif" font-size="12">
-    dita2epub v2.0.0
+    DITA2ePub v2.0.0
   </text>
 </svg>

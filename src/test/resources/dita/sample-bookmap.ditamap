@@ -3,7 +3,7 @@
 <bookmap id="sample-bookmap" xml:lang="en">
   <booktitle>
     <mainbooktitle>The DITA to EPUB Handbook</mainbooktitle>
-    <booktitlealt>A Complete Guide to Digital Publishing with dita2epub</booktitlealt>
+    <booktitlealt>A Complete Guide to Digital Publishing with DITA2ePub</booktitlealt>
   </booktitle>
 
   <bookmeta>

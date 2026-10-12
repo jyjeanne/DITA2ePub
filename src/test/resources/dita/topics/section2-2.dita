@@ -13,7 +13,7 @@
         <image href="../accessibility-layers.svg" alt="Nested layers of EPUB accessibility: content alternatives at the core, then semantic markup, navigation and structure, and WCAG conformance as the outermost layer" placement="break"/>
       </fig>
 
-      <p>The dita2epub plugin addresses each layer automatically:</p>
+      <p>The DITA2ePub plugin addresses each layer automatically:</p>
       <dl>
         <dlentry>
           <dt>Content alternatives</dt>

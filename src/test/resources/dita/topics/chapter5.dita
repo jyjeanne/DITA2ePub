@@ -4,7 +4,7 @@
   <title>Content Generation</title>
   <shortdesc>Automatic generation of cover pages, title pages, copyright pages, navigation, indexes, glossaries, and lists.</shortdesc>
   <body>
-    <p>Beyond transforming your DITA topics into XHTML, the <indexterm>content generation</indexterm>dita2epub plugin generates several structural pages automatically. These pages are standard components of professionally published books, and producing them by hand would be tedious and error-prone.</p>
+    <p>Beyond transforming your DITA topics into XHTML, the <indexterm>content generation</indexterm>DITA2ePub plugin generates several structural pages automatically. These pages are standard components of professionally published books, and producing them by hand would be tedious and error-prone.</p>
 
     <p>The plugin generates two categories of content:</p>
     <ul>

@@ -2,7 +2,7 @@
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
 <topic id="appendix-b-supported-elements" xml:lang="en">
   <title>Supported DITA Elements</title>
-  <shortdesc>A comprehensive list of DITA elements supported by the dita2epub transformation.</shortdesc>
+  <shortdesc>A comprehensive list of DITA elements supported by the DITA2ePub transformation.</shortdesc>
   <body>
     <section>
       <title>Block Elements</title>

@@ -1,4 +1,4 @@
-# Dita2epub - Modern EPUB3 Transformation Plugin
+# DITA2ePub - Modern EPUB3 Transformation Plugin
 
 <div align="center">
 
@@ -21,9 +21,9 @@
 
 ## About
 
-**Dita2epub** is a production-ready DITA-OT plugin that transforms DITA content into standards-compliant EPUB 3.3 publications. Built for technical writers, documentation teams, and publishers who demand professional-quality e-books with modern features and accessibility compliance.
+**DITA2ePub** is a production-ready DITA-OT plugin that transforms DITA content into standards-compliant EPUB 3.3 publications. Built for technical writers, documentation teams, and publishers who demand professional-quality e-books with modern features and accessibility compliance.
 
-### Why Dita2epub?
+### Why DITA2ePub?
 
 - **Standards-Compliant**: Full EPUB 3.3 specification compliance with WCAG 2.1 accessibility
 - **Professional Output**: Custom cover pages, embedded fonts, optimized images, and typographic features
@@ -86,7 +86,7 @@
 
 ## Table of Contents
 
-- [About](#about) - Why Dita2epub? What's new?
+- [About](#about) - Why DITA2ePub? What's new?
 - [Key Features](#key-features) - Core capabilities and advanced features
 - [Requirements](#requirements) - System requirements
 - [Quick Start](#-quick-start) - Installation and first EPUB

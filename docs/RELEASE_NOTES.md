@@ -156,7 +156,7 @@ book.epub
 
 **Release Date:** October 2025
 
-Initial release of Dita2epub - A modern EPUB3 transformation plugin for DITA-OT 4.3.5.
+Initial release of DITA2ePub - A modern EPUB3 transformation plugin for DITA-OT 4.3.5.
 
 ## Features
 

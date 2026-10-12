@@ -1,6 +1,6 @@
-# Contributing to Dita2epub
+# Contributing to DITA2ePub
 
-Thank you for your interest in contributing to Dita2epub! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to DITA2ePub! This document provides guidelines for contributing to the project.
 
 ## Code of Conduct
 
@@ -528,4 +528,4 @@ If you have questions:
 
 By contributing, you agree that your contributions will be licensed under the Apache License 2.0.
 
-Thank you for contributing to Dita2epub!
+Thank you for contributing to DITA2ePub!

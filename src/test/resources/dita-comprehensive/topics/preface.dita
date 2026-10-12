@@ -2,9 +2,9 @@
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
 <topic id="preface">
   <title>Preface</title>
-  <shortdesc>Welcome to the comprehensive test publication for the Dita2epub plugin. This document exercises all major DITA features to ensure proper EPUB3 transformation.</shortdesc>
+  <shortdesc>Welcome to the comprehensive test publication for the DITA2ePub plugin. This document exercises all major DITA features to ensure proper EPUB3 transformation.</shortdesc>
   <body>
-    <p>This test publication has been created to thoroughly validate the Dita2epub plugin's ability to transform DITA content into high-quality EPUB3 publications.</p>
+    <p>This test publication has been created to thoroughly validate the DITA2ePub plugin's ability to transform DITA content into high-quality EPUB3 publications.</p>
 
     <section>
       <title>Purpose of This Document</title>
@@ -41,7 +41,7 @@
     <section>
       <title>How to Use This Test</title>
       <ol>
-        <li>Transform this DITA map to EPUB3 using the Dita2epub plugin</li>
+        <li>Transform this DITA map to EPUB3 using the DITA2ePub plugin</li>
         <li>Validate the resulting EPUB with EPUBCheck</li>
         <li>Open the EPUB in multiple readers (Calibre, Adobe Digital Editions, iBooks)</li>
         <li>Verify all elements render correctly</li>

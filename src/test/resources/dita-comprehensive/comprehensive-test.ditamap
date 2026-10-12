@@ -3,7 +3,7 @@
 <bookmap id="comprehensive-test" xml:lang="en">
   <booktitle>
     <mainbooktitle>Comprehensive EPUB Test Publication</mainbooktitle>
-    <booktitlealt>Testing All DITA Features with Dita2epub Plugin</booktitlealt>
+    <booktitlealt>Testing All DITA Features with DITA2ePub Plugin</booktitlealt>
   </booktitle>
 
   <bookmeta>
@@ -16,7 +16,7 @@
       <data name="lastname">Doe</data>
     </author>
     <publisherinformation>
-      <organization>Dita2epub Test Suite</organization>
+      <organization>DITA2ePub Test Suite</organization>
     </publisherinformation>
     <critdates>
       <created date="2025-10-29"/>

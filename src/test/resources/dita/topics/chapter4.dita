@@ -4,7 +4,7 @@
   <title>Metadata and Publishing</title>
   <shortdesc>How the plugin extracts, generates, and embeds publication metadata in the EPUB package document.</shortdesc>
   <body>
-    <p><indexterm>metadata<indexterm>OPF</indexterm></indexterm>Metadata is the invisible backbone of a well-published EPUB. It determines how your book appears in store listings, how reading systems display it in libraries, and how discovery platforms index it for search. The dita2epub plugin extracts metadata from two sources — your DITA bookmap and transformation parameters — and embeds it in the OPF package document using Dublin Core and EPUB-specific properties.</p>
+    <p><indexterm>metadata<indexterm>OPF</indexterm></indexterm>Metadata is the invisible backbone of a well-published EPUB. It determines how your book appears in store listings, how reading systems display it in libraries, and how discovery platforms index it for search. The DITA2ePub plugin extracts metadata from two sources — your DITA bookmap and transformation parameters — and embeds it in the OPF package document using Dublin Core and EPUB-specific properties.</p>
 
     <p>The metadata extraction follows a consistent precedence rule: <b>parameters override bookmap values</b>. This allows you to maintain canonical metadata in your DITA source while overriding specific fields at build time for different publishing contexts (e.g., using a different ISBN for paperback vs. eBook editions).</p>
 

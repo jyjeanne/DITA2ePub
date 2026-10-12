@@ -4,7 +4,7 @@
   <title>CSS Themes and Styling</title>
   <shortdesc>How to use built-in themes, customize CSS variables, and apply platform-specific stylesheets.</shortdesc>
   <body>
-    <p>The <indexterm>CSS themes</indexterm>dita2epub plugin includes a layered CSS architecture designed for flexibility without complexity. Instead of a single monolithic stylesheet, the plugin uses a cascade of purpose-specific CSS files that are loaded in a defined order. This allows you to change the visual appearance of your EPUB without touching the transformation code.</p>
+    <p>The <indexterm>CSS themes</indexterm>DITA2ePub plugin includes a layered CSS architecture designed for flexibility without complexity. Instead of a single monolithic stylesheet, the plugin uses a cascade of purpose-specific CSS files that are loaded in a defined order. This allows you to change the visual appearance of your EPUB without touching the transformation code.</p>
 
     <p>The CSS cascade order is:</p>
     <ol>

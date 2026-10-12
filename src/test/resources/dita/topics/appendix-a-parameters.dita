@@ -2,7 +2,7 @@
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
 <topic id="appendix-a-parameters" xml:lang="en">
   <title>Plugin Parameters Reference</title>
-  <shortdesc>Complete reference of all configurable parameters for the dita2epub plugin.</shortdesc>
+  <shortdesc>Complete reference of all configurable parameters for the DITA2ePub plugin.</shortdesc>
   <body>
     <section>
       <title>EPUB Core Configuration</title>

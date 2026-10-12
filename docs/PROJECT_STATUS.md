@@ -1,4 +1,4 @@
-# Dita2epub Project Status
+# DITA2ePub Project Status
 
 ## ✅ Current Version: 2.0.0
 
@@ -282,7 +282,7 @@ Copyright 2025 J. Jeanne
 
 ## ✅ Ready for Production
 
-The Dita2epub v1.0.1 plugin is **production-ready** with:
+The DITA2ePub v1.0.1 plugin is **production-ready** with:
 
 - ✅ Complete EPUB3 generation
 - ✅ Cover page generation

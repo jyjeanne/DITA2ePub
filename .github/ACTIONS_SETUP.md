@@ -2,7 +2,7 @@
 
 ## Summary
 
-Comprehensive CI/CD automation has been successfully configured for the Dita2epub project with 4 automated workflows covering testing, releases, and documentation.
+Comprehensive CI/CD automation has been successfully configured for the DITA2ePub project with 4 automated workflows covering testing, releases, and documentation.
 
 ---
 
@@ -369,7 +369,7 @@ The GitHub Actions CI/CD system is **production-ready** and will activate when:
 
 ## 🎖️ Achievement Unlocked!
 
-The Dita2epub project now has:
+The DITA2ePub project now has:
 - 🏗️ **Automated CI/CD** with 4 comprehensive workflows
 - 🧪 **14 matrix test combinations** across platforms and Java versions
 - 📊 **Automated testing** with 44 test methods

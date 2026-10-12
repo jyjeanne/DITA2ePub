@@ -155,7 +155,7 @@ fun Zip.configurePluginContents() {
 // Package the local plugin as a ZIP file for DITA-OT installation
 val packagePlugin = tasks.register<Zip>("packagePlugin") {
     group = "dita"
-    description = "Package the dita2epub plugin as a ZIP file"
+    description = "Package the DITA2ePub plugin as a ZIP file"
     archiveFileName.set("io.github.jyjeanne.dita2epub.zip")
     destinationDirectory.set(layout.buildDirectory.dir("plugin"))
     configurePluginContents()
@@ -189,10 +189,10 @@ tasks.register("distChecksum") {
     }
 }
 
-// Install local dita2epub plugin to DITA-OT
+// Install local DITA2ePub plugin to DITA-OT
 tasks.register<com.github.jyjeanne.DitaOtInstallPluginTask>("installLocalPlugin") {
     group = "dita"
-    description = "Install the local dita2epub plugin to DITA-OT"
+    description = "Install the local DITA2ePub plugin to DITA-OT"
     dependsOn("downloadDitaOt", packagePlugin)
     ditaOtDir.set(ditaOtHome)
     plugins.set(listOf(layout.buildDirectory.file("plugin/io.github.jyjeanne.dita2epub.zip").get().asFile.absolutePath))

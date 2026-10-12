@@ -2,7 +2,7 @@
 
 ## Overview
 
-Comprehensive test suite for Dita2epub EPUB3 transformation plugin.
+Comprehensive test suite for DITA2ePub EPUB3 transformation plugin.
 
 ## Test Statistics
 

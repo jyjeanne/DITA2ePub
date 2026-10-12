@@ -17,7 +17,7 @@
 
     <section>
       <title>Installation</title>
-      <p>The <indexterm>dita2epub plugin<indexterm>installation</indexterm></indexterm>plugin can be installed from a local ZIP file or from the DITA-OT plugin registry:</p>
+      <p>The <indexterm>DITA2ePub plugin<indexterm>installation</indexterm></indexterm>plugin can be installed from a local ZIP file or from the DITA-OT plugin registry:</p>
       <codeblock outputclass="language-bash">## Install from a local ZIP archive
 dita install dita2epub-1.5.0.zip
 

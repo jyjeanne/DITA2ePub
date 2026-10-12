@@ -4,7 +4,7 @@
   <title>Build Integration and Validation</title>
   <shortdesc>Using the plugin from the command line, Gradle builds, and CI/CD pipelines, with EPUBCheck validation.</shortdesc>
   <body>
-    <p>The <indexterm>build integration</indexterm>dita2epub plugin integrates with the standard DITA-OT build infrastructure. You can invoke it from the command line, from Gradle or Maven build scripts, or from continuous integration pipelines.</p>
+    <p>The <indexterm>build integration</indexterm>DITA2ePub plugin integrates with the standard DITA-OT build infrastructure. You can invoke it from the command line, from Gradle or Maven build scripts, or from continuous integration pipelines.</p>
 
     <section>
       <title>Command Line Usage</title>

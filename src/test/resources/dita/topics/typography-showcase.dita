@@ -2,7 +2,7 @@
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
 <topic id="typography-showcase" xml:lang="en">
   <title>Typography and Element Showcase</title>
-  <shortdesc>A comprehensive demonstration of every DITA element supported by the dita2epub plugin, with examples of the rendered output.</shortdesc>
+  <shortdesc>A comprehensive demonstration of every DITA element supported by the DITA2ePub plugin, with examples of the rendered output.</shortdesc>
   <body>
     <p>This chapter serves as a visual and structural test for every content element the plugin transforms. If you are reading a well-formatted EPUB, each section below should render with the appropriate styling, semantic markup, and accessibility attributes.</p>
 

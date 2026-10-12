@@ -1,8 +1,8 @@
-# Dita2epub - Technical Specification
+# DITA2ePub - Technical Specification
 
 ## Project Overview
 
-**Project Name:** Dita2epub
+**Project Name:** DITA2ePub
 **Plugin ID:** io.github.jyjeanne.dita2epub
 **Version:** 2.0.0
 **Target DITA-OT Version:** 4.4+
@@ -12,7 +12,7 @@
 
 ### Description
 
-Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 that converts DITA XML content and maps into publication-ready EPUB 3.3 publications. It extends the DITA-OT HTML5 base transformation with 9 XSLT 3.0 modules for OPF, navigation, metadata, content generation, back-of-book index, consolidated glossary, and platform-specific logic, backed by Java utilities for EPUB-compliant ZIP packaging, font obfuscation, image optimization, and validation. The plugin produces EPUB 3.3 output with full Structural Semantics Vocabulary (SSV) compliance, professional typography features, and retail distribution metadata (ISBN, series, BISAC, MARC relator codes) suitable for Amazon KDP, Apple Books, and Kobo ingestion.
+DITA2ePub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 that converts DITA XML content and maps into publication-ready EPUB 3.3 publications. It extends the DITA-OT HTML5 base transformation with 9 XSLT 3.0 modules for OPF, navigation, metadata, content generation, back-of-book index, consolidated glossary, and platform-specific logic, backed by Java utilities for EPUB-compliant ZIP packaging, font obfuscation, image optimization, and validation. The plugin produces EPUB 3.3 output with full Structural Semantics Vocabulary (SSV) compliance, professional typography features, and retail distribution metadata (ISBN, series, BISAC, MARC relator codes) suitable for Amazon KDP, Apple Books, and Kobo ingestion.
 
 ### Key Differentiators
 
@@ -102,7 +102,7 @@ dependencies {
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              Dita2epub Plugin Entry Point                    │
+│              DITA2ePub Plugin Entry Point                    │
 │        (plugin.xml → build-epub3.xml → XSLT)                │
 └──────────────────────┬──────────────────────────────────────┘
                        │
@@ -779,7 +779,7 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] DITA-OT plugin registry support
 
 ### v1.3.0 (Released 2026-03-05)
-*Goal: Close the visual gap between dita2epub output and commercial publishers.*
+*Goal: Close the visual gap between DITA2ePub output and commercial publishers.*
 
 - [x] **Auto `@font-face` CSS generation** from embedded font files with font family/weight/style detection
 - [x] **Custom CSS injection** — `epub.custom.css` parameter for publisher-specific stylesheets

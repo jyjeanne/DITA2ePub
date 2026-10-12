@@ -7,9 +7,9 @@
 
     <p>Two decades later, the world has changed profoundly. Readers expect content on their phones, tablets, and e-readers. Accessibility is no longer an afterthought but a legal requirement in many jurisdictions. And the <indexterm>EPUB<indexterm>adoption</indexterm></indexterm>EPUB format — once a niche concern of trade publishers — has become the universal container for reflowable digital content, supported by every major reading platform from Apple Books to Kobo to Thorium Reader.</p>
 
-    <p>What has not changed is the fundamental challenge: how do you take structured, semantically rich content and transform it into a publication that is both technically correct and aesthetically pleasing? This is the question that the <indexterm>dita2epub plugin</indexterm>dita2epub plugin answers.</p>
+    <p>What has not changed is the fundamental challenge: how do you take structured, semantically rich content and transform it into a publication that is both technically correct and aesthetically pleasing? This is the question that the <indexterm>DITA2ePub plugin</indexterm>DITA2ePub plugin answers.</p>
 
-    <p>I first encountered this project when searching for a modern EPUB 3 transformation for DITA-OT. The existing options were either outdated, incomplete, or produced output that failed EPUBCheck validation. The dita2epub plugin took a different approach: start from the EPUB 3.3 specification and work backward, ensuring that every output file is valid, accessible, and well-structured from the ground up.</p>
+    <p>I first encountered this project when searching for a modern EPUB 3 transformation for DITA-OT. The existing options were either outdated, incomplete, or produced output that failed EPUBCheck validation. The DITA2ePub plugin took a different approach: start from the EPUB 3.3 specification and work backward, ensuring that every output file is valid, accessible, and well-structured from the ground up.</p>
 
     <p>What impressed me most was the attention to detail. Footnotes with proper backlinks. Localized labels for notes and navigation in eleven languages. Font obfuscation using the IDPF algorithm. Automatic generation of indexes, glossaries, and lists of figures — all from standard DITA markup, with no custom extensions required.</p>
 

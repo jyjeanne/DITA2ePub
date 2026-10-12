@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
-  <!-- String resource registry for Dita2epub plugin -->
+  <!-- String resource registry for DITA2ePub plugin -->
   <stringfile locale="en" filename="strings-en.xml"/>
   <stringfile locale="en-US" filename="strings-en.xml"/>
   <stringfile locale="en-GB" filename="strings-en.xml"/>

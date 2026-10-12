@@ -1,4 +1,4 @@
-# Test Coverage Summary - Dita2epub v1.0.1
+# Test Coverage Summary - DITA2ePub v1.0.1
 
 ## ✅ Test Implementation Complete
 
@@ -370,4 +370,4 @@ jobs:
 ✅ **Professional test documentation**
 ✅ **CI/CD ready test suite**
 
-The Dita2epub plugin now has **enterprise-grade test coverage** ensuring quality and reliability for EPUB 3.3 generation from DITA content.
+The DITA2ePub plugin now has **enterprise-grade test coverage** ensuring quality and reliability for EPUB 3.3 generation from DITA content.

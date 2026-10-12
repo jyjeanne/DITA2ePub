@@ -2,11 +2,11 @@
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
 <topic id="introduction" xml:lang="en">
   <title>Introduction</title>
-  <shortdesc>What the dita2epub plugin is, what problem it solves, and what you can expect from it.</shortdesc>
+  <shortdesc>What the DITA2ePub plugin is, what problem it solves, and what you can expect from it.</shortdesc>
   <body>
-    <p>The <indexterm>dita2epub plugin<indexterm>overview</indexterm></indexterm>dita2epub plugin is a transformation for the DITA Open Toolkit that converts DITA content into production-quality EPUB 3 publications. It handles every aspect of the process: structural mapping, metadata extraction, navigation generation, accessibility compliance, font embedding, image optimization, and standards validation.</p>
+    <p>The <indexterm>DITA2ePub plugin<indexterm>overview</indexterm></indexterm>DITA2ePub plugin is a transformation for the DITA Open Toolkit that converts DITA content into production-quality EPUB 3 publications. It handles every aspect of the process: structural mapping, metadata extraction, navigation generation, accessibility compliance, font embedding, image optimization, and standards validation.</p>
 
-    <p>Unlike minimal proof-of-concept transformations, dita2epub is designed for <b>commercial publishing</b>. It produces output that passes EPUBCheck validation, conforms to WCAG 2.1 AA accessibility guidelines, and renders correctly across major reading systems. The goal is simple: you should be able to take a well-authored DITA bookmap and produce an EPUB that is ready for distribution — to an app store, a corporate intranet, or a reader's bookshelf — without manual post-processing.</p>
+    <p>Unlike minimal proof-of-concept transformations, DITA2ePub is designed for <b>commercial publishing</b>. It produces output that passes EPUBCheck validation, conforms to WCAG 2.1 AA accessibility guidelines, and renders correctly across major reading systems. The goal is simple: you should be able to take a well-authored DITA bookmap and produce an EPUB that is ready for distribution — to an app store, a corporate intranet, or a reader's bookshelf — without manual post-processing.</p>
 
     <section>
       <title>The Problem</title>
@@ -18,7 +18,7 @@
         <li>Accessibility requirements demand ARIA roles, <codeph>epub:type</codeph> attributes, proper heading hierarchy, and alt text validation.</li>
         <li>The output must be packaged as a valid ZIP archive with strict ordering requirements (the <codeph>mimetype</codeph> file must be first, uncompressed, at byte offset zero).</li>
       </ul>
-      <p>The dita2epub plugin handles all of this automatically.</p>
+      <p>The DITA2ePub plugin handles all of this automatically.</p>
     </section>
 
     <section>

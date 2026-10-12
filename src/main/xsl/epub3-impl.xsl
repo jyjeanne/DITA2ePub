@@ -1275,7 +1275,7 @@
         <head>
           <meta name="dtb:uid" content="{epub:get-identifier($map)}"/>
           <meta name="dtb:depth" content="{$epub.toc.depth}"/>
-          <meta name="dtb:generator" content="DITA2EPUB"/>
+          <meta name="dtb:generator" content="DITA2ePub"/>
           <meta name="dtb:totalPageCount" content="0"/>
           <meta name="dtb:maxPageNumber" content="0"/>
         </head>

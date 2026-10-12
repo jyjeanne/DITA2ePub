@@ -10,7 +10,7 @@
                 version="3.0">
 
   <!--
-    Dita2epub - Modern EPUB3 Transformation Plugin for DITA-OT 4.4
+    DITA2ePub - Modern EPUB3 Transformation Plugin for DITA-OT 4.4
 
     Main entry point for DITA to EPUB3 transformation
 
@@ -47,7 +47,7 @@
   <!-- Root template -->
   <xsl:template match="/">
     <xsl:message>
-      <xsl:text>Dita2epub v2.0.0 - Starting EPUB3 transformation</xsl:text>
+      <xsl:text>DITA2ePub v2.0.0 - Starting EPUB3 transformation</xsl:text>
     </xsl:message>
     <xsl:message>
       <xsl:text>DITA-OT Version: </xsl:text>

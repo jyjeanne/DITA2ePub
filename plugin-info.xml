@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin-info>
-  <name>Dita2epub</name>
+  <name>DITA2ePub</name>
   <description>Modern EPUB 3.3 transformation plugin for DITA-OT 4.4 with accessibility, cover pages, font embedding, and image optimization</description>
   <version>1.2.0</version>
   <author>J. Jeanne</author>

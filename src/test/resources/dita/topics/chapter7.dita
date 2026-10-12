@@ -4,7 +4,7 @@
   <title>Internationalization</title>
   <shortdesc>Language support, right-to-left text, locale-aware typography, and CJK considerations.</shortdesc>
   <body>
-    <p>The <indexterm>internationalization</indexterm>dita2epub plugin supports content in multiple languages with features that go beyond simple text translation. The plugin adapts its output based on the <codeph>xml:lang</codeph> attribute in your DITA source, automatically adjusting text direction, quotation marks, and generated labels.</p>
+    <p>The <indexterm>internationalization</indexterm>DITA2ePub plugin supports content in multiple languages with features that go beyond simple text translation. The plugin adapts its output based on the <codeph>xml:lang</codeph> attribute in your DITA source, automatically adjusting text direction, quotation marks, and generated labels.</p>
 
     <section>
       <title>Language Detection</title>
