@@ -25,7 +25,24 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class EpubGenerationIntegrationTest {
 
-    private static final String DITA_COMMAND = "dita";
+    private static final String DITA_SCRIPT =
+        System.getProperty("os.name").toLowerCase().startsWith("windows") ? "dita.bat" : "dita";
+
+    /**
+     * Resolve the DITA-OT launcher: DITA_HOME/bin/dita (dita.bat on Windows) when
+     * DITA_HOME is set, otherwise the launcher found on PATH.
+     * The script name must be explicit on Windows, where ProcessBuilder only appends ".exe".
+     */
+    static String ditaCommand() {
+        String ditaHome = System.getenv("DITA_HOME");
+        if (ditaHome != null && !ditaHome.isEmpty()) {
+            File launcher = Paths.get(ditaHome, "bin", DITA_SCRIPT).toFile();
+            if (launcher.isFile()) {
+                return launcher.getAbsolutePath();
+            }
+        }
+        return DITA_SCRIPT;
+    }
 
     /**
      * Check if DITA-OT is available on the system
@@ -33,15 +50,14 @@ class EpubGenerationIntegrationTest {
     static boolean isDitaOtAvailable() {
         String ditaHome = System.getenv("DITA_HOME");
         if (ditaHome != null && !ditaHome.isEmpty()) {
-            File ditaHomeDir = new File(ditaHome);
-            if (ditaHomeDir.exists() && ditaHomeDir.isDirectory()) {
+            if (Paths.get(ditaHome, "bin", DITA_SCRIPT).toFile().isFile()) {
                 return true;
             }
         }
 
-        // Try to run dita command
+        // Try to run dita command from PATH
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{"dita", "--version"});
+            Process process = Runtime.getRuntime().exec(new String[]{DITA_SCRIPT, "--version"});
             int exitCode = process.waitFor();
             return exitCode == 0;
         } catch (Exception e) {
@@ -64,7 +80,7 @@ class EpubGenerationIntegrationTest {
 
         // Build DITA command
         List<String> command = new ArrayList<>();
-        command.add("dita");
+        command.add(ditaCommand());
         command.add("--input=" + ditamapFile.getAbsolutePath());
         command.add("--format=epub3");
         command.add("--output=" + outputDir.getAbsolutePath());
@@ -140,7 +156,7 @@ class EpubGenerationIntegrationTest {
 
         // Build DITA command
         List<String> command = new ArrayList<>();
-        command.add("dita");
+        command.add(ditaCommand());
         command.add("--input=" + ditamapFile.getAbsolutePath());
         command.add("--format=epub3");
         command.add("--output=" + outputDir.getAbsolutePath());
@@ -205,7 +221,7 @@ class EpubGenerationIntegrationTest {
 
         // Build DITA command with French language settings
         List<String> command = new ArrayList<>();
-        command.add("dita");
+        command.add(ditaCommand());
         command.add("--input=" + ditamapFile.getAbsolutePath());
         command.add("--format=epub3");
         command.add("--output=" + outputDir.getAbsolutePath());
@@ -279,8 +295,8 @@ class EpubGenerationIntegrationTest {
             System.out.println("To test EPUB generation, please:");
             System.out.println("1. Download DITA-OT from https://www.dita-ot.org/download");
             System.out.println("2. Extract and set DITA_HOME environment variable");
-            System.out.println("3. Add DITA-OT bin directory to PATH");
-            System.out.println("4. Install this plugin: gradle installPlugin");
+            System.out.println("3. Or add DITA-OT bin directory to PATH instead");
+            System.out.println("4. Install this plugin: gradle installLocalPlugin");
             System.out.println("5. Run tests again");
             System.out.println("=".repeat(70));
         } else {

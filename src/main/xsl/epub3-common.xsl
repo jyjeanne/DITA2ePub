@@ -283,6 +283,18 @@
     </xsl:choose>
   </xsl:function>
 
+  <!-- Normalized topic path from a topicref href: forward slashes, no fragment, no leading ../ -->
+  <xsl:function name="epub:get-topic-path" as="xs:string">
+    <xsl:param name="href" as="xs:string"/>
+    <xsl:sequence select="replace(substring-before(concat(replace($href, '\\', '/'), '#'), '#'), '^(\./|\.\./)+', '')"/>
+  </xsl:function>
+
+  <!-- Topic filename from a normalized topic path, without folder and extension -->
+  <xsl:function name="epub:get-topic-name" as="xs:string">
+    <xsl:param name="path" as="xs:string"/>
+    <xsl:sequence select="replace(tokenize($path, '/')[last()], '\.[^.]+$', '')"/>
+  </xsl:function>
+
   <!-- Generate unique filename from topicref -->
   <xsl:function name="epub:get-topic-filename" as="xs:string">
     <xsl:param name="topicref" as="element()"/>
@@ -290,9 +302,22 @@
     <xsl:variable name="href" select="$topicref/@href"/>
     <xsl:choose>
       <xsl:when test="$href">
-        <!-- Use the href filename without path and extension -->
-        <xsl:variable name="filename" select="tokenize(replace(string($href), '\\', '/'), '/')[last()]"/>
-        <xsl:sequence select="concat(replace($filename, '\.[^.]+$', ''), '.xhtml')"/>
+        <xsl:variable name="path" select="epub:get-topic-path($href)"/>
+        <xsl:variable name="name" select="epub:get-topic-name($path)"/>
+        <!-- Topics are flattened into one directory: when topics in different folders share a
+             name (e.g. chapter1/overview.dita and chapter2/overview.dita), use their path instead -->
+        <xsl:variable name="same-name-paths" select="distinct-values(
+          for $ref in $topicref/ancestor-or-self::*[last()]//*[contains(@class, ' map/topicref ')][@href]
+          return epub:get-topic-path($ref/@href))[epub:get-topic-name(.) = $name]"/>
+        <xsl:choose>
+          <xsl:when test="count($same-name-paths) gt 1">
+            <xsl:sequence select="concat(replace(replace($path, '\.[^./]+$', ''), '[^A-Za-z0-9._-]+', '-'), '.xhtml')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Use the href filename without path and extension -->
+            <xsl:sequence select="concat($name, '.xhtml')"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <xsl:sequence select="concat('topic-', generate-id($topicref), '.xhtml')"/>

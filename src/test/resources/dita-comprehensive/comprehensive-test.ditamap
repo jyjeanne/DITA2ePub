@@ -15,22 +15,14 @@
       <data name="firstname">John</data>
       <data name="lastname">Doe</data>
     </author>
-    <publisher>Dita2epub Test Suite</publisher>
+    <publisherinformation>
+      <organization>Dita2epub Test Suite</organization>
+    </publisherinformation>
     <critdates>
       <created date="2025-10-29"/>
       <revised modified="2025-10-29"/>
     </critdates>
-    <bookrights>
-      <copyrfirst>
-        <year>2025</year>
-      </copyrfirst>
-      <bookowner>
-        <organization>Open Source Community</organization>
-      </bookowner>
-    </bookrights>
-    <bookid>
-      <isbn>978-0-000000-00-0</isbn>
-    </bookid>
+    <category>Technical Documentation</category>
     <keywords>
       <keyword>DITA</keyword>
       <keyword>EPUB3</keyword>
@@ -39,7 +31,17 @@
       <keyword>Testing</keyword>
       <keyword>Documentation</keyword>
     </keywords>
-    <category>Technical Documentation</category>
+    <bookid>
+      <isbn>978-0-000000-00-0</isbn>
+    </bookid>
+    <bookrights>
+      <copyrfirst>
+        <year>2025</year>
+      </copyrfirst>
+      <bookowner>
+        <organization>Open Source Community</organization>
+      </bookowner>
+    </bookrights>
   </bookmeta>
 
   <frontmatter>

@@ -10,11 +10,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -51,8 +54,7 @@ class CoverPageGenerationTest {
             String coverContent = new String(zipFile.getInputStream(coverEntry).readAllBytes());
             assertTrue(coverContent.contains("cover"), "Cover page should have cover class");
             assertTrue(coverContent.contains("cover-image"), "Cover page should reference cover image");
-            assertTrue(coverContent.contains("width: 100%"), "Full-page style should set width to 100%");
-            assertTrue(coverContent.contains("height: 100vh"), "Full-page style should set height to 100vh");
+            assertFullPageCoverStyle(zipFile, coverContent);
         }
     }
 
@@ -73,13 +75,13 @@ class CoverPageGenerationTest {
             String coverContent = new String(zipFile.getInputStream(coverEntry).readAllBytes());
 
             if ("full-page".equals(style)) {
-                assertTrue(coverContent.contains("width: 100%"),
-                    "Full-page style should set width to 100%");
-                assertTrue(coverContent.contains("height: 100vh"),
-                    "Full-page style should set height to 100vh");
+                assertFullPageCoverStyle(zipFile, coverContent);
             } else if ("centered".equals(style)) {
-                assertTrue(coverContent.contains("flex") || coverContent.contains("center"),
-                    "Centered style should use flex or center");
+                assertTrue(coverContent.contains("class=\"cover-page-centered\""),
+                    "Centered style should set the cover-page-centered class");
+                String rule = extractCssRule(readLinkedStylesheet(zipFile, coverContent),
+                    ".cover-page-centered body");
+                assertTrue(rule.contains("display: flex"), "Centered style should use flex layout");
             }
         }
     }
@@ -125,8 +127,8 @@ class CoverPageGenerationTest {
             ZipEntry opfEntry = zipFile.getEntry("content/content.opf");
             String opfContent = new String(zipFile.getInputStream(opfEntry).readAllBytes());
 
-            // Extract spine section
-            int spineStart = opfContent.indexOf("<spine>");
+            // Extract spine section (the spine element carries attributes such as page-progression-direction)
+            int spineStart = opfContent.indexOf("<spine");
             int spineEnd = opfContent.indexOf("</spine>");
             assertTrue(spineStart > 0 && spineEnd > spineStart, "Spine section should exist");
 
@@ -189,7 +191,7 @@ class CoverPageGenerationTest {
         outputDir.mkdirs();
 
         List<String> command = new ArrayList<>();
-        command.add("dita");
+        command.add(EpubGenerationIntegrationTest.ditaCommand());
         command.add("--input=" + ditamapFile.getAbsolutePath());
         command.add("--format=epub3");
         command.add("--output=" + outputDir.getAbsolutePath());
@@ -221,5 +223,31 @@ class CoverPageGenerationTest {
     private File findEpubFile(File directory) {
         File[] epubFiles = directory.listFiles((dir, name) -> name.endsWith(".epub"));
         return (epubFiles != null && epubFiles.length > 0) ? epubFiles[0] : null;
+    }
+
+    /**
+     * Cover styles live in the shared stylesheet, selected by a class on the cover page's html element.
+     */
+    private void assertFullPageCoverStyle(ZipFile zipFile, String coverContent) throws IOException {
+        assertTrue(coverContent.contains("class=\"cover-page-full\""),
+            "Full-page style should set the cover-page-full class");
+        String rule = extractCssRule(readLinkedStylesheet(zipFile, coverContent), ".cover-page-full .cover-image");
+        assertTrue(rule.contains("width: 100%"), "Full-page style should set width to 100%");
+        assertTrue(rule.contains("height: 100vh"), "Full-page style should set height to 100vh");
+    }
+
+    private String readLinkedStylesheet(ZipFile zipFile, String coverContent) throws IOException {
+        Matcher matcher = Pattern.compile("<link[^>]+href=\"([^\"]+\\.css)\"").matcher(coverContent);
+        assertTrue(matcher.find(), "Cover page should link a stylesheet");
+        String cssPath = URI.create("content/cover.xhtml").resolve(matcher.group(1)).getPath();
+        ZipEntry cssEntry = zipFile.getEntry(cssPath);
+        assertNotNull(cssEntry, "Linked stylesheet should exist in EPUB: " + cssPath);
+        return new String(zipFile.getInputStream(cssEntry).readAllBytes());
+    }
+
+    private String extractCssRule(String css, String selector) {
+        int start = css.indexOf(selector + " {");
+        assertTrue(start >= 0, "Stylesheet should define rule: " + selector);
+        return css.substring(start, css.indexOf('}', start));
     }
 }

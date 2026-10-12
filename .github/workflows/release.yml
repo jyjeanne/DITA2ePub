@@ -35,8 +35,8 @@ jobs:
 
       - name: Install plugin in DITA-OT and test
         run: |
-          wget -q https://github.com/dita-ot/dita-ot/releases/download/4.4/dita-ot-4.4.zip
-          unzip -q dita-ot-4.4.zip
+          wget -q https://github.com/dita-ot/dita-ot/releases/download/4.4.1/dita-ot-4.4.1.zip
+          unzip -q dita-ot-4.4.1.zip
 
           # Find the actual dist ZIP produced by Gradle (avoids version mismatch with git tag)
           DIST_ZIP=$(ls build/dist/io.github.jyjeanne.dita2epub-*.zip | head -1)
@@ -47,10 +47,10 @@ jobs:
           echo "Installing plugin from: $DIST_ZIP"
 
           # Install plugin from the distribution ZIP
-          ./dita-ot-4.4/bin/dita install "$DIST_ZIP"
+          ./dita-ot-4.4.1/bin/dita install "$DIST_ZIP"
 
           # Test EPUB generation
-          ./dita-ot-4.4/bin/dita \
+          ./dita-ot-4.4.1/bin/dita \
             --input="src/test/resources/dita/sample-bookmap.ditamap" \
             --format=epub3 \
             --output="build/release-test"

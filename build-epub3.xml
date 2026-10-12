@@ -205,6 +205,7 @@
       <include name="**/*.ditamap"/>
 
       <!-- XSLT Parameters -->
+      <param name="dita.ot.version" expression="${otversion}"/>
       <param name="epub.version" expression="${epub.version}"/>
       <param name="epub.toc.depth" expression="${epub.toc.depth}"/>
       <param name="epub.nav.depth" expression="${epub.nav.depth}"/>
@@ -434,7 +435,16 @@
     <available file="${font.source}" type="dir" property="font.source.isdir"/>
 
     <!-- Copy fonts from directory -->
-    <copy todir="${output.dir}/${epub.fonts.dir}" failonerror="false" if="font.source.isdir">
+    <antcall target="epub3.copy.fonts.dir"/>
+
+    <!-- Copy individual font files (comma-separated list) -->
+    <antcall target="epub3.copy.fonts.list"/>
+
+    <echo message="Fonts copied to ${epub.fonts.dir}/"/>
+  </target>
+
+  <target name="epub3.copy.fonts.dir" if="font.source.isdir">
+    <copy todir="${output.dir}/${epub.fonts.dir}" failonerror="false">
       <fileset dir="${font.source}">
         <include name="**/*.ttf"/>
         <include name="**/*.otf"/>
@@ -442,11 +452,6 @@
         <include name="**/*.woff2"/>
       </fileset>
     </copy>
-
-    <!-- Copy individual font files (comma-separated list) -->
-    <antcall target="epub3.copy.fonts.list"/>
-
-    <echo message="Fonts copied to ${epub.fonts.dir}/"/>
   </target>
 
   <target name="epub3.copy.fonts.list" unless="font.source.isdir">

@@ -89,7 +89,7 @@ class EpubStructureTest {
             assertTrue(hasDirectory(zipFile, "content/"), "content/ directory should exist");
             assertTrue(hasDirectory(zipFile, "images/"), "images/ directory should exist");
             assertTrue(hasDirectory(zipFile, "styles/"), "styles/ directory should exist");
-            assertTrue(hasDirectory(zipFile, "fonts/"), "fonts/ directory should exist");
+            // fonts/ is only packaged when fonts are embedded (covered by FontEmbeddingTest)
         }
     }
 
@@ -246,7 +246,7 @@ class EpubStructureTest {
         outputDir.mkdirs();
 
         List<String> command = new ArrayList<>();
-        command.add("dita");
+        command.add(EpubGenerationIntegrationTest.ditaCommand());
         command.add("--input=" + ditamapFile.getAbsolutePath());
         command.add("--format=epub3");
         command.add("--output=" + outputDir.getAbsolutePath());

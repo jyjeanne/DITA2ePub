@@ -11,6 +11,9 @@
     Defines all configurable parameters for EPUB3 transformation
   -->
 
+  <!-- Running DITA-OT version (from the otversion Ant property), used for logging -->
+  <xsl:param name="dita.ot.version" as="xs:string" select="'unknown'"/>
+
   <!-- EPUB Version -->
   <xsl:param name="epub.version" as="xs:string" select="'3.3'"/>
 

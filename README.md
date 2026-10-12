@@ -3,10 +3,10 @@
 <div align="center">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![DITA-OT](https://img.shields.io/badge/DITA--OT-4.4-green.svg)](https://www.dita-ot.org/)
+[![DITA-OT](https://img.shields.io/badge/DITA--OT-4.4.1-green.svg)](https://www.dita-ot.org/)
 [![EPUB](https://img.shields.io/badge/EPUB-3.3-purple.svg)](https://www.w3.org/publishing/epub3/)
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://adoptium.net/)
-[![Tests](https://img.shields.io/badge/tests-41%20passing-success.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-43%20passing-success.svg)](#testing)
 
 [![CI Build](https://github.com/jyjeanne/dita2epub/actions/workflows/ci.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/ci.yml)
 [![Documentation](https://github.com/jyjeanne/dita2epub/actions/workflows/docs.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/docs.yml)
@@ -27,9 +27,9 @@
 
 - **Standards-Compliant**: Full EPUB 3.3 specification compliance with WCAG 2.1 accessibility
 - **Professional Output**: Custom cover pages, embedded fonts, optimized images, and typographic features
-- **Production-Ready**: 41 comprehensive tests, EPUBCheck validation with zero errors, CI/CD automation
+- **Production-Ready**: 43 automated tests (unit and end-to-end), EPUBCheck validation with zero errors, CI/CD automation
 - **Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
-- **Modern Stack**: Built on DITA-OT 4.4, Java 17+, and latest web standards
+- **Modern Stack**: Built and tested on DITA-OT 4.4.1, Java 17+, and latest web standards
 
 ### What's New in v1.5.0?
 
@@ -57,7 +57,7 @@
 
 ### Core Capabilities
 - **EPUB 3.3 Standard**: Full compliance with latest EPUB specification and Structural Semantics Vocabulary (SSV)
-- **DITA-OT 4.4 Integration**: Seamless plugin architecture
+- **DITA-OT 4.4+ Integration**: Seamless plugin architecture
 - **XHTML5 Output**: Modern, semantic HTML content with proper `epub:type` annotations
 - **Accessibility Built-in**: WCAG 2.1 AA/AAA metadata, skip-navigation links, alt text validation
 - **Navigation**: Automatic TOC, landmarks, and NCX generation
@@ -128,22 +128,18 @@
 git clone https://github.com/jyjeanne/dita2epub.git
 cd dita2epub
 
-# Build the project
-./gradlew build
+# Build the plugin package (build/plugin/io.github.jyjeanne.dita2epub.zip)
+./gradlew packagePlugin
 
-# Install plugin to DITA-OT
-./gradlew installPlugin
-
-# Integrate with DITA-OT
-cd $DITA_HOME
-bin/dita install
+# Install it into your DITA-OT
+$DITA_HOME/bin/dita install build/plugin/io.github.jyjeanne.dita2epub.zip
 ```
 
 ### 2. Verify Installation
 
 ```bash
 # List installed plugins
-dita --plugins | grep epub
+dita plugins | grep epub
 
 # Expected output:
 # io.github.jyjeanne.dita2epub@1.5.0
@@ -161,10 +157,10 @@ dita --input=mybook.ditamap --format=epub3 --output=output
 
 ```bash
 # Build and test
-./gradlew build                  # Compile + unit tests
-./gradlew test                   # Unit tests only (no DITA-OT needed)
+./gradlew build                  # Compile + tests
+./gradlew test                   # Unit tests; integration tests also run when DITA_HOME is set (see Testing)
 
-# EPUB generation (downloads DITA-OT 4.4 on first run)
+# EPUB generation (downloads DITA-OT 4.4.1 on first run)
 ./gradlew buildSampleEpub        # Build + validate sample EPUB
 ./gradlew buildAllEpubs          # Build all test datasets
 
@@ -175,6 +171,10 @@ dita --input=mybook.ditamap --format=epub3 --output=output
 # Full CI pipeline
 ./gradlew ciCheck                # Compile, test, build EPUBs, EPUBCheck
 ```
+
+> **Windows:** the Gradle EPUB tasks (`buildSampleEpub`, `buildAllEpubs`, `ciCheck`, …) currently fail because the
+> generated `dita.bat` command line exceeds the 8191-character `cmd.exe` limit. Run `dita` directly or use Linux/macOS;
+> see [Known Limitations](docs/SPECIFICATION.md#known-limitations).
 
 ---
 
@@ -505,23 +505,30 @@ dita2epub/
 
 ### Test Suite Overview
 
-- **41 test methods** across 6 test classes
-- **100% unit test pass rate**
-- **1 comprehensive test dataset**: Complete English bookmap with all EPUB features
-- **0 EPUBCheck errors** on generated EPUB
+- **42 test methods** (43 test runs) across 6 test classes, all passing against DITA-OT 4.4.1
+- **3 test datasets**: complete English bookmap, Amazon KDP novel, and a comprehensive feature map
+- **0 EPUBCheck errors** on generated EPUBs
 
 ### Running Tests
 
 ```bash
-# Run all tests
+# Unit tests only (no DITA-OT required; integration tests are skipped)
 ./gradlew test
 
-# Run unit tests only (no DITA-OT required)
+# Full suite including integration tests (about 10 minutes)
+./gradlew installLocalPlugin                            # downloads DITA-OT 4.4.1 and installs the plugin
+export DITA_HOME=$PWD/build/dita-ot/dita-ot-4.4.1       # Windows: set DITA_HOME=%CD%\build\dita-ot\dita-ot-4.4.1
+./gradlew test
+
+# Single test class
 ./gradlew test --tests EpubValidatorTest
 
 # View test report
 open build/reports/tests/test/index.html
 ```
+
+Integration tests run the plugin installed in `DITA_HOME` (`bin/dita`, or `bin\dita.bat` on Windows). Re-run
+`./gradlew installLocalPlugin` after changing XSLT, Ant, or CSS files.
 
 ### Test Dataset
 
@@ -538,11 +545,15 @@ The sample dataset at `src/test/resources/dita/` is a complete bookmap exercisin
 | Note types | 6 | Default, tip, important, warning, caution, danger |
 | Bookmap features | All | Cover, title page, copyright, TOC, LOF, LOT, glossary, index |
 
+Two more datasets are used by the build and integration tests: `src/test/resources/dita-kdp/` (commercial novel built
+with the KDP platform profile) and `src/test/resources/dita-comprehensive/` (feature-coverage map, including topics
+that share a file name across folders).
+
 ### Test Coverage
 
 | Feature | Tests | Status |
 |---------|-------|--------|
-| Cover Page Generation | 5 | Complete |
+| Cover Page Generation | 6 | Complete |
 | Font Embedding | 6 | Complete |
 | OPF Manifest | 8 | Complete |
 | EPUB Structure | 10 | Complete |
@@ -583,7 +594,6 @@ The sample dataset at `src/test/resources/dita/` is a complete bookmap exercisin
 | Document | Description | Content |
 |----------|-------------|---------|
 | **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** | Contribution guidelines | 500+ lines with code examples |
-| **[.github/README.md](.github/README.md)** | CI/CD documentation | Complete GitHub Actions guide |
 | **[.github/ACTIONS_SETUP.md](.github/ACTIONS_SETUP.md)** | CI/CD setup summary | Workflow descriptions |
 
 ### External Resources
@@ -666,6 +676,7 @@ dita --input=training.ditamap \
 - RTL language support: Arabic, Hebrew, Farsi, Urdu with CSS logical properties
 - Global figure/table numbering via `xsl:iterate` offset pre-computation
 - 0 EPUBCheck errors across all configurations (reflowable, fixed, KDP, Apple, generic)
+- Built and tested against DITA-OT 4.4.1, with the full integration test suite running end to end
 
 ### Implemented — v2.0 Phases
 
@@ -754,7 +765,7 @@ You may obtain a copy of the License at
 ## Acknowledgments
 
 ### Built With
-- [DITA Open Toolkit 4.4](https://www.dita-ot.org/)
+- [DITA Open Toolkit 4.4.1](https://www.dita-ot.org/)
 - [Saxon-HE 12.7](https://www.saxonica.com/html/documentation12/about/) (XSLT 3.0)
 - [EPUBCheck 5.3.0](https://github.com/w3c/epubcheck)
 - [Gradle 9.x](https://gradle.org/) with [dita-ot-gradle 2.8.5](https://github.com/jyjeanne/dita-ot-gradle)

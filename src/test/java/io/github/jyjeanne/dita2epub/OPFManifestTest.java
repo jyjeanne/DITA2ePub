@@ -207,8 +207,8 @@ class OPFManifestTest {
 
         Element manifest = getFirstElementByTagName(opfDoc, "manifest");
 
-        // Sample bookmap has 9 topics
-        String[] expectedTopics = {"preface", "chapter1", "chapter2", "appendix", "glossary"};
+        // Representative topics from the sample bookmap (front matter, chapters, appendix, glossary)
+        String[] expectedTopics = {"preface", "chapter1", "chapter2", "appendix-a-parameters", "glossary"};
 
         for (String topicId : expectedTopics) {
             assertTrue(hasManifestItem(manifest, topicId),
@@ -244,7 +244,7 @@ class OPFManifestTest {
         outputDir.mkdirs();
 
         List<String> command = new ArrayList<>();
-        command.add("dita");
+        command.add(EpubGenerationIntegrationTest.ditaCommand());
         command.add("--input=" + ditamapFile.getAbsolutePath());
         command.add("--format=epub3");
         command.add("--output=" + outputDir.getAbsolutePath());
@@ -296,7 +296,8 @@ class OPFManifestTest {
     }
 
     private boolean containsMetaProperty(Element metadata, String property) {
-        NodeList metas = metadata.getElementsByTagName("meta");
+        // Match by local name: meta elements may be serialized with an opf: prefix
+        NodeList metas = metadata.getElementsByTagNameNS("*", "meta");
         for (int i = 0; i < metas.getLength(); i++) {
             Element meta = (Element) metas.item(i);
             if (property.equals(meta.getAttribute("property"))) {

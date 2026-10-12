@@ -16,7 +16,7 @@ Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 tha
 
 ### Key Differentiators
 
-- **Modern DITA-OT 4.4** — Built for the latest DITA-OT release
+- **Modern DITA-OT 4.4+** — Built and tested against DITA-OT 4.4.1, the latest release
 - **Gradle Build System** — Kotlin DSL with `dita-ot-gradle` 2.8.5 plugin
 - **Java 17+** — Leverages modern Java features
 - **EPUB 3.3 + SSV Compliance** — Full Structural Semantics Vocabulary with dynamic `epub:type` annotations
@@ -39,7 +39,7 @@ Dita2epub is a transformation plugin for the DITA Open Toolkit (DITA-OT) 4.4 tha
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| DITA-OT | 4.4 | Document processing framework |
+| DITA-OT | 4.4.1 (minimum 4.4) | Document processing framework |
 | Java | 17+ (LTS) | Runtime environment |
 | Gradle | 8.x / 9.x | Build system (Kotlin DSL) |
 | dita-ot-gradle | 2.8.5 | Gradle plugin for DITA-OT tasks |
@@ -238,11 +238,12 @@ dita2epub/
 │           │   ├── sample-bookmap.ditamap
 │           │   ├── cover.svg
 │           │   └── topics/
-│           ├── dita-calibre/           # French Calibre Guide
-│           │   ├── calibre-guide.ditamap
-│           │   └── cover.jpg
-│           ├── dita-indexing/          # Indexing Guide (with back-of-book index)
-│           │   ├── indexing-guide.ditamap
+│           ├── dita-kdp/               # Amazon KDP commercial novel
+│           │   ├── kdp-commercial-bookmap.ditamap
+│           │   ├── cover-kdp.svg
+│           │   └── topics/
+│           ├── dita-comprehensive/     # Feature-coverage map (integration tests)
+│           │   ├── comprehensive-test.ditamap
 │           │   └── topics/
 │           └── epub/                   # Reference EPUB for validation
 │
@@ -429,7 +430,7 @@ plugins {
     id("java")
 }
 
-val ditaOtVersion = "4.4"
+val ditaOtVersion = "4.4.1"
 val ditaOtHome = layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion")
 
 val sharedEpubProperties = mapOf(
@@ -449,7 +450,7 @@ val sharedEpubProperties = mapOf(
 
 | Task | Type | Description |
 |------|------|-------------|
-| `downloadDitaOt` | DitaOtDownloadTask | Download DITA-OT 4.4 from GitHub releases |
+| `downloadDitaOt` | DitaOtDownloadTask | Download DITA-OT 4.4.1 from GitHub releases |
 | `epubPackagerJar` | Jar | Build epub-packager.jar |
 | `packagePlugin` | Zip | Package plugin as ZIP for DITA-OT |
 | `installLocalPlugin` | DitaOtInstallPluginTask | Install plugin into DITA-OT |
@@ -676,25 +677,33 @@ When `epub.layout=fixed`:
 
 | Test Class | Tests | Coverage |
 |------------|-------|----------|
-| `EpubStructureTest` | mimetype, container.xml, directories, navigation, file naming |
-| `OPFManifestTest` | package structure, Dublin Core, manifest items, spine |
-| `CoverPageGenerationTest` | cover styles, OPF integration, spine ordering |
-| `FontEmbeddingTest` | font formats, directory embedding, CSS templates |
-| `EpubValidatorTest` | validator behavior, null/missing files, size warnings |
-| `EpubGenerationIntegrationTest` | end-to-end EPUB generation (requires DITA-OT) |
+| `EpubStructureTest` | 10 | mimetype, container.xml, directories, navigation, file naming |
+| `OPFManifestTest` | 8 | package structure, Dublin Core, manifest items, spine |
+| `CoverPageGenerationTest` | 6 | cover styles, OPF integration, spine ordering |
+| `FontEmbeddingTest` | 6 | font formats, directory embedding, CSS templates |
+| `EpubValidatorTest` | 8 | validator behavior, null/missing files, size warnings |
+| `EpubGenerationIntegrationTest` | 4 | end-to-end EPUB generation from the test datasets |
+
+All classes except `EpubValidatorTest` (and the two font template checks) generate EPUBs with DITA-OT and are skipped
+when no DITA-OT installation is found.
 
 ### Test Datasets
 
 | Dataset | Language | Map | Output | Features |
 |---------|----------|-----|--------|----------|
 | sample | English | `src/test/resources/dita/sample-bookmap.ditamap` | `build/epub` | Cover, frontmatter/backmatter |
-| calibre-guide | French | `src/test/resources/dita-calibre/calibre-guide.ditamap` | `build/epub-calibre` | Nested chapters, French locale |
-| indexing-guide | English | `src/test/resources/dita-indexing/indexing-guide.ditamap` | `build/epub-indexing` | Back-of-book index, appendices |
+| kdp-commercial | English (US) | `src/test/resources/dita-kdp/kdp-commercial-bookmap.ditamap` | `build/epub-kdp` | KDP platform profile, fiction theme, series and BISAC metadata |
+| comprehensive | English | `src/test/resources/dita-comprehensive/comprehensive-test.ditamap` | (integration tests) | Lists, tables, code, notes; topics sharing a file name across folders |
 
 ### Running Tests
 
+Integration tests resolve the DITA-OT launcher from `DITA_HOME` (`bin/dita`, or `bin\dita.bat` on Windows) and fall
+back to `dita` on `PATH`. They run the plugin installed in that DITA-OT, so reinstall it after changing plugin files.
+
 ```bash
-./gradlew test                                  # All unit tests
+./gradlew installLocalPlugin                    # Download DITA-OT 4.4.1 and install the plugin
+export DITA_HOME=$PWD/build/dita-ot/dita-ot-4.4.1
+./gradlew test                                  # Unit + integration tests (unit only when DITA_HOME is unset)
 ./gradlew test --tests EpubValidatorTest        # Single class
 ./gradlew test --tests "*.FontEmbeddingTest.testFontCSSTemplateExists"  # Single method
 ./gradlew buildSampleEpub                       # Build + validate sample EPUB
@@ -738,6 +747,8 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - Cover page limited to 3 styles (full-page, centered, custom)
 - Fixed Layout EPUB does not support per-spine-item layout overrides (mixed reflowable/fixed)
 - `float: inline-start/inline-end` not supported in EPUB readers (physical float with RTL override used instead)
+- On Windows, the Gradle EPUB tasks (`dita`, `ditaKdp` and the aggregate tasks depending on them) fail: `dita-ot-gradle` passes every property on the `dita.bat` command line, which together with the plugin classpath set by DITA-OT's `env.bat` exceeds the 8191-character `cmd.exe` limit. Running `dita` directly (e.g. with `--propertyfile`) works.
+- Cross-references between topics in different folders (`../other/topic.dita`) are not remapped to the flattened `content/` file names
 
 ---
 
@@ -803,8 +814,14 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Fixed Layout EPUB** — `epub.layout` parameter (`reflowable`, `fixed`) with viewport dimensions, orientation/spread controls, rendition metadata, and fixed-layout CSS overlay
 - [x] **Global figure/table numbering** — Cross-topic sequential numbering via `xsl:iterate` offset pre-computation
 - [x] **List of Figures / List of Tables** — Auto-generated from bookmap `<figurelist/>` and `<tablelist/>`
+- [x] **DITA-OT 4.4.1** — Build, CI and release workflows updated to the latest DITA-OT release; logged DITA-OT version now read from the running toolkit
+- [x] **End-to-end integration tests** — Launcher resolved from `DITA_HOME` (including `dita.bat` on Windows), CI installs the packaged plugin, 43 tests passing
+- [x] **Fix: font embedding** — Builds using `epub.embed.fonts` no longer abort on an invalid Ant `<copy>` condition
+- [x] **Fix: same-named topics** — Topics sharing a file name in different folders get unique output files instead of colliding
 
 ### Future
+- [ ] **Windows support for Gradle EPUB tasks** — Pass DITA properties via `--propertyfile` in `dita-ot-gradle` to stay under the `cmd.exe` line limit
+- [ ] **Cross-folder xref resolution** — Map cross-references to the flattened output file names
 - [ ] **DITA 2.0 support** — full compatibility with DITA 2.0 specializations and processing
 - [ ] **MathML / equation rendering** — for STEM publishing with proper fallback images
 - [ ] **Per-spine-item layout overrides** — mixed reflowable/fixed content within a single EPUB
@@ -819,5 +836,5 @@ Apache License 2.0 — Copyright 2025 J. Jeanne
 ---
 
 **Document Version:** 1.4.0
-**Last Updated:** 2026-03-05
+**Last Updated:** 2026-10-12
 **Status:** Current Release

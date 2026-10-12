@@ -82,17 +82,17 @@ jobs:
       - name: Download DITA-OT (Linux/Mac)
         if: runner.os != 'Windows'
         run: |
-          wget -q https://github.com/dita-ot/dita-ot/releases/download/4.4/dita-ot-4.4.zip
-          unzip -q dita-ot-4.4.zip
-          echo "DITA_HOME=${{ github.workspace }}/dita-ot-4.4" >> $GITHUB_ENV
+          wget -q https://github.com/dita-ot/dita-ot/releases/download/4.4.1/dita-ot-4.4.1.zip
+          unzip -q dita-ot-4.4.1.zip
+          echo "DITA_HOME=${{ github.workspace }}/dita-ot-4.4.1" >> $GITHUB_ENV
 
       - name: Download DITA-OT (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri "https://github.com/dita-ot/dita-ot/releases/download/4.4/dita-ot-4.4.zip" -OutFile "dita-ot-4.4.zip"
-          Expand-Archive -Path "dita-ot-4.4.zip" -DestinationPath "."
-          echo "DITA_HOME=${{ github.workspace }}\dita-ot-4.4" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Invoke-WebRequest -Uri "https://github.com/dita-ot/dita-ot/releases/download/4.4.1/dita-ot-4.4.1.zip" -OutFile "dita-ot-4.4.1.zip"
+          Expand-Archive -Path "dita-ot-4.4.1.zip" -DestinationPath "."
+          echo "DITA_HOME=${{ github.workspace }}\dita-ot-4.4.1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Grant execute permission for gradlew
         if: runner.os != 'Windows'
@@ -101,24 +101,14 @@ jobs:
       - name: Build and install plugin
         shell: bash
         run: |
-          ./gradlew build -x test --no-daemon
+          ./gradlew build packagePlugin -x test --no-daemon
 
-          # Create plugin directory
-          mkdir -p "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub"
-
-          # Copy only necessary plugin files to DITA-OT
-          cp plugin.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
-          cp plugin-info.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
-          cp build-epub3.xml "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
-          cp -r src "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/"
-          [ -d strings ] && cp -r strings "$DITA_HOME/plugins/io.github.jyjeanne.dita2epub/" || true
-
-          # Integrate plugin
+          # Install the packaged plugin (includes lib/epub-packager.jar required for EPUB packaging)
           cd "$DITA_HOME"
           if [ "$RUNNER_OS" == "Windows" ]; then
-            ./bin/dita.bat install
+            ./bin/dita.bat install "$(cd "$GITHUB_WORKSPACE" && pwd -W)/build/plugin/io.github.jyjeanne.dita2epub.zip"
           else
-            ./bin/dita install
+            ./bin/dita install "$GITHUB_WORKSPACE/build/plugin/io.github.jyjeanne.dita2epub.zip"
           fi
 
       - name: Verify plugin installation
@@ -240,7 +230,7 @@ jobs:
           echo "✅ Completed on multiple platforms and Java versions" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Integration Tests" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Completed with DITA-OT 4.4" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Completed with DITA-OT 4.4.1" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Build" >> $GITHUB_STEP_SUMMARY
           echo "✅ Build successful" >> $GITHUB_STEP_SUMMARY

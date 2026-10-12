@@ -84,7 +84,6 @@ All project files updated to version **1.0.1**:
 - **CONTRIBUTING.md** - 500+ lines with practical examples
 - **TEST_COVERAGE.md** - Complete test documentation
 - **TEST_SUMMARY.md** - Executive summary
-- **.github/README.md** - CI/CD documentation
 
 ---
 
@@ -229,19 +228,8 @@ dita --input=mybook.ditamap \
 
 ## 📈 Roadmap
 
-### Version 1.1 (Planned)
-- Font obfuscation (Adobe algorithm)
-- Font subsetting
-- Advanced cover templates
-- Image optimization
-- Performance improvements
-
-### Version 1.2 (Future)
-- EPUB3 Fixed Layout
-- Interactive elements
-- Advanced CSS Grid layouts
-- Dark mode support
-- Multiple output formats
+The maintained roadmap, including released versions and planned work, is in
+[SPECIFICATION.md](SPECIFICATION.md#roadmap).
 
 ---
 
@@ -259,8 +247,7 @@ dita --input=mybook.ditamap \
 - [TEST_SUMMARY.md](TEST_SUMMARY.md) - Executive test summary
 
 ### CI/CD
-- [.github/README.md](.github/README.md) - CI/CD documentation
-- [.github/ACTIONS_SETUP.md](.github/ACTIONS_SETUP.md) - Setup summary
+- [.github/ACTIONS_SETUP.md](../.github/ACTIONS_SETUP.md) - CI/CD setup and usage
 
 ### Repository
 - **GitHub:** https://github.com/jyjeanne/dita2epub
@@ -280,7 +267,7 @@ Copyright 2025 J. Jeanne
 ## 🙏 Acknowledgments
 
 **Built with:**
-- DITA Open Toolkit 4.3.5
+- DITA Open Toolkit 4.4.1
 - Saxon-HE 12.7
 - Gradle 9.1
 - Java 17

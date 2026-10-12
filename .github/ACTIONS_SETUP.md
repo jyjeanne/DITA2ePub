@@ -48,13 +48,7 @@ Comprehensive CI/CD automation has been successfully configured for the Dita2epu
    - Project-specific terms
    - Path exclusions
 
-7. **`.github/README.md`** (400+ lines)
-   - Complete CI/CD documentation
-   - Workflow descriptions
-   - Troubleshooting guides
-   - Best practices
-
-8. **`.github/ACTIONS_SETUP.md`** (this file)
+7. **`.github/ACTIONS_SETUP.md`** (this file)
    - Setup summary and overview
 
 ### Documentation Updates
@@ -341,10 +335,9 @@ The GitHub Actions CI/CD system is **production-ready** and will activate when:
 ## 📞 Support
 
 **Issues with CI/CD:**
-1. Check [.github/README.md](.github/README.md)
-2. Review workflow logs in Actions tab
-3. Consult [GitHub Actions Documentation](https://docs.github.com/en/actions)
-4. Open issue with `ci` label
+1. Review workflow logs in Actions tab
+2. Consult [GitHub Actions Documentation](https://docs.github.com/en/actions)
+3. Open issue with `ci` label
 
 **Questions:**
 - Open GitHub Discussion
@@ -356,7 +349,6 @@ The GitHub Actions CI/CD system is **production-ready** and will activate when:
 ## 📚 Resources
 
 ### Internal Documentation
-- [.github/README.md](.github/README.md) - Complete CI/CD guide
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
 - [README.md](../README.md) - Project overview
 

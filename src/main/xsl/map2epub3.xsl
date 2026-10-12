@@ -50,7 +50,8 @@
       <xsl:text>Dita2epub v2.0.0 - Starting EPUB3 transformation</xsl:text>
     </xsl:message>
     <xsl:message>
-      <xsl:text>DITA-OT Version: 4.4</xsl:text>
+      <xsl:text>DITA-OT Version: </xsl:text>
+      <xsl:value-of select="$dita.ot.version"/>
     </xsl:message>
     <xsl:message>
       <xsl:text>EPUB Version: </xsl:text>

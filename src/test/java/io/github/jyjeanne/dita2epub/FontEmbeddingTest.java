@@ -134,7 +134,7 @@ class FontEmbeddingTest {
         outputDir.mkdirs();
 
         List<String> command = new ArrayList<>();
-        command.add("dita");
+        command.add(EpubGenerationIntegrationTest.ditaCommand());
         command.add("--input=" + ditamapFile.getAbsolutePath());
         command.add("--format=epub3");
         command.add("--output=" + outputDir.getAbsolutePath());
@@ -214,7 +214,7 @@ class FontEmbeddingTest {
         outputDir.mkdirs();
 
         List<String> command = new ArrayList<>();
-        command.add("dita");
+        command.add(EpubGenerationIntegrationTest.ditaCommand());
         command.add("--input=" + ditamapFile.getAbsolutePath());
         command.add("--format=epub3");
         command.add("--output=" + outputDir.getAbsolutePath());

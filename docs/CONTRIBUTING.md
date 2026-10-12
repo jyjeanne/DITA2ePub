@@ -512,7 +512,7 @@ The project uses GitHub Actions for automated testing and builds:
 3. View job details and test reports
 4. Download artifacts for detailed analysis
 
-See [.github/README.md](.github/README.md) for complete CI/CD documentation.
+See [.github/ACTIONS_SETUP.md](../.github/ACTIONS_SETUP.md) for complete CI/CD documentation.
 
 ---
 
@@ -521,7 +521,7 @@ See [.github/README.md](.github/README.md) for complete CI/CD documentation.
 If you have questions:
 - Open a GitHub discussion
 - Check existing issues and documentation
-- Review [.github/README.md](.github/README.md) for CI/CD help
+- Review [.github/ACTIONS_SETUP.md](../.github/ACTIONS_SETUP.md) for CI/CD help
 - Contact the maintainers
 
 ## License

@@ -4,7 +4,7 @@ plugins {
 }
 
 // DITA-OT version configuration
-val ditaOtVersion = "4.4"
+val ditaOtVersion = "4.4.1"
 val ditaOtHome = layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion")
 
 group = "io.github.jyjeanne"
@@ -90,6 +90,12 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // Integration tests run the plugin installed in DITA_HOME: track the plugin sources and
+    // DITA-OT location so cached results are not reused after XSLT/Ant changes
+    inputs.files(fileTree(projectDir) {
+        include("plugin.xml", "build-epub3.xml", "src/main/xsl/**", "strings/**")
+    }).withPropertyName("pluginSources").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.property("ditaHome", providers.environmentVariable("DITA_HOME").orElse(""))
     testLogging {
         events("passed", "skipped", "failed")
         showStandardStreams = true
