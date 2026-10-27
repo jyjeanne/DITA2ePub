@@ -228,15 +228,15 @@ dita --input=mybook.ditamap \
 
 ## 📈 Roadmap
 
-The maintained roadmap, including released versions and planned work, is in
-[SPECIFICATION.md](SPECIFICATION.md#roadmap).
+Planned milestones and improvements are in [ROADMAP.md](ROADMAP.md); released versions are in
+[CHANGELOG.md](CHANGELOG.md).
 
 ---
 
 ## 🔗 Links
 
 ### Documentation
-- [README.md](README.md) - Main project documentation
+- [README.md](../README.md) - Main project documentation
 - [SPECIFICATION.md](SPECIFICATION.md) - Complete parameter reference
 - [QUICKSTART.md](QUICKSTART.md) - 5-minute setup guide
 - [RELEASE_NOTES.md](RELEASE_NOTES.md) - Version history

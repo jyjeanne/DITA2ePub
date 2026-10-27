@@ -819,12 +819,8 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Fix: same-named topics** — Topics sharing a file name in different folders get unique output files instead of colliding
 
 ### Future
-- [ ] **Windows support for Gradle EPUB tasks** — Pass DITA properties via `--propertyfile` in `dita-ot-gradle` to stay under the `cmd.exe` line limit
-- [ ] **Cross-folder xref resolution** — Map cross-references to the flattened output file names
-- [ ] **DITA 2.0 support** — full compatibility with DITA 2.0 specializations and processing
-- [ ] **MathML / equation rendering** — for STEM publishing with proper fallback images
-- [ ] **Per-spine-item layout overrides** — mixed reflowable/fixed content within a single EPUB
-- [ ] **Extended image descriptions** — long descriptions beyond `alt` text (WCAG AAA)
+
+Planned milestones and improvements are maintained in [ROADMAP.md](ROADMAP.md).
 
 ---
 

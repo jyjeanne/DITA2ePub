@@ -534,6 +534,7 @@ dita2epub/
     ├── QUICKSTART.md           # Quick start guide
     ├── REGISTRY.md             # Publishing to the DITA-OT plugin registry
     ├── RELEASE_NOTES.md        # Version history
+    ├── ROADMAP.md              # Planned milestones and improvements
     ├── SPECIFICATION.md        # Complete technical specification
     ├── TEST_COVERAGE.md        # Test documentation
     └── TEST_SUMMARY.md         # Executive test summary
@@ -615,7 +616,8 @@ space, a remote image, a TOC heading cut by `epub.toc.depth`), whose EPUB must p
 | **[QUICKSTART.md](docs/QUICKSTART.md)** | 5-minute setup and first EPUB | New users |
 | **[SPECIFICATION.md](docs/SPECIFICATION.md)** | Complete technical specification | All users |
 | **[ANATOMY_EPUB_THREE.md](docs/ANATOMY_EPUB_THREE.md)** | EPUB 3 file structure and SSV reference | Developers |
-| **[PROJECT_STATUS.md](docs/PROJECT_STATUS.md)** | Current status, roadmap, and metrics | Project overview |
+| **[PROJECT_STATUS.md](docs/PROJECT_STATUS.md)** | Current status and metrics | Project overview |
+| **[ROADMAP.md](docs/ROADMAP.md)** | Planned milestones and improvements | Next releases |
 
 ### User Documentation
 
@@ -765,7 +767,7 @@ dita --input=training.ditamap \
 - Parameter validation with fallback to `reflowable`
 - CSS cascade: `epub-default.css` → theme → platform → fonts → custom → `epub-fxl.css`
 
-See [SPECIFICATION.md](docs/SPECIFICATION.md#roadmap) for the detailed roadmap.
+See [ROADMAP.md](docs/ROADMAP.md) for the planned milestones and improvements.
 
 ---
 
