@@ -32,7 +32,7 @@ bin/dita install
 ### Step 3: Verify Installation
 ```bash
 dita --plugins | grep epub
-# Should show: io.github.jyjeanne.dita2epub@2.0.0
+# Should show: io.github.jyjeanne.dita2epub@2.1.0
 ```
 
 ## First EPUB Generation (2 minutes)

@@ -9,7 +9,7 @@ val ditaOtHome = layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion")
 
 group = "io.github.jyjeanne"
 // Single source of the plugin version: plugin.xml and plugin-info.xml must match it (see verifyPluginVersion)
-version = "2.0.0"
+version = "2.1.0"
 
 // =============================================================================
 // Shared EPUB properties (common to all EPUB builds)

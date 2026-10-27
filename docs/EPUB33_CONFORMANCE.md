@@ -6,7 +6,7 @@ Review of the DITA2ePub output against the creator requirements of
 
 | | |
 |---|---|
-| **Plugin version** | 2.0.0 |
+| **Plugin version** | 2.1.0 |
 | **Review date** | 2026-10-27 |
 | **Last update** | 2026-10-27 — C1 to C6, S1, S2 and S9 fixed |
 | **Validator** | EPUBCheck 5.3.0, also run with `--usage` |

@@ -2,7 +2,7 @@
 <plugin-info>
   <name>DITA2ePub</name>
   <description>Modern EPUB 3.3 transformation plugin for DITA-OT 4.4 with accessibility, cover pages, font embedding, and image optimization</description>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <author>J. Jeanne</author>
   <license>Apache License 2.0</license>
   <homepage>https://github.com/jyjeanne/dita2epub</homepage>
@@ -35,6 +35,12 @@
   </dependencies>
 
   <release-notes>
+    <release version="2.1.0" date="2026-10-27">
+      <note>Multi-folder, multi-map publications build as valid EPUB 3.3 (EPUBCheck clean on the DITA-OT user guide)</note>
+      <note>More DITA content rendered: nested and multi-topic files, definition lists, simple tables, domains</note>
+      <note>EPUB Accessibility 1.1 metadata derived from the content; conformance only when declared</note>
+      <note>EPUB 3.3 conformance fixes: file names, manifest ids, font obfuscation key, images, file: links</note>
+    </release>
     <release version="2.0.0" date="2026-03-09">
       <note>Theme system with 5 built-in themes</note>
       <note>Platform profiles for Amazon KDP, Apple Books and Kobo</note>

@@ -1,8 +1,8 @@
 # DITA2ePub Project Status
 
-## ✅ Current Version: 2.0.0
+## ✅ Current Version: 2.1.0
 
-**Release Date:** March 9, 2026
+**Release Date:** October 27, 2026
 **Status:** Production Ready
 **Repository:** https://github.com/jyjeanne/dita2epub
 
@@ -13,16 +13,15 @@
 ### GitHub Repository
 - **URL:** `https://github.com/jyjeanne/dita2epub`
 - **Issues:** `https://github.com/jyjeanne/dita2epub/issues`
-- **Discussions:** `https://github.com/jyjeanne/dita2epub/discussions`
 
 ### Version Consistency
-The version is set once, in `build.gradle.kts` (**2.0.0**). `plugin.xml` (plugin `@version` and
+The version is set once, in `build.gradle.kts` (**2.1.0**). `plugin.xml` (plugin `@version` and
 `package.version`) and `plugin-info.xml` must declare the same value: the `verifyPluginVersion` task,
 run by `check` and before every plugin package, fails the build otherwise.
-- ✅ `build.gradle.kts` - v2.0.0
-- ✅ `plugin.xml` - v2.0.0
-- ✅ `plugin-info.xml` - v2.0.0
-- ✅ `README.md`, `SPECIFICATION.md`, `CHANGELOG.md` - v2.0.0
+- ✅ `build.gradle.kts` - v2.1.0
+- ✅ `plugin.xml` - v2.1.0
+- ✅ `plugin-info.xml` - v2.1.0
+- ✅ `README.md`, `SPECIFICATION.md`, `CHANGELOG.md` - v2.1.0
 
 ---
 

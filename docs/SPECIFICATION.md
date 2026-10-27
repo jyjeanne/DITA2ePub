@@ -4,7 +4,7 @@
 
 **Project Name:** DITA2ePub
 **Plugin ID:** io.github.jyjeanne.dita2epub
-**Version:** 2.0.0
+**Version:** 2.1.0
 **Target DITA-OT Version:** 4.4+
 **License:** Apache License 2.0
 **Author:** J. Jeanne
@@ -803,7 +803,7 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Extended landmarks navigation** — Conditional entries for preface, dedication, appendix, colophon, copyright page; all labels i18n-aware (10 languages)
 - [x] **Auto-generated copyright page** — `copyright.xhtml` from bookmap metadata with title, copyright notice, "All rights reserved" (i18n), publisher, license, ISBN
 
-### v2.0.0 — Theme System, Platform Variants & Fixed Layout (Current)
+### v2.0.0 — Theme System, Platform Variants & Fixed Layout (Released 2026-03-09)
 *Goal: Enable publishers to produce branded, series-consistent output across multiple retail channels.*
 
 - [x] **CSS Foundation** — Refactored to CSS custom properties for theme overridability, extracted inline styles
@@ -818,6 +818,17 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Fix: font embedding** — Builds using `epub.embed.fonts` no longer abort on an invalid Ant `<copy>` condition
 - [x] **Fix: same-named topics** — Topics sharing a file name in different folders get unique output files instead of colliding
 
+### v2.1.0 — Real-World DITA (Current)
+*Goal: Publications made of many maps, folders and topic types build as valid EPUB 3.3.*
+
+- [x] **Multi-map publications** — Only the root map is transformed; external links, non-DITA resources, key definitions and relationship tables are not treated as topics
+- [x] **More DITA content** — Nested and multi-topic files, definition and parameter lists, simple tables, examples, task blocks, related links, programming/software/UI/XML/highlighting domains
+- [x] **Package and accessibility metadata** — Read from the publication's own metadata; EPUB Accessibility 1.1 metadata derived from the content, conformance only when declared with its evaluator
+- [x] **EPUB 3.3 conformance** — File names, manifest ids, font obfuscation key, navigation at the TOC depth limit, remote, `data:` and unreferenced images, `file:` links (see [EPUB33_CONFORMANCE.md](EPUB33_CONFORMANCE.md))
+- [x] **XSpec tests** of the XSLT modules, and a check that every plugin descriptor declares the project version
+
+See [CHANGELOG.md](CHANGELOG.md) for the complete list.
+
 ### Future
 
 Planned milestones and improvements are maintained in [ROADMAP.md](ROADMAP.md).
@@ -830,6 +841,6 @@ Apache License 2.0 — Copyright 2025 J. Jeanne
 
 ---
 
-**Document Version:** 2.0.0
-**Last Updated:** 2026-10-12
+**Document Version:** 2.1.0
+**Last Updated:** 2026-10-27
 **Status:** Current Release
