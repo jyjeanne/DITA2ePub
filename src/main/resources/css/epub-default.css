@@ -242,6 +242,86 @@ th {
 .row-even { background-color: var(--color-zebra-even); }
 
 /* ==========================================================================
+   Definition Lists, Parameter Lists and Simple Lists
+   ========================================================================== */
+
+dl {
+  margin: var(--spacing-paragraph) 0;
+}
+
+dt {
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--spacing-paragraph);
+}
+
+dd {
+  margin-inline-start: var(--spacing-list-indent);
+  margin-bottom: var(--spacing-paragraph);
+}
+
+ul.sl {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.lines {
+  white-space: pre-wrap;
+}
+
+/* ==========================================================================
+   Examples, Task Blocks and Related Links
+   ========================================================================== */
+
+section.example {
+  margin: var(--spacing-paragraph) 0;
+  padding-inline-start: 1em;
+  border-inline-start: 3px solid var(--color-border);
+}
+
+.stepresult, .stepxmp, .info {
+  margin: 0.5em 0;
+}
+
+.related-links {
+  margin-top: var(--spacing-section);
+  padding-top: var(--spacing-paragraph);
+  border-top: 1px solid var(--color-border);
+}
+
+.link-desc {
+  font-size: 0.9em;
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Software, User Interface and Highlighting Phrases
+   ========================================================================== */
+
+.uicontrol {
+  font-weight: var(--font-weight-bold);
+}
+
+.wintitle {
+  font-style: italic;
+}
+
+.shortcut {
+  text-decoration: underline;
+}
+
+.tt {
+  font-family: var(--font-mono);
+}
+
+.line-through {
+  text-decoration: line-through;
+}
+
+.overline {
+  text-decoration: overline;
+}
+
+/* ==========================================================================
    Images and Figures
    ========================================================================== */
 
@@ -250,6 +330,13 @@ img {
   height: auto;
   display: block;
   margin: 1em auto;
+}
+
+/* Image inside running text */
+img.inline {
+  display: inline;
+  margin: 0;
+  vertical-align: middle;
 }
 
 figure {

@@ -14,6 +14,14 @@
     Extracts and formats Dublin Core and EPUB3 metadata from DITA
   -->
 
+  <!-- Metadata of the publication itself: the bookmap's bookmeta, or a map's own topicmeta.
+       Searching the whole map would also pick up topicref metadata, such as key definitions
+       used as text variables (<keydef keys="release"><topicmeta><keywords>...) -->
+  <xsl:function name="epub:publication-metadata" as="element()*">
+    <xsl:param name="root" as="element()"/>
+    <xsl:sequence select="$root/*[contains(@class, ' map/topicmeta ')]"/>
+  </xsl:function>
+
   <!-- Extract metadata from bookmap or map -->
   <xsl:template name="extract-metadata">
     <xsl:param name="root" as="element()"/>
@@ -49,7 +57,7 @@
       <!-- Subtitle (if present) -->
       <xsl:if test="$root//*[contains(@class, ' bookmap/booktitle ')]/*[contains(@class, ' bookmap/booktitlealt ')]">
         <dc:title id="subtitle">
-          <xsl:value-of select="normalize-space($root//*[contains(@class, ' bookmap/booktitle ')]/*[contains(@class, ' bookmap/booktitlealt ')][1])"/>
+          <xsl:value-of select="normalize-space(($root//*[contains(@class, ' bookmap/booktitle ')]/*[contains(@class, ' bookmap/booktitlealt ')])[1])"/>
         </dc:title>
         <opf:meta refines="#subtitle" property="title-type">subtitle</opf:meta>
       </xsl:if>
@@ -153,7 +161,7 @@
   <xsl:template name="extract-authors">
     <xsl:param name="root" as="element()"/>
 
-    <xsl:for-each select="$root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/author ')]">
+    <xsl:for-each select="epub:publication-metadata($root)//*[contains(@class, ' topic/author ')]">
       <xsl:variable name="author-id" select="concat('author-', position())"/>
 
       <dc:creator id="{$author-id}">
@@ -184,12 +192,7 @@
         </opf:meta>
       </xsl:if>
     </xsl:for-each>
-
-    <!-- Fallback if no author in bookmeta -->
-    <xsl:if test="not($root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/author ')])">
-      <dc:creator id="creator">Unknown</dc:creator>
-      <opf:meta refines="#creator" property="role" scheme="marc:relators">aut</opf:meta>
-    </xsl:if>
+    <!-- No author: dc:creator is optional in EPUB 3, and a placeholder would show up in libraries -->
   </xsl:template>
 
   <!-- Extract contributors -->
@@ -248,18 +251,18 @@
         <xsl:when test="$root//*[contains(@class, ' bookmap/publisherinformation ')]//*[contains(@class, ' bookmap/organization ')]">
           <xsl:value-of select="normalize-space(($root//*[contains(@class, ' bookmap/publisherinformation ')]//*[contains(@class, ' bookmap/organization ')])[1])"/>
         </xsl:when>
-        <xsl:when test="$root//*[contains(@class, ' topic/publisher ')]">
-          <xsl:value-of select="normalize-space($root//*[contains(@class, ' topic/publisher ')][1])"/>
+        <xsl:when test="epub:publication-metadata($root)//*[contains(@class, ' topic/publisher ')]">
+          <xsl:value-of select="normalize-space((epub:publication-metadata($root)//*[contains(@class, ' topic/publisher ')])[1])"/>
         </xsl:when>
-        <xsl:otherwise>
-          <xsl:text>Unknown Publisher</xsl:text>
-        </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
 
-    <dc:publisher>
-      <xsl:value-of select="$publisher"/>
-    </dc:publisher>
+    <!-- No publisher: dc:publisher is optional, so no placeholder is written -->
+    <xsl:if test="normalize-space($publisher) != ''">
+      <dc:publisher>
+        <xsl:value-of select="$publisher"/>
+      </dc:publisher>
+    </xsl:if>
   </xsl:template>
 
   <!-- Extract publication date -->
@@ -277,8 +280,8 @@
           if ($day) then concat('-', format-number(number(normalize-space($day)), '00')) else ''
         )"/>
       </xsl:when>
-      <xsl:when test="$root//*[contains(@class, ' topic/created ')]/@date">
-        <xsl:value-of select="$root//*[contains(@class, ' topic/created ')]/@date"/>
+      <xsl:when test="epub:publication-metadata($root)//*[contains(@class, ' topic/created ')]/@date">
+        <xsl:value-of select="(epub:publication-metadata($root)//*[contains(@class, ' topic/created ')]/@date)[1]"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="format-dateTime(current-dateTime(), '[Y0001]-[M01]-[D01]')"/>
@@ -300,8 +303,8 @@
           <xsl:variable name="holder" select="($root//*[contains(@class, ' bookmap/bookrights ')]//*[contains(@class, ' bookmap/bookowner ')]/*[contains(@class, ' bookmap/organization ')])[1]"/>
           <xsl:value-of select="concat('Copyright © ', $year, ' ', normalize-space($holder))"/>
         </xsl:when>
-        <xsl:when test="$root//*[contains(@class, ' topic/copyright ')]">
-          <xsl:value-of select="normalize-space($root//*[contains(@class, ' topic/copyright ')][1])"/>
+        <xsl:when test="epub:publication-metadata($root)//*[contains(@class, ' topic/copyright ')]">
+          <xsl:value-of select="normalize-space((epub:publication-metadata($root)//*[contains(@class, ' topic/copyright ')])[1])"/>
         </xsl:when>
       </xsl:choose>
     </xsl:variable>
@@ -317,9 +320,11 @@
   <xsl:template name="extract-description">
     <xsl:param name="root" as="element()"/>
 
-    <xsl:if test="$root//*[contains(@class, ' topic/shortdesc ')][1]">
+    <!-- The map's own short description (a topicref's would describe that topic, not the book) -->
+    <xsl:variable name="shortdesc" select="epub:publication-metadata($root)/*[contains(@class, ' topic/shortdesc ')][normalize-space(.) != '']"/>
+    <xsl:if test="$shortdesc">
       <dc:description>
-        <xsl:value-of select="normalize-space($root//*[contains(@class, ' topic/shortdesc ')][1])"/>
+        <xsl:value-of select="normalize-space($shortdesc[1])"/>
       </dc:description>
     </xsl:if>
   </xsl:template>
@@ -328,90 +333,123 @@
   <xsl:template name="extract-subjects">
     <xsl:param name="root" as="element()"/>
 
-    <xsl:for-each select="$root//*[contains(@class, ' topic/keywords ')]//*[contains(@class, ' topic/keyword ')]">
+    <xsl:variable name="pub-meta" select="epub:publication-metadata($root)"/>
+    <xsl:variable name="subjects" as="xs:string*" select="
+      $pub-meta//*[contains(@class, ' topic/keywords ')]//*[contains(@class, ' topic/keyword ')]/normalize-space(.),
+      $pub-meta//*[contains(@class, ' topic/category ')]/normalize-space(.),
+      (: BISAC codes from the parameter, then from bookmeta data elements :)
+      tokenize($epub.bisac.codes, ',')!normalize-space(.),
+      $pub-meta//*[contains(@class, ' topic/data ')][@name = 'bisac']/normalize-space(if (@value) then @value else .)"/>
+
+    <!-- Each subject once, in order of first appearance -->
+    <xsl:for-each-group select="$subjects[. != '']" group-by=".">
       <dc:subject>
-        <xsl:value-of select="normalize-space(.)"/>
+        <xsl:value-of select="current-grouping-key()"/>
       </dc:subject>
-    </xsl:for-each>
-
-    <xsl:for-each select="$root//*[contains(@class, ' bookmap/category ')]">
-      <dc:subject>
-        <xsl:value-of select="normalize-space(.)"/>
-      </dc:subject>
-    </xsl:for-each>
-
-    <!-- Collect BISAC codes from parameter -->
-    <xsl:variable name="param-bisac-codes" as="xs:string*"
-      select="for $code in tokenize($epub.bisac.codes, ',') return normalize-space($code)[. != '']"/>
-
-    <xsl:for-each select="$param-bisac-codes">
-      <dc:subject>
-        <xsl:value-of select="."/>
-      </dc:subject>
-    </xsl:for-each>
-
-    <!-- BISAC codes from bookmap bookmeta data elements (skip duplicates already emitted from parameter) -->
-    <xsl:for-each select="$root//*[contains(@class, ' bookmap/bookmeta ')]//*[contains(@class, ' topic/data ')][@name='bisac']">
-      <xsl:variable name="code" select="normalize-space(if (@value) then @value else .)"/>
-      <xsl:if test="not($code = $param-bisac-codes)">
-        <dc:subject>
-          <xsl:value-of select="$code"/>
-        </dc:subject>
-      </xsl:if>
-    </xsl:for-each>
+    </xsl:for-each-group>
   </xsl:template>
 
-  <!-- Generate accessibility metadata -->
+  <!-- Value of a <data name="..."> element of the publication metadata (its @value, or its text) -->
+  <xsl:function name="epub:get-publication-data" as="xs:string">
+    <xsl:param name="root" as="element()"/>
+    <xsl:param name="name" as="xs:string"/>
+    <xsl:variable name="data" select="(epub:publication-metadata($root)//*[contains(@class, ' topic/data ')][@name = $name])[1]"/>
+    <xsl:sequence select="normalize-space(if ($data/@value) then $data/@value else string($data))"/>
+  </xsl:function>
+
+  <!-- Accessibility metadata (EPUB Accessibility 1.1). The discovery metadata describes what the
+       generated content actually contains. Conformance is only claimed when the bookmap declares it
+       with the party that evaluated it: a converter cannot evaluate WCAG conformance by itself.
+         <data name="accessibility-conformance" value="EPUB Accessibility 1.1 - WCAG 2.2 Level AA"/>
+         <data name="accessibility-certifier" value="Name of the evaluating organization"/>
+         <data name="accessibility-summary" value="Replaces the generated summary"/> -->
   <xsl:template name="generate-accessibility-metadata">
     <xsl:param name="root" as="element()"/>
-    <xsl:variable name="wcag-level" select="upper-case($epub.accessibility)"/>
 
-    <!-- Access modes -->
+    <!-- Rendered content: images outside the prolog, related links and unpublished elements -->
+    <xsl:variable name="docs" select="epub:content-topicrefs($root)/epub:topic-document(.)"/>
+    <xsl:variable name="images" select="$docs//*[contains(@class, ' topic/image ')][not(ancestor::*[
+      contains(@class, ' topic/prolog ') or contains(@class, ' topic/related-links ') or contains(@class, ' topic/draft-comment ')
+      or contains(@class, ' topic/required-cleanup ') or contains(@class, ' topic/data ') or contains(@class, ' topic/foreign ')])]"/>
+    <!-- Decorative images (@alt="" or outputclass="decorative") correctly have no text alternative -->
+    <xsl:variable name="images-without-alt" select="$images[not(@outputclass = 'decorative' or exists(@alt)
+      or *[contains(@class, ' topic/alt ')][normalize-space(.) != ''])]"/>
+    <xsl:variable name="has-visual" select="exists($images) or normalize-space($epub.cover.image) != ''"/>
+    <xsl:variable name="has-index" select="epub:is-true($epub.generate.index)
+      or ($epub.generate.index = 'auto' and exists($root//*[contains(@class, ' bookmap/indexlist ')]))"/>
+    <!-- Animated images and embedded media may flash or play sound: their hazards cannot be determined -->
+    <xsl:variable name="has-media" select="exists($images[matches(lower-case(@href), '\.gif$')])
+      or exists($docs//*[contains(@class, ' topic/object ') or contains(@class, ' media-d/')])"/>
+
+    <!-- Access modes, and the ones sufficient to read everything -->
     <opf:meta property="schema:accessMode">textual</opf:meta>
-    <opf:meta property="schema:accessMode">visual</opf:meta>
+    <xsl:if test="$has-visual">
+      <opf:meta property="schema:accessMode">visual</opf:meta>
+    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="empty($images-without-alt)">
+        <opf:meta property="schema:accessModeSufficient">textual</opf:meta>
+      </xsl:when>
+      <xsl:otherwise>
+        <opf:meta property="schema:accessModeSufficient">textual,visual</opf:meta>
+      </xsl:otherwise>
+    </xsl:choose>
 
-    <!-- Accessibility features -->
+    <!-- Accessibility features: headings, navigation document, spine order and ARIA roles
+         (main, note, doc-toc, doc-noteref...) are always generated -->
     <opf:meta property="schema:accessibilityFeature">structuralNavigation</opf:meta>
     <opf:meta property="schema:accessibilityFeature">tableOfContents</opf:meta>
     <opf:meta property="schema:accessibilityFeature">readingOrder</opf:meta>
-
-    <xsl:if test="epub:is-true($epub.aria.landmarks)">
-      <opf:meta property="schema:accessibilityFeature">ARIA</opf:meta>
+    <opf:meta property="schema:accessibilityFeature">ARIA</opf:meta>
+    <xsl:if test="$has-index">
+      <opf:meta property="schema:accessibilityFeature">index</opf:meta>
     </xsl:if>
-
-    <!-- DPUB-ARIA doc-* roles on structural elements -->
-    <xsl:if test="epub:is-true($epub.aria.landmarks)">
-      <opf:meta property="schema:accessibilityFeature">dpubAria</opf:meta>
-    </xsl:if>
-
-    <!-- List of Illustrations (conditional on LOF generation) -->
-    <xsl:variable name="lof-figurelist" select="exists($root//*[contains(@class, ' bookmap/figurelist ')])"/>
-    <xsl:if test="epub:is-true($epub.generate.lof) or ($epub.generate.lof = 'auto' and $lof-figurelist)">
-      <opf:meta property="schema:accessibilityFeature">listOfIllustrations</opf:meta>
-    </xsl:if>
-
-    <!-- List of Tables (conditional on LOT generation) -->
-    <xsl:variable name="lot-tablelist" select="exists($root//*[contains(@class, ' bookmap/tablelist ')])"/>
-    <xsl:if test="epub:is-true($epub.generate.lot) or ($epub.generate.lot = 'auto' and $lot-tablelist)">
-      <opf:meta property="schema:accessibilityFeature">listOfTables</opf:meta>
+    <xsl:if test="exists($images) and empty($images-without-alt)">
+      <opf:meta property="schema:accessibilityFeature">alternativeText</opf:meta>
     </xsl:if>
 
     <!-- Accessibility hazards -->
-    <opf:meta property="schema:accessibilityHazard">none</opf:meta>
-
-    <!-- Accessibility summary -->
-    <opf:meta property="schema:accessibilitySummary">
-      <xsl:text>This publication conforms to </xsl:text>
-      <xsl:value-of select="$wcag-level"/>
-      <xsl:text> accessibility guidelines.</xsl:text>
+    <opf:meta property="schema:accessibilityHazard">
+      <xsl:value-of select="if ($has-media) then 'unknown' else 'none'"/>
     </opf:meta>
 
-    <!-- Accessibility control -->
-    <opf:meta property="schema:accessibilityControl">fullKeyboardControl</opf:meta>
-    <opf:meta property="schema:accessibilityControl">fullMouseControl</opf:meta>
+    <!-- Conformance claim, only as declared by the author (EPUB Accessibility 1.1 requires the evaluator) -->
+    <xsl:variable name="conformance" select="epub:get-publication-data($root, 'accessibility-conformance')"/>
+    <xsl:variable name="certifier" select="epub:get-publication-data($root, 'accessibility-certifier')"/>
+    <xsl:variable name="has-claim" select="$conformance != '' and $certifier != ''"/>
+    <xsl:if test="$conformance != '' and $certifier = ''">
+      <xsl:message>[WARN] Accessibility conformance "<xsl:value-of select="$conformance"/>" is declared without a data element named "accessibility-certifier": EPUB Accessibility 1.1 requires the evaluator, so no conformance claim is written.</xsl:message>
+    </xsl:if>
+    <xsl:if test="$conformance != '' and not(matches($conformance, '^EPUB Accessibility 1\.[1-9][0-9]* - WCAG 2\.[0-9]+ Level (A|AA|AAA)$'))">
+      <xsl:message>[WARN] Accessibility conformance "<xsl:value-of select="$conformance"/>" does not follow the EPUB Accessibility 1.1 form, e.g. "EPUB Accessibility 1.1 - WCAG 2.2 Level AA".</xsl:message>
+    </xsl:if>
+    <xsl:if test="$has-claim">
+      <opf:meta property="dcterms:conformsTo">
+        <xsl:value-of select="$conformance"/>
+      </opf:meta>
+      <opf:meta property="a11y:certifiedBy">
+        <xsl:value-of select="$certifier"/>
+      </opf:meta>
+    </xsl:if>
 
-    <!-- Accessibility API -->
-    <opf:meta property="schema:accessibilityAPI">ARIA</opf:meta>
+    <!-- Summary: the author's, or a factual one built from the checks above (in English) -->
+    <xsl:variable name="declared-summary" select="epub:get-publication-data($root, 'accessibility-summary')"/>
+    <xsl:variable name="image-count" select="count($images)"/>
+    <xsl:variable name="missing-count" select="count($images-without-alt)"/>
+    <xsl:variable name="generated-summary" select="string-join((
+      'Structured headings, a table of contents and a logical reading order support navigation with assistive technologies.',
+      if ($has-index) then 'A back-of-book index is included.' else (),
+      if ($image-count = 0) then ()
+      else if ($missing-count = 0) then concat(if ($image-count = 1) then 'The image has' else 'All images have', ' a text alternative.')
+      else concat($missing-count, ' of ', $image-count, ' image', if ($image-count gt 1) then 's' else '',
+                  if ($missing-count = 1) then ' has' else ' have', ' no text alternative.'),
+      if ($has-claim) then () else 'No conformance to EPUB Accessibility or WCAG is claimed.'), ' ')"/>
+    <opf:meta property="schema:accessibilitySummary">
+      <xsl:if test="$declared-summary = '' and not(starts-with(lower-case(epub:get-language($root)), 'en'))">
+        <xsl:attribute name="xml:lang">en</xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="if ($declared-summary != '') then $declared-summary else $generated-summary"/>
+    </opf:meta>
   </xsl:template>
 
 </xsl:stylesheet>

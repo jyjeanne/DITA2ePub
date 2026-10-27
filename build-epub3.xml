@@ -201,8 +201,8 @@
           filenameparameter="FILENAME"
           filedirparameter="FILEDIR">
 
-      <!-- Input file -->
-      <include name="**/*.ditamap"/>
+      <!-- Input file: only the root map; sub-maps also remain in the temp dir -->
+      <include name="${user.input.file}"/>
 
       <!-- XSLT Parameters -->
       <param name="dita.ot.version" expression="${otversion}"/>

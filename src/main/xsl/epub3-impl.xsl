@@ -70,7 +70,7 @@
         $epub.generate.glossary = 'auto'
       )
     "/>
-    <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')][not($consolidate-glossary and ancestor::*[contains(@class, ' bookmap/glossarylist ')])]"/>
+    <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)[not($consolidate-glossary and ancestor::*[contains(@class, ' bookmap/glossarylist ')])]"/>
 
     <!-- Determine if index should be generated -->
     <xsl:variable name="has-indexlist" select="exists($map//*[contains(@class, ' bookmap/indexlist ')])"/>
@@ -238,20 +238,20 @@
           </xsl:if>
 
           <!-- Add images referenced in topics - load each topic document and scan for image elements -->
-          <xsl:variable name="all-image-hrefs" as="xs:string*">
+          <xsl:variable name="all-image-paths" as="xs:string*">
             <xsl:for-each select="$all-topicrefs[@href]">
-              <xsl:variable name="topic-doc" select="document(@href, .)"/>
+              <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
               <xsl:if test="$topic-doc">
-                <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/image ')]/@href">
-                  <xsl:sequence select="string(.)"/>
+                <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/image ')][@href][not(@scope = 'external')]">
+                  <xsl:sequence select="epub:get-image-path(.)"/>
                 </xsl:for-each>
               </xsl:if>
             </xsl:for-each>
           </xsl:variable>
-          <xsl:for-each select="distinct-values($all-image-hrefs)">
+          <xsl:for-each select="distinct-values($all-image-paths)">
             <xsl:variable name="image-filename" select="tokenize(., '/')[last()]"/>
-            <xsl:variable name="image-id" select="concat('image-', replace($image-filename, '[\.\s]', '-'))"/>
-            <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', $image-filename))"/>
+            <xsl:variable name="image-id" select="concat('image-', replace(., '[^A-Za-z0-9_-]', '-'))"/>
+            <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', .))"/>
 
             <item id="{$image-id}"
                   href="{$image-path}"
@@ -686,7 +686,7 @@
       not(contains(@class, ' bookmap/tablelist ')) and
       not(contains(@class, ' bookmap/indexlist ')) and
       not(contains(@class, ' bookmap/glossarylist ')) and
-      (@href or *[contains(@class, ' map/topicref ')][@href])
+      (epub:is-content-topicref(.) or .//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])
     ]"/>
 
     <xsl:if test="($valid-topicrefs or $append-glossary or $append-lof or $append-lot or $append-index) and $depth &lt;= $epub.toc.depth">
@@ -694,8 +694,8 @@
         <xsl:for-each select="$valid-topicrefs">
           <li xmlns="http://www.w3.org/1999/xhtml">
             <xsl:choose>
-              <xsl:when test="@href">
-                <a xmlns="http://www.w3.org/1999/xhtml" href="{epub:get-topic-filename(.)}">
+              <xsl:when test="epub:is-content-topicref(.)">
+                <a xmlns="http://www.w3.org/1999/xhtml" href="{epub:get-topicref-link(.)}">
                   <xsl:call-template name="get-navtitle">
                     <xsl:with-param name="topicref" select="."/>
                   </xsl:call-template>
@@ -1260,7 +1260,7 @@
       not(contains(@class, ' bookmap/indexlist ')) and
       not(contains(@class, ' bookmap/glossarylist ')) and
       not(ancestor::*[contains(@class, ' bookmap/glossarylist ')]) and
-      @href
+      epub:is-content-topicref(.)
     ]"/>
 
     <!-- NCX must be at root level for compatibility with older readers like Calibre -->
@@ -1317,15 +1317,16 @@
       not(contains(@class, ' bookmap/indexlist ')) and
       not(contains(@class, ' bookmap/glossarylist ')) and
       not(ancestor::*[contains(@class, ' bookmap/glossarylist ')]) and
-      (@href or *[contains(@class, ' map/topicref ')][@href])
+      (epub:is-content-topicref(.) or .//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])
     ]"/>
 
     <xsl:if test="$valid-topicrefs and $depth &lt;= $epub.toc.depth">
       <xsl:for-each select="$valid-topicrefs">
         <!-- Use position in the pre-computed flat list for unique playOrder.
-             When a container has no @href, use the same playOrder as its first child
-             to avoid "different playOrder values for same target" NCX errors. -->
-        <xsl:variable name="play-order-target" select="if (@href) then . else (*[contains(@class, ' map/topicref ')][@href])[1]"/>
+             When a container has no content of its own, use the same playOrder as its first
+             content descendant to avoid "different playOrder values for same target" NCX errors. -->
+        <xsl:variable name="first-content" select="(.//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])[1]"/>
+        <xsl:variable name="play-order-target" select="if (epub:is-content-topicref(.)) then . else $first-content"/>
         <xsl:variable name="play-order" select="count($all-valid[. &lt;&lt; $play-order-target]) + 1"/>
 
         <navPoint xmlns="http://www.daisy.org/z3986/2005/ncx/" id="navpoint-{generate-id(.)}" playOrder="{$play-order}">
@@ -1337,15 +1338,12 @@
             </text>
           </navLabel>
           <xsl:choose>
-            <xsl:when test="@href">
-              <content src="{concat($epub.topics.dir, '/', epub:get-topic-filename(.))}"/>
+            <xsl:when test="epub:is-content-topicref(.)">
+              <content src="{concat($epub.topics.dir, '/', epub:get-topicref-link(.))}"/>
             </xsl:when>
             <xsl:otherwise>
-              <!-- For container elements without href, link to first child -->
-              <xsl:variable name="first-child" select="(*[contains(@class, ' map/topicref ')][@href])[1]"/>
-              <xsl:if test="$first-child">
-                <content src="{concat($epub.topics.dir, '/', epub:get-topic-filename($first-child))}"/>
-              </xsl:if>
+              <!-- For containers without content of their own, link to the first content descendant -->
+              <content src="{concat($epub.topics.dir, '/', epub:get-topicref-link($first-content))}"/>
             </xsl:otherwise>
           </xsl:choose>
 
@@ -1379,12 +1377,12 @@
       <xsl:message>Generating List of Figures...</xsl:message>
 
       <xsl:variable name="lang" select="epub:get-language($map)"/>
-      <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
+      <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)"/>
 
       <!-- Collect all figures with titles from all topics (in document order) -->
       <xsl:variable name="fig-entries" as="element()*">
         <xsl:for-each select="$all-topicrefs">
-          <xsl:variable name="topic-doc" select="document(@href, .)"/>
+          <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
           <xsl:variable name="topic-filename" select="epub:get-topic-filename(.)"/>
           <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/fig ')][*[contains(@class, ' topic/title ')]]">
             <xsl:variable name="fig-id" select="if (@id) then @id else generate-id(.)"/>
@@ -1479,12 +1477,12 @@
       <xsl:message>Generating List of Tables...</xsl:message>
 
       <xsl:variable name="lang" select="epub:get-language($map)"/>
-      <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
+      <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)"/>
 
       <!-- Collect all tables with titles from all topics (in document order) -->
       <xsl:variable name="table-entries" as="element()*">
         <xsl:for-each select="$all-topicrefs">
-          <xsl:variable name="topic-doc" select="document(@href, .)"/>
+          <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
           <xsl:variable name="topic-filename" select="epub:get-topic-filename(.)"/>
           <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/table ')][*[contains(@class, ' topic/title ')]]">
             <xsl:variable name="table-id" select="if (@id) then @id else generate-id(.)"/>

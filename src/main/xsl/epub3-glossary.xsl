@@ -33,7 +33,7 @@
       <!-- Collect glossary entries from referenced topics -->
       <xsl:variable name="glossary-entries" as="element()*">
         <xsl:for-each select="$glossary-topicrefs">
-          <xsl:variable name="topic-doc" select="document(@href, .)"/>
+          <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
           <xsl:variable name="glossentry" select="$topic-doc/*[contains(@class, ' glossentry/glossentry ') or self::glossentry]"/>
 
           <xsl:if test="$glossentry">
