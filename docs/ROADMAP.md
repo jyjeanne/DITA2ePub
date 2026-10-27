@@ -7,7 +7,7 @@ Planned milestones and improvements after release 2.0.0. Released versions are d
 | | |
 |---|---|
 | **Current release** | 2.0.0 (2026-03-09) |
-| **Next release** | 2.1.0, in progress on branch `fix/real-world-dita-output` |
+| **Next release** | 2.1.0, version set on branch `fix/real-world-dita-output`, to be merged and tagged |
 | **Last update** | 2026-10-27 |
 
 Milestones are listed in priority order. Versions follow [semantic versioning](https://semver.org/):
@@ -40,13 +40,17 @@ Done (on the branch, not yet released):
 - [x] XSpec unit tests of the XSLT modules (`xspecTest` suite, run by `check`)
 - [x] NCX: a topic referenced twice in the map keeps the `playOrder` of its first reference (it got a second one,
       which EPUBCheck reports as `RSC-005` on KDP builds); found by the XSpec tests
+- [x] CHANGELOG section 2.1.0; version 2.1.0 in `build.gradle.kts`, `plugin.xml` and `plugin-info.xml`
+- [x] Copyrighted reference EPUBs in `src/test/resources/epub` replaced by public-domain ones
+- [x] Registry entry of 2.1.0 in `io.github.jyjeanne.dita2epub.json`, tested with a local registry; the release
+      workflow attaches the entry with the checksum of the released ZIP
 
 Remaining before the release:
 
-- [ ] Fill the `[Unreleased]` section of the CHANGELOG, set the version to 2.1.0 in `build.gradle.kts`,
-      `plugin.xml` and `plugin-info.xml`
-- [ ] Merge the branch, tag `v2.1.0`, publish the distribution ZIP and checksum, and update the registry
-      entry `io.github.jyjeanne.dita2epub.json` (still describes 1.2.0), following [REGISTRY.md](REGISTRY.md)
+- [ ] Make the GitHub repository public: the registry needs a ZIP that downloads without authentication
+- [ ] Merge the branch and tag `v2.1.0` (the release workflow publishes the ZIP and the registry entry), record the
+      checksum, and submit the entry to `dita-ot/registry` in a signed-off pull request, following
+      [REGISTRY.md](REGISTRY.md)
 
 Changes to mention in the release notes: topic file names are sanitized (no spaces, `topic-` prefix for
 names of generated pages, path-based names when names clash ignoring case); the fallback identifier is
