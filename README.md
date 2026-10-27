@@ -161,6 +161,7 @@ dita --input=mybook.ditamap --format=epub3 --output=output
 # Build and test
 ./gradlew build                  # Compile + tests
 ./gradlew test                   # Unit tests; integration tests also run when DITA_HOME is set (see Testing)
+./gradlew xspecTest              # XSpec tests of the XSLT modules (no DITA-OT needed)
 
 # EPUB generation (downloads DITA-OT 4.4.1 on first run)
 ./gradlew buildSampleEpub        # Build + validate sample EPUB
@@ -513,14 +514,16 @@ dita2epub/
 │   │       │   ├── epub-fxl.css             # Fixed Layout CSS overlay
 │   │       │   └── epub-fonts.css           # Font declarations
 │   │       └── fonts/          # Font directory (empty template)
-│   └── test/
-│       ├── java/               # Test classes (47 test methods)
-│       └── resources/
-│           ├── dita/               # Complete English bookmap (18 topics, 10 glossary entries)
-│           ├── dita-kdp/           # Amazon KDP commercial novel
-│           ├── dita-comprehensive/ # Feature-coverage map
-│           ├── dita-edge-cases/    # EPUB 3.3 conformance edge cases
-│           └── epub/               # Reference EPUB for validation
+│   ├── test/
+│   │   ├── java/               # Test classes (47 test methods)
+│   │   ├── resources/
+│   │   │   ├── dita/               # Complete English bookmap (18 topics, 10 glossary entries)
+│   │   │   ├── dita-kdp/           # Amazon KDP commercial novel
+│   │   │   ├── dita-comprehensive/ # Feature-coverage map
+│   │   │   ├── dita-edge-cases/    # EPUB 3.3 conformance edge cases
+│   │   │   └── epub/               # Reference EPUB for validation
+│   │   └── xspec/              # XSpec tests of the XSLT modules, and their fixtures
+│   └── xspecTest/java/         # JUnit runner of the XSpec tests
 ├── plugin.xml                  # DITA-OT plugin descriptor
 ├── build-epub3.xml             # Ant build integration
 ├── build.gradle.kts            # Gradle build configuration
@@ -547,6 +550,7 @@ dita2epub/
 ### Test Suite Overview
 
 - **47 test methods** (48 test runs) across 8 test classes, all passing against DITA-OT 4.4.1
+- **144 XSpec expectations** on the XSLT modules
 - **4 test datasets**: complete English bookmap, Amazon KDP novel, a comprehensive feature map, and EPUB 3.3 edge cases
 - **0 EPUBCheck errors** on generated EPUBs
 
@@ -570,6 +574,28 @@ open build/reports/tests/test/index.html
 
 Integration tests run the plugin installed in `DITA_HOME` (`bin/dita`, or `bin\dita.bat` on Windows). Re-run
 `./gradlew installLocalPlugin` after changing XSLT, Ant, or CSS files.
+
+### XSLT Unit Tests (XSpec)
+
+The XSLT modules have [XSpec](https://github.com/xspec/xspec) tests in `src/test/xspec/`, run with Saxon-HE 12.9,
+the XSLT processor of DITA-OT 4.4.1. They need no DITA-OT installation and run as part of `check`, hence of `build`.
+
+```bash
+./gradlew xspecTest
+open build/reports/xspec/epub3-content-result.html   # XSpec report of one test file
+```
+
+| File | What it tests |
+|------|---------------|
+| `epub3-common.xspec` | Output file names and manifest ids, cross-reference targets, image paths, URI decoding, identifiers, media types, languages, fonts |
+| `epub3-content.xspec` | XHTML rendering of DITA elements: topics, paragraphs, notes, links, images, figures, tables, lists, code, domain phrases |
+| `epub3-metadata.xspec` | OPF package metadata and EPUB Accessibility 1.1 metadata |
+| `epub3-navigation.xspec` | Table of contents of the navigation document, navigation titles, NCX navigation points |
+
+The tests load the modules through `src/test/xspec/epub3-modules.xsl`, which includes them as `map2epub3.xsl` does,
+without its DITA-OT HTML5 import. They run with `run-as="external"`, so that a fixture map from
+`src/test/xspec/fixtures/` is the global context item the modules read, as in a real build. Each XSpec expectation is
+reported as a JUnit test of the `xspecTest` suite (`src/xspecTest/java`).
 
 ### Test Dataset
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dita>
+  <topic class="- topic/topic " id="first">
+    <title class="- topic/title ">First topic</title>
+  </topic>
+  <topic class="- topic/topic " id="second">
+    <title class="- topic/title ">Second topic</title>
+    <body class="- topic/body "><p class="- topic/p " id="detail">Detail.</p></body>
+  </topic>
+</dita>

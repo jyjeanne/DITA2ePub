@@ -37,6 +37,9 @@ Done (on the branch, not yet released):
 - [x] **S1** — viewport `meta` written for fixed layout only
 - [x] **S2** — only the images the publication references are packaged
 - [x] **S9** — `data:` URLs of images kept as they are
+- [x] XSpec unit tests of the XSLT modules (`xspecTest` suite, run by `check`)
+- [x] NCX: a topic referenced twice in the map keeps the `playOrder` of its first reference (it got a second one,
+      which EPUBCheck reports as `RSC-005` on KDP builds); found by the XSpec tests
 
 Remaining before the release:
 

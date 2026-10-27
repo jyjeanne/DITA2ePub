@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Every rendered image has a text alternative; the images left out of the count have none -->
+<topic class="- topic/topic " id="with-alt">
+  <title class="- topic/title ">Images with text alternatives</title>
+  <prolog class="- topic/prolog ">
+    <metadata class="- topic/metadata ">
+      <data class="- topic/data " name="thumbnail"><image class="- topic/image " href="thumbnail.png"/></data>
+    </metadata>
+  </prolog>
+  <body class="- topic/body ">
+    <image class="- topic/image " href="diagram.png" placement="break"><alt class="- topic/alt ">Processing diagram</alt></image>
+    <p class="- topic/p ">Press <image class="- topic/image " href="play.png" alt="Play"/>.</p>
+    <image class="- topic/image " href="https://www.dita-ot.org/images/logo.png" scope="external" placement="break"/>
+    <draft-comment class="- topic/draft-comment "><image class="- topic/image " href="todo.png"/></draft-comment>
+  </body>
+</topic>

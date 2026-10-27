@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bookmap as DITA-OT preprocessing leaves it: class attributes, navigation titles pulled from the topics.
+     Topic names clash (install, intro/Intro), use a generated page name (index), start with a digit
+     (2-start); some references are not content: external, missing, resource-only, relationship table -->
+<bookmap class="- map/map bookmap/bookmap " id="fixture-book" xml:lang="en-US">
+  <booktitle class="- topic/title bookmap/booktitle ">
+    <mainbooktitle class="- topic/ph bookmap/mainbooktitle ">Fixture Guide</mainbooktitle>
+    <booktitlealt class="- topic/ph bookmap/booktitlealt ">Unit test edition</booktitlealt>
+  </booktitle>
+  <bookmeta class="- map/topicmeta bookmap/bookmeta ">
+    <author class="- topic/author ">Jane Doe</author>
+    <author class="- topic/author ">
+      <data class="- topic/data " name="firstname">John</data>
+      <data class="- topic/data " name="lastname">Smith</data>
+    </author>
+    <publisherinformation class="- topic/publisher bookmap/publisherinformation ">
+      <organization class="- topic/data bookmap/organization ">Fixture Press</organization>
+      <published class="- topic/data bookmap/published ">
+        <completed class="- topic/ph bookmap/completed ">
+          <year class="- topic/ph bookmap/year ">2026</year>
+          <month class="- topic/ph bookmap/month ">3</month>
+          <day class="- topic/ph bookmap/day ">9</day>
+        </completed>
+      </published>
+    </publisherinformation>
+    <bookid class="- topic/data bookmap/bookid ">
+      <isbn class="- topic/data bookmap/isbn ">978-0-00-000000-2</isbn>
+    </bookid>
+    <keywords class="- topic/keywords ">
+      <keyword class="- topic/keyword ">DITA</keyword>
+      <keyword class="- topic/keyword ">EPUB</keyword>
+    </keywords>
+    <category class="- topic/category ">Technical Documentation</category>
+    <data class="- topic/data " name="bisac" value="COM051000"/>
+  </bookmeta>
+  <!-- Key definition used as a text variable: its keywords are not subjects of the book -->
+  <keydef class="+ map/topicref mapgroup-d/keydef " keys="release" processing-role="resource-only">
+    <topicmeta class="- map/topicmeta ">
+      <keywords class="- topic/keywords "><keyword class="- topic/keyword ">4.4</keyword></keywords>
+    </topicmeta>
+  </keydef>
+  <keydef class="+ map/topicref mapgroup-d/keydef " keys="shared" href="shared.dita" processing-role="resource-only"/>
+  <chapter class="- map/topicref bookmap/chapter " href="intro.dita">
+    <topicmeta class="- map/topicmeta "><navtitle class="- topic/navtitle ">Introduction</navtitle></topicmeta>
+    <topicref class="- map/topicref " href="guide/install.dita">
+      <topicmeta class="- map/topicmeta "><navtitle class="- topic/navtitle ">Installing</navtitle></topicmeta>
+    </topicref>
+  </chapter>
+  <chapter class="- map/topicref bookmap/chapter " href="reference/install.dita" navtitle="Installation reference"/>
+  <topichead class="+ map/topicref mapgroup-d/topichead ">
+    <topicmeta class="- map/topicmeta "><navtitle class="- topic/navtitle ">More topics</navtitle></topicmeta>
+    <topicref class="- map/topicref " href="reference/Intro.dita" navtitle="Reference introduction"/>
+    <topicref class="- map/topicref " href="index.dita" navtitle="Index of commands"/>
+    <topicref class="- map/topicref " href="2-start.dita" navtitle="Getting started"/>
+    <topicref class="- map/topicref " href="multi.dita#second" navtitle="Second topic"/>
+    <topicref class="- map/topicref " href="intro.dita" navtitle="Introduction again"/>
+  </topichead>
+  <topicref class="- map/topicref " href="https://www.dita-ot.org/" scope="external" format="html" navtitle="DITA-OT website"/>
+  <topicref class="- map/topicref " href="missing.dita" navtitle="Missing topic"/>
+  <reltable class="- map/reltable ">
+    <relrow class="- map/relrow ">
+      <relcell class="- map/relcell "><topicref class="- map/topicref " href="shared.dita"/></relcell>
+    </relrow>
+  </reltable>
+  <backmatter class="- map/topicref bookmap/backmatter ">
+    <booklists class="- map/topicref bookmap/booklists ">
+      <indexlist class="- map/topicref bookmap/indexlist "/>
+    </booklists>
+  </backmatter>
+</bookmap>

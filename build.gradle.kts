@@ -66,6 +66,12 @@ repositories {
     gradlePluginPortal()
 }
 
+// XSpec unit tests of the XSLT modules run with the Saxon release DITA-OT 4.4.1 ships, in their own
+// test suite: EPUBCheck puts an older Saxon on the classpath of the other tests
+val xspecVersion = "4.1.2"
+val saxonVersion = "12.9"
+val xspec: Configuration by configurations.creating
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -87,6 +93,9 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.xmlunit:xmlunit-core:2.9.1")
     testImplementation("org.assertj:assertj-core:3.24.2")
+
+    // XSpec compiler and reporter (XSLT only; Saxon comes from the xspecTest suite)
+    xspec("io.xspec:xspec:$xspecVersion") { isTransitive = false }
 }
 
 tasks.test {
@@ -105,6 +114,55 @@ tasks.test {
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
+}
+
+// =============================================================================
+// XSpec tests of the XSLT modules (src/test/xspec)
+// =============================================================================
+
+val unpackXspec = tasks.register<Sync>("unpackXspec") {
+    group = "verification"
+    description = "Extract the XSpec compiler and reporter used by the xspecTest suite"
+    from({ zipTree(xspec.singleFile) }) {
+        include("io/xspec/xspec/impl/src/**")
+        eachFile { path = path.removePrefix("io/xspec/xspec/impl/") }
+        includeEmptyDirs = false
+    }
+    into(layout.buildDirectory.dir("xspec"))
+}
+
+testing {
+    suites {
+        register<JvmTestSuite>("xspecTest") {
+            useJUnitJupiter("5.10.0")
+            dependencies {
+                implementation("net.sf.saxon:Saxon-HE:$saxonVersion")
+                implementation("org.assertj:assertj-core:3.24.2")
+            }
+            targets.all {
+                testTask.configure {
+                    description = "Run the XSpec tests of the XSLT modules"
+                    dependsOn(unpackXspec)
+                    val reports = layout.buildDirectory.dir("reports/xspec")
+                    systemProperty("xspec.home", layout.buildDirectory.dir("xspec/src").get().asFile.absolutePath)
+                    systemProperty("xspec.tests", file("src/test/xspec").absolutePath)
+                    systemProperty("xspec.reports", reports.get().asFile.absolutePath)
+                    systemProperty("xspec.work", temporaryDir.absolutePath)
+                    inputs.dir("src/test/xspec").withPropertyName("xspecTests").withPathSensitivity(PathSensitivity.RELATIVE)
+                    inputs.dir("src/main/xsl").withPropertyName("xslt").withPathSensitivity(PathSensitivity.RELATIVE)
+                    outputs.dir(reports).withPropertyName("xspecReports")
+                    testLogging {
+                        events("failed", "skipped")
+                        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn(testing.suites.named("xspecTest"))
 }
 
 // =============================================================================

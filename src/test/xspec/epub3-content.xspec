@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DITA elements rendered as XHTML by epub3-content.xsl (mode topic-content). The contexts are DITA
+  elements as DITA-OT preprocessing leaves them, identified by their class attribute.
+-->
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               stylesheet="epub3-modules.xsl" run-as="external">
+
+  <!-- ================================================================ -->
+  <!-- Topics, titles and paragraphs                                    -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="A nested topic">
+    <x:context mode="topic-content" select="//*[@id = 'inner']">
+      <topic class="- topic/topic " id="outer">
+        <title class="- topic/title ">Outer</title>
+        <topic class="- topic/topic " id="inner">
+          <title class="- topic/title ">Inner</title>
+          <shortdesc class="- topic/shortdesc ">Short description.</shortdesc>
+          <body class="- topic/body "><p class="- topic/p ">Body text.</p></body>
+        </topic>
+      </topic>
+    </x:context>
+    <x:expect label="is a section with a second-level heading that carries the topic id">
+      <section xmlns="http://www.w3.org/1999/xhtml" class="topic">
+        <h2 id="inner">Inner</h2>
+        <p class="shortdesc">Short description.</p>
+        <p>Body text.</p>
+      </section>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A section title">
+    <x:context mode="topic-content" select="//*[contains(@class, ' topic/title ')]">
+      <section class="- topic/section "><title class="- topic/title ">Options</title></section>
+    </x:context>
+    <x:expect label="is a second-level heading">
+      <h2 xmlns="http://www.w3.org/1999/xhtml">Options</h2>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A paragraph">
+    <x:context mode="topic-content">
+      <p class="- topic/p " id="p1">Plain text.</p>
+    </x:context>
+    <x:expect label="is an XHTML p with its id">
+      <p xmlns="http://www.w3.org/1999/xhtml" id="p1">Plain text.</p>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A paragraph containing a list">
+    <x:context mode="topic-content">
+      <p class="- topic/p ">Choose:<ul class="- topic/ul "><li class="- topic/li ">one</li></ul></p>
+    </x:context>
+    <x:expect label="is a div, since XHTML does not allow lists in p">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="p">Choose:<ul><li>one</li></ul></div>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A paragraph reusing an id that an earlier element of the document has">
+    <x:context mode="topic-content" select="//*[contains(@class, ' topic/p ')][2]">
+      <body class="- topic/body ">
+        <p class="- topic/p " id="same">First.</p>
+        <p class="- topic/p " id="same">Second.</p>
+      </body>
+    </x:context>
+    <x:expect label="loses the id, which must be unique in the content document">
+      <p xmlns="http://www.w3.org/1999/xhtml">Second.</p>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A paragraph in a right-to-left language of an English publication">
+    <x:context mode="topic-content">
+      <p class="- topic/p " xml:lang="ar">&#x645;&#x631;&#x62D;&#x628;&#x627;</p>
+    </x:context>
+    <x:expect label="gets its language and direction">
+      <p xmlns="http://www.w3.org/1999/xhtml" lang="ar" dir="rtl">&#x645;&#x631;&#x62D;&#x628;&#x627;</p>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A sidebar section">
+    <x:context mode="topic-content">
+      <section class="- topic/section " outputclass="sidebar" id="sb">
+        <title class="- topic/title ">Aside</title>
+        <p class="- topic/p ">Text.</p>
+      </section>
+    </x:context>
+    <x:expect label="is a complementary aside">
+      <aside xmlns="http://www.w3.org/1999/xhtml" class="sidebar" role="complementary" id="sb">
+        <h2>Aside</h2>
+        <p>Text.</p>
+      </aside>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Notes                                                            -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="A note without type">
+    <x:context mode="topic-content">
+      <note class="- topic/note ">Keep a backup.</note>
+    </x:context>
+    <x:expect label="is a note aside without label">
+      <aside xmlns="http://www.w3.org/1999/xhtml" role="note" class="note">Keep a backup.</aside>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A French warning">
+    <x:context mode="topic-content">
+      <note class="- topic/note " type="warning" xml:lang="fr">Sauvegardez vos fichiers.</note>
+    </x:context>
+    <x:expect label="gets the type classes and a French label">
+      <aside xmlns="http://www.w3.org/1999/xhtml" role="note" class="note warning note-warning"><strong class="note-label">Avertissement : </strong>Sauvegardez vos fichiers.</aside>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A note of a type without translation">
+    <x:context mode="topic-content">
+      <note class="- topic/note " type="trouble">Check the log.</note>
+    </x:context>
+    <x:expect label="is labelled with its capitalized type">
+      <aside xmlns="http://www.w3.org/1999/xhtml" role="note" class="note trouble note-trouble"><strong class="note-label">Trouble: </strong>Check the log.</aside>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Cross-references                                                 -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="An external cross-reference">
+    <x:context mode="topic-content">
+      <xref class="- topic/xref " href="https://www.dita-ot.org/" scope="external" format="html">DITA-OT</xref>
+    </x:context>
+    <x:expect label="is a link that does not pass the reader's context">
+      <a xmlns="http://www.w3.org/1999/xhtml" href="https://www.dita-ot.org/" rel="noopener noreferrer">DITA-OT</a>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A cross-reference with the target's description added by DITA-OT">
+    <x:context mode="topic-content">
+      <xref class="- topic/xref " href="https://www.dita-ot.org/" scope="external">DITA-OT<desc class="- topic/desc ">The project site.</desc></xref>
+    </x:context>
+    <x:expect label="leaves the description out of the link text">
+      <a xmlns="http://www.w3.org/1999/xhtml" href="https://www.dita-ot.org/" rel="noopener noreferrer">DITA-OT</a>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A cross-reference without text">
+    <x:context mode="topic-content">
+      <xref class="- topic/xref " href="https://www.dita-ot.org/" scope="external"/>
+    </x:context>
+    <x:expect label="shows its URL">
+      <a xmlns="http://www.w3.org/1999/xhtml" href="https://www.dita-ot.org/" rel="noopener noreferrer">https://www.dita-ot.org/</a>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A cross-reference to a file: URL">
+    <x:context mode="topic-content">
+      <xref class="- topic/xref " href="file:///C:/notes/readme.txt">the notes</xref>
+    </x:context>
+    <x:expect label="keeps its text without link, since EPUB forbids file: URLs">
+      <span xmlns="http://www.w3.org/1999/xhtml" class="xref">the notes</span>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A cross-reference to a topic outside the publication">
+    <x:context mode="topic-content">
+      <xref class="- topic/xref " href="elsewhere.dita">another guide</xref>
+    </x:context>
+    <x:expect label="keeps its text without link">
+      <span xmlns="http://www.w3.org/1999/xhtml" class="xref">another guide</span>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Images and figures                                               -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="A block image with alternative text">
+    <x:context mode="topic-content">
+      <image class="- topic/image " href="images/flow.svg" placement="break"><alt class="- topic/alt ">Flow chart</alt></image>
+    </x:context>
+    <x:expect label="is a figure with an img from the images directory">
+      <figure xmlns="http://www.w3.org/1999/xhtml"><img src="../images/images/flow.svg" alt="Flow chart"/></figure>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="An image inside running text">
+    <x:context mode="topic-content">
+      <p class="- topic/p ">Press <image class="- topic/image " href="icons/play.png" alt="Play"/> to start.</p>
+    </x:context>
+    <x:expect label="stays an inline img">
+      <p xmlns="http://www.w3.org/1999/xhtml">Press <img src="../images/icons/play.png" class="inline" alt="Play"/> to start.</p>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A decorative image">
+    <x:context mode="topic-content">
+      <image class="- topic/image " href="rule.png" alt="" placement="break"/>
+    </x:context>
+    <x:expect label="has an empty alt and the presentation role">
+      <figure xmlns="http://www.w3.org/1999/xhtml"><img src="../images/rule.png" alt="" role="presentation"/></figure>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="An image sized in pixels and inches">
+    <x:context mode="topic-content">
+      <image class="- topic/image " href="chart.png" width="300px" height="2in" placement="break"><alt class="- topic/alt ">Chart</alt></image>
+    </x:context>
+    <x:expect label="keeps the pixels as width and the inches as CSS">
+      <figure xmlns="http://www.w3.org/1999/xhtml"><img src="../images/chart.png" alt="Chart" width="300" style="height: 2in"/></figure>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A data: image">
+    <x:context mode="topic-content">
+      <image class="- topic/image " href="data:image/png;base64,iVBORw0KGgo=" scope="external" alt="Pixel" placement="break"/>
+    </x:context>
+    <x:expect label="is embedded with its data: URL">
+      <figure xmlns="http://www.w3.org/1999/xhtml"><img src="data:image/png;base64,iVBORw0KGgo=" alt="Pixel"/></figure>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A remote image">
+    <x:context mode="topic-content">
+      <image class="- topic/image " href="https://www.dita-ot.org/images/logo.png" scope="external" placement="break"><alt class="- topic/alt ">DITA-OT logo</alt></image>
+    </x:context>
+    <x:expect label="is replaced by a link labelled with its alternative text, since EPUB images must be packaged">
+      <a xmlns="http://www.w3.org/1999/xhtml" href="https://www.dita-ot.org/images/logo.png" rel="noopener noreferrer" class="remote-image">DITA-OT logo</a>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A remote image inside a cross-reference">
+    <x:context mode="topic-content">
+      <xref class="- topic/xref " href="https://www.dita-ot.org/" scope="external"><image class="- topic/image " href="https://www.dita-ot.org/images/logo.png" scope="external"><alt class="- topic/alt ">Logo</alt></image></xref>
+    </x:context>
+    <x:expect label="is plain text, since links cannot be nested">
+      <a xmlns="http://www.w3.org/1999/xhtml" href="https://www.dita-ot.org/" rel="noopener noreferrer"><span class="remote-image">Logo</span></a>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A figure with a title">
+    <x:context mode="topic-content">
+      <fig class="- topic/fig " id="flow">
+        <title class="- topic/title ">Processing flow</title>
+        <image class="- topic/image " href="flow.svg"><alt class="- topic/alt ">Flow chart</alt></image>
+      </fig>
+    </x:context>
+    <x:expect label="is a numbered figure with its image and caption">
+      <figure xmlns="http://www.w3.org/1999/xhtml" id="flow" class="numbered-figure">
+        <img src="../images/flow.svg" alt="Flow chart"/>
+        <figcaption><span class="fig-label">Figure 1. </span>Processing flow</figcaption>
+      </figure>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Tables                                                           -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="A table with a title, spans and column alignment">
+    <x:context mode="topic-content">
+      <table class="- topic/table " id="options">
+        <title class="- topic/title ">Options</title>
+        <tgroup class="- topic/tgroup " cols="3">
+          <colspec class="- topic/colspec " colname="c1"/>
+          <colspec class="- topic/colspec " colname="c2" align="right"/>
+          <colspec class="- topic/colspec " colname="c3" align="center"/>
+          <thead class="- topic/thead ">
+            <row class="- topic/row ">
+              <entry class="- topic/entry " colname="c1">Name</entry>
+              <entry class="- topic/entry " colname="c2">Size</entry>
+              <entry class="- topic/entry " colname="c3">Note</entry>
+            </row>
+          </thead>
+          <tbody class="- topic/tbody ">
+            <row class="- topic/row ">
+              <entry class="- topic/entry " colname="c1" morerows="1">a</entry>
+              <entry class="- topic/entry " namest="c2" nameend="c3">spans two columns</entry>
+            </row>
+            <row class="- topic/row ">
+              <entry class="- topic/entry " colname="c2">1</entry>
+              <entry class="- topic/entry " colname="c3">x</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </x:context>
+    <x:expect label="is a captioned XHTML table with header cells, spans, logical alignment and zebra rows">
+      <table xmlns="http://www.w3.org/1999/xhtml" id="options">
+        <caption><span class="table-label">Table 1. </span>Options</caption>
+        <thead>
+          <tr><th>Name</th><th style="text-align: end">Size</th><th style="text-align: center">Note</th></tr>
+        </thead>
+        <tbody>
+          <tr class="row-odd"><td rowspan="2">a</td><td colspan="2" style="text-align: end">spans two columns</td></tr>
+          <tr class="row-even"><td style="text-align: end">1</td><td style="text-align: center">x</td></tr>
+        </tbody>
+      </table>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A simple table with a key column">
+    <x:context mode="topic-content">
+      <simpletable class="- topic/simpletable " keycol="1">
+        <sthead class="- topic/sthead "><stentry class="- topic/stentry ">Key</stentry><stentry class="- topic/stentry ">Value</stentry></sthead>
+        <strow class="- topic/strow "><stentry class="- topic/stentry ">a</stentry><stentry class="- topic/stentry ">1</stentry></strow>
+      </simpletable>
+    </x:context>
+    <x:expect label="has column headers and row headers">
+      <table xmlns="http://www.w3.org/1999/xhtml" class="simpletable">
+        <thead><tr><th scope="col">Key</th><th scope="col">Value</th></tr></thead>
+        <tbody><tr class="row-odd"><th scope="row">a</th><td>1</td></tr></tbody>
+      </table>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Lists                                                            -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="A definition list entry with an id">
+    <x:context mode="topic-content">
+      <dl class="- topic/dl ">
+        <dlentry class="- topic/dlentry " id="entry"><dt class="- topic/dt ">Term</dt><dd class="- topic/dd ">Definition</dd></dlentry>
+      </dl>
+    </x:context>
+    <x:expect label="keeps the entry id on its term, as dlentry has no XHTML equivalent">
+      <dl xmlns="http://www.w3.org/1999/xhtml" class="dl"><dt><span id="entry"/>Term</dt><dd>Definition</dd></dl>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A parameter list">
+    <x:context mode="topic-content">
+      <parml class="- topic/dl pr-d/parml ">
+        <plentry class="- topic/dlentry pr-d/plentry "><pt class="- topic/dt pr-d/pt ">-o</pt><pd class="- topic/dd pr-d/pd ">Output directory</pd></plentry>
+      </parml>
+    </x:context>
+    <x:expect label="is a definition list of class parml">
+      <dl xmlns="http://www.w3.org/1999/xhtml" class="parml"><dt>-o</dt><dd>Output directory</dd></dl>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A simple list">
+    <x:context mode="topic-content">
+      <sl class="- topic/sl "><sli class="- topic/sli ">one</sli><sli class="- topic/sli ">two</sli></sl>
+    </x:context>
+    <x:expect label="is an unordered list of class sl">
+      <ul xmlns="http://www.w3.org/1999/xhtml" class="sl"><li>one</li><li>two</li></ul>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Code and domain phrases                                          -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="A code block with a language-prefixed outputclass">
+    <x:context mode="topic-content">
+      <codeblock class="+ topic/pre pr-d/codeblock " outputclass="language-xml">&lt;map/&gt;</codeblock>
+    </x:context>
+    <x:expect label="carries the language class on pre and code">
+      <pre xmlns="http://www.w3.org/1999/xhtml" class="language-xml"><code class="language-xml">&lt;map/&gt;</code></pre>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A code block with a bare language outputclass">
+    <x:context mode="topic-content">
+      <codeblock class="+ topic/pre pr-d/codeblock " outputclass="python">print()</codeblock>
+    </x:context>
+    <x:expect label="gets the language- prefix">
+      <pre xmlns="http://www.w3.org/1999/xhtml" class="language-python"><code class="language-python">print()</code></pre>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A screen">
+    <x:context mode="topic-content">
+      <screen class="+ topic/pre sw-d/screen ">BUILD SUCCESSFUL</screen>
+    </x:context>
+    <x:expect label="is preformatted text of class screen">
+      <pre xmlns="http://www.w3.org/1999/xhtml" class="screen">BUILD SUCCESSFUL</pre>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="An XML element mention, also a markup name">
+    <x:context mode="topic-content">
+      <xmlelement class="+ topic/keyword markup-d/markupname xml-d/xmlelement ">topicref</xmlelement>
+    </x:context>
+    <x:expect label="is code with angle brackets">
+      <code xmlns="http://www.w3.org/1999/xhtml" class="xmlelement">&lt;topicref&gt;</code>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="An XML attribute mention">
+    <x:context mode="topic-content">
+      <xmlatt class="+ topic/keyword markup-d/markupname xml-d/xmlatt ">href</xmlatt>
+    </x:context>
+    <x:expect label="is code with an at sign">
+      <code xmlns="http://www.w3.org/1999/xhtml" class="xmlatt">@href</code>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A menu cascade">
+    <x:context mode="topic-content">
+      <menucascade class="+ topic/ph ui-d/menucascade "><uicontrol class="+ topic/ph ui-d/uicontrol ">File</uicontrol><uicontrol class="+ topic/ph ui-d/uicontrol ">Save</uicontrol></menucascade>
+    </x:context>
+    <x:expect label="joins its controls with greater-than signs">
+      <span xmlns="http://www.w3.org/1999/xhtml" class="menucascade"><span class="uicontrol">File</span> &gt; <span class="uicontrol">Save</span></span>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A registered trademark">
+    <x:context mode="topic-content">
+      <p class="- topic/p "><tm class="- topic/tm " tmtype="reg">DITA</tm> rocks.</p>
+    </x:context>
+    <x:expect label="is followed by the registered sign">
+      <p xmlns="http://www.w3.org/1999/xhtml">DITA&#xAE; rocks.</p>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A footnote">
+    <x:context mode="topic-content" select="//*[contains(@class, ' topic/fn ')]">
+      <p class="- topic/p ">Text<fn class="- topic/fn " id="f1">The note.</fn></p>
+    </x:context>
+    <x:expect label="is a numbered note reference">
+      <sup xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" class="fn-ref"><a epub:type="noteref" role="doc-noteref" href="#f1" id="fnref-f1">1</a></sup>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A long quote with an external source">
+    <x:context mode="topic-content">
+      <lq class="- topic/lq " href="https://example.com/source" reftitle="The Source">Quoted text.</lq>
+    </x:context>
+    <x:expect label="is a pull quote crediting and linking its source">
+      <blockquote xmlns="http://www.w3.org/1999/xhtml" class="pull-quote">Quoted text.<footer class="quote-attribution"><cite><a href="https://example.com/source" rel="noopener noreferrer">The Source</a></cite></footer></blockquote>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Elements that are not, or not only, rendered as text             -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="A draft comment">
+    <x:context mode="topic-content">
+      <draft-comment class="- topic/draft-comment ">Check with the developers.</draft-comment>
+    </x:context>
+    <x:expect label="is not published" select="()"/>
+  </x:scenario>
+
+  <x:scenario label="A phrase with an id but no rendering of its own">
+    <x:context mode="topic-content">
+      <ph class="- topic/ph " id="anchor">text</ph>
+    </x:context>
+    <x:expect label="keeps its id as an anchor before its text, so that links to it resolve">
+      <span xmlns="http://www.w3.org/1999/xhtml" id="anchor"/>text</x:expect>
+  </x:scenario>
+
+  <x:scenario label="An index term with a nested term">
+    <x:context mode="topic-content" select="(//*[contains(@class, ' topic/indexterm ')])[2]">
+      <topic class="- topic/topic " id="t">
+        <body class="- topic/body ">
+          <p class="- topic/p ">Alpha<indexterm class="- topic/indexterm ">alpha</indexterm> and beta<indexterm class="- topic/indexterm ">beta<indexterm class="- topic/indexterm ">gamma</indexterm></indexterm></p>
+        </body>
+      </topic>
+    </x:context>
+    <x:expect label="leaves an anchor per term, numbered in document order within the topic">
+      <span xmlns="http://www.w3.org/1999/xhtml" id="ixa-t-2"/><span xmlns="http://www.w3.org/1999/xhtml" id="ixa-t-3"/>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="Related links">
+    <x:context mode="topic-content">
+      <related-links class="- topic/related-links ">
+        <link class="- topic/link " href="parent.dita" role="parent"><linktext class="- topic/linktext ">Parent</linktext></link>
+        <link class="- topic/link " href="https://www.dita-ot.org/" scope="external" format="html"><linktext class="- topic/linktext ">DITA-OT</linktext></link>
+        <link class="- topic/link " href="https://www.dita-ot.org/" scope="external" format="html"><linktext class="- topic/linktext ">DITA-OT again</linktext></link>
+        <link class="- topic/link " href="elsewhere.dita"><linktext class="- topic/linktext ">Elsewhere</linktext></link>
+      </related-links>
+    </x:context>
+    <x:expect label="list each target in the publication once, without parent links, under Related information">
+      <section xmlns="http://www.w3.org/1999/xhtml" class="related-links">
+        <h2 class="related-links-title">Related information</h2>
+        <ul><li><a href="https://www.dita-ot.org/" rel="noopener noreferrer">DITA-OT</a></li></ul>
+      </section>
+    </x:expect>
+  </x:scenario>
+
+</x:description>

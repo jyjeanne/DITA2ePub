@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task class="- topic/topic task/task " id="install" xml:lang="en-US">
+  <title class="- topic/title ">Installing</title>
+  <prolog class="- topic/prolog ">
+    <metadata class="- topic/metadata ">
+      <keywords class="- topic/keywords "><keyword class="- topic/keyword " id="kw">installation</keyword></keywords>
+    </metadata>
+  </prolog>
+  <taskbody class="- topic/body task/taskbody ">
+    <section class="- topic/section " id="step1">
+      <p class="- topic/p ">Unpack the archive.</p>
+      <image class="- topic/image " href="../images/diagram.png" alt="Processing diagram"/>
+      <image class="- topic/image " href="screenshot.png" alt="Installer window"/>
+    </section>
+  </taskbody>
+</task>
