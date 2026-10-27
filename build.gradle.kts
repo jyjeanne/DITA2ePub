@@ -8,7 +8,8 @@ val ditaOtVersion = "4.4.1"
 val ditaOtHome = layout.buildDirectory.dir("dita-ot/dita-ot-$ditaOtVersion")
 
 group = "io.github.jyjeanne"
-version = "1.5.0"
+// Single source of the plugin version: plugin.xml and plugin-info.xml must match it (see verifyPluginVersion)
+version = "2.0.0"
 
 // =============================================================================
 // Shared EPUB properties (common to all EPUB builds)
@@ -136,9 +137,34 @@ val epubPackagerJar = tasks.register<Jar>("epubPackagerJar") {
     dependsOn("compileJava")
 }
 
+// plugin.xml and plugin-info.xml are packaged as they are: fail if they declare another version
+val verifyPluginVersion = tasks.register("verifyPluginVersion") {
+    group = "verification"
+    description = "Check that plugin.xml and plugin-info.xml declare the project version"
+    val expected = version.toString()
+    val descriptors = files("plugin.xml", "plugin-info.xml")
+    inputs.files(descriptors)
+    inputs.property("version", expected)
+    doLast {
+        val versionPattern = Regex("""<plugin\s[^>]*\bversion="([^"]+)"|extension="package\.version" value="([^"]+)"|<version>([^<]+)</version>""")
+        val declared = descriptors.flatMap { descriptor ->
+            versionPattern.findAll(descriptor.readText())
+                .map { match -> "${descriptor.name}: ${match.groupValues.drop(1).first { it.isNotEmpty() }}" }
+                .toList()
+        }
+        if (declared.size != 3 || declared.any { !it.endsWith(": $expected") }) {
+            throw GradleException("Plugin descriptors must declare version $expected, found ${declared.joinToString()}")
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn(verifyPluginVersion)
+}
+
 // Shared plugin ZIP content configuration
 fun Zip.configurePluginContents() {
-    dependsOn(epubPackagerJar)
+    dependsOn(epubPackagerJar, verifyPluginVersion)
     from(projectDir) {
         include("plugin.xml")
         include("plugin-info.xml")
