@@ -368,7 +368,7 @@
 
     <!-- Rendered content: images outside the prolog, related links and unpublished elements -->
     <xsl:variable name="docs" select="epub:content-topicrefs($root)/epub:topic-document(.)"/>
-    <xsl:variable name="images" select="$docs//*[contains(@class, ' topic/image ')][not(ancestor::*[
+    <xsl:variable name="images" select="$docs//*[contains(@class, ' topic/image ')][not(epub:is-remote-image(.))][not(ancestor::*[
       contains(@class, ' topic/prolog ') or contains(@class, ' topic/related-links ') or contains(@class, ' topic/draft-comment ')
       or contains(@class, ' topic/required-cleanup ') or contains(@class, ' topic/data ') or contains(@class, ' topic/foreign ')])]"/>
     <!-- Decorative images (@alt="" or outputclass="decorative") correctly have no text alternative -->

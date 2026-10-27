@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic-d">
+  <title>readme in folder d</title>
+  <prolog>
+    <metadata>
+      <keywords><indexterm>readme (d)</indexterm></keywords>
+    </metadata>
+  </prolog>
+  <body>
+    <p>This topic is <filepath>d/readme.dita</filepath>.</p>
+  </body>
+</topic>

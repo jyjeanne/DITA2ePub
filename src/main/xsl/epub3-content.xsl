@@ -528,6 +528,23 @@
     </xsl:choose>
   </xsl:template>
 
+  <!-- Remote image: EPUB 3.3 (3.6) requires images to be inside the publication, so the image is
+       replaced by a link to it, labelled with its alternative text -->
+  <xsl:template match="*[contains(@class, ' topic/image ')][epub:is-remote-image(.)]" mode="topic-content" priority="20">
+    <xsl:variable name="alt-text" select="normalize-space((@alt, *[contains(@class, ' topic/alt ')])[1])"/>
+    <xsl:message>[WARN] Remote image replaced by a link, because EPUB requires images inside the publication: <xsl:value-of select="@href"/></xsl:message>
+    <!-- Inside a cross-reference the text alone is kept: links cannot be nested -->
+    <xsl:element name="{if (ancestor::*[contains(@class, ' topic/xref ')]) then 'span' else 'a'}" namespace="http://www.w3.org/1999/xhtml">
+      <xsl:if test="not(ancestor::*[contains(@class, ' topic/xref ')])">
+        <xsl:attribute name="href" select="@href"/>
+        <xsl:attribute name="rel">noopener noreferrer</xsl:attribute>
+      </xsl:if>
+      <xsl:attribute name="class">remote-image</xsl:attribute>
+      <xsl:call-template name="emit-id"/>
+      <xsl:value-of select="if ($alt-text != '') then $alt-text else @href"/>
+    </xsl:element>
+  </xsl:template>
+
   <!-- Transform DITA image to HTML img -->
   <xsl:template match="*[contains(@class, ' topic/image ')]" mode="topic-content">
     <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', epub:get-image-path(.)))"/>

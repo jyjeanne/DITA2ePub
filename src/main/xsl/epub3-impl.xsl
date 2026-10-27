@@ -201,11 +201,8 @@
 
           <!-- Content documents -->
           <xsl:for-each select="$all-topicrefs">
-            <xsl:variable name="filename" select="epub:get-topic-filename(.)"/>
-            <xsl:variable name="topic-id" select="replace($filename, '\.xhtml$', '')"/>
-
-            <item id="{$topic-id}"
-                  href="{$filename}"
+            <item id="{epub:get-topic-item-id(.)}"
+                  href="{epub:get-topic-filename(.)}"
                   media-type="application/xhtml+xml"/>
           </xsl:for-each>
 
@@ -242,7 +239,7 @@
             <xsl:for-each select="$all-topicrefs[@href]">
               <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
               <xsl:if test="$topic-doc">
-                <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/image ')][@href][not(@scope = 'external')]">
+                <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/image ')][@href][not(epub:is-remote-image(.))]">
                   <xsl:sequence select="epub:get-image-path(.)"/>
                 </xsl:for-each>
               </xsl:if>
@@ -287,9 +284,7 @@
 
           <!-- Main content -->
           <xsl:for-each select="$all-topicrefs">
-            <xsl:variable name="filename" select="epub:get-topic-filename(.)"/>
-            <xsl:variable name="topic-id" select="replace($filename, '\.xhtml$', '')"/>
-            <itemref idref="{$topic-id}"/>
+            <itemref idref="{epub:get-topic-item-id(.)}"/>
           </xsl:for-each>
 
           <!-- Glossary (if generated) -->
@@ -696,6 +691,16 @@
             <xsl:choose>
               <xsl:when test="epub:is-content-topicref(.)">
                 <a xmlns="http://www.w3.org/1999/xhtml" href="{epub:get-topicref-link(.)}">
+                  <xsl:call-template name="get-navtitle">
+                    <xsl:with-param name="topicref" select="."/>
+                  </xsl:call-template>
+                </a>
+              </xsl:when>
+              <!-- A heading without content of its own needs a nested list (EPUB 3.3, 7.3): at the
+                   depth limit, where its entries are not listed, link it to its first topic instead -->
+              <xsl:when test="$depth ge $epub.toc.depth">
+                <a xmlns="http://www.w3.org/1999/xhtml"
+                   href="{epub:get-topicref-link((.//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])[1])}">
                   <xsl:call-template name="get-navtitle">
                     <xsl:with-param name="topicref" select="."/>
                   </xsl:call-template>

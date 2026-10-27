@@ -355,11 +355,71 @@
   <!-- Directory of the root map in the temp dir; topics and images keep their paths relative to it -->
   <xsl:variable name="epub:map-dir" as="xs:string" select="string(resolve-uri('.', base-uri(/*)))"/>
 
+  <!-- Content document file name and manifest id of every packaged topic, keyed by the topic's absolute
+       URI. Topics are flattened into one directory, so file names must be unique, also after case
+       folding (EPUB 3.3, 4.2.3): a topic keeps its name when no other topic has it, otherwise it is
+       named after its path; names of generated pages get a "topic-" prefix, any remaining clash a
+       numeric suffix. Manifest ids are XML names distinct from the plugin's own items (ncx, css-*...) -->
+  <xsl:variable name="epub:topic-outputs" as="map(xs:string, map(xs:string, xs:string))">
+    <xsl:variable name="refs" select="epub:content-topicrefs(/*)"/>
+    <xsl:variable name="paths" select="for $ref in $refs return epub:get-topic-path($ref/@href)"/>
+    <xsl:variable name="generated-pages" select="('cover', 'titlepage', 'copyright', 'nav', 'glossary', 'index', 'lof', 'lot')"/>
+    <xsl:iterate select="$refs">
+      <xsl:param name="outputs" as="map(xs:string, map(xs:string, xs:string))" select="map{}"/>
+      <xsl:param name="used-files" as="xs:string*" select="$generated-pages"/>
+      <xsl:param name="used-ids" as="xs:string*" select="('ncx', 'cover-image', $generated-pages)"/>
+      <xsl:on-completion select="$outputs"/>
+      <xsl:variable name="uri" select="epub:resolve-href(@href, .)"/>
+      <xsl:variable name="path" select="epub:get-topic-path(@href)"/>
+      <xsl:variable name="name" select="epub:get-topic-name($path)"/>
+      <xsl:variable name="base" select="epub:to-file-name(
+        if (count(distinct-values($paths[lower-case(epub:get-topic-name(.)) = lower-case($name)])) gt 1)
+        then replace(replace($path, '\.[^./]+$', ''), '[^A-Za-z0-9._-]+', '-')
+        else $name)"/>
+      <xsl:variable name="file" select="epub:unused-name(
+        if (lower-case($base) = $generated-pages) then concat('topic-', $base) else $base, $used-files)"/>
+      <xsl:variable name="id-base" select="replace($file, '[^\p{L}\p{Nd}._-]', '-')"/>
+      <xsl:variable name="id" select="epub:unused-name(
+        if (matches($id-base, '^[\p{L}_]') and not(matches(lower-case($id-base), '^(css|image)-')))
+        then $id-base else concat('topic-', $id-base), $used-ids)"/>
+      <xsl:next-iteration>
+        <xsl:with-param name="outputs" select="if (map:contains($outputs, $uri)) then $outputs
+                                               else map:put($outputs, $uri, map{'file': concat($file, '.xhtml'), 'id': $id})"/>
+        <xsl:with-param name="used-files" select="($used-files, lower-case($file))"/>
+        <xsl:with-param name="used-ids" select="($used-ids, lower-case($id))"/>
+      </xsl:next-iteration>
+    </xsl:iterate>
+  </xsl:variable>
+
   <!-- Content document of every packaged topic, keyed by the topic's absolute URI -->
-  <xsl:variable name="epub:topic-files" as="map(xs:string, xs:string)" select="map:merge(
-    for $ref in epub:content-topicrefs(/*)
-    return map:entry(epub:resolve-href($ref/@href, $ref), epub:get-topic-filename($ref)),
-    map{'duplicates': 'use-first'})"/>
+  <xsl:variable name="epub:topic-files" as="map(xs:string, xs:string)"
+                select="map:merge(map:for-each($epub:topic-outputs, function($uri, $output) { map:entry($uri, $output('file')) }))"/>
+
+  <!-- A file name OCF allows (EPUB 3.3, 4.2.3): NFC-normalized, without spaces, control or private-use
+       characters, characters such as : * ? " < > | \ /, URL delimiters % and #, or a trailing full stop.
+       Percent-encoded characters of an href (My%20Topic.dita) become a hyphen like a space would -->
+  <xsl:function name="epub:to-file-name" as="xs:string">
+    <xsl:param name="name" as="xs:string"/>
+    <xsl:variable name="cleaned" select="replace(replace(replace(normalize-unicode($name, 'NFC'), '(%[0-9A-Fa-f]{2})+', '-'),
+                                         '[\s\p{Cc}\p{Co}&quot;*:&lt;&gt;?\\|%#/]+', '-'), '\.+$', '')"/>
+    <xsl:sequence select="if ($cleaned = '') then 'topic' else $cleaned"/>
+  </xsl:function>
+
+  <!-- $base, or else $base-2, $base-3...: the first form not in $used (lower-case names) -->
+  <xsl:function name="epub:unused-name" as="xs:string">
+    <xsl:param name="base" as="xs:string"/>
+    <xsl:param name="used" as="xs:string*"/>
+    <xsl:sequence select="(for $n in 1 to count($used) + 1
+                           return if ($n = 1) then $base else concat($base, '-', $n))[not(lower-case(.) = $used)][1]"/>
+  </xsl:function>
+
+  <!-- True when an image lives outside the publication (http:, https:..., or scope="external").
+       EPUB 3.3 (3.6) only allows audio, video, fonts and scripts to be remote, so it cannot be embedded -->
+  <xsl:function name="epub:is-remote-image" as="xs:boolean">
+    <xsl:param name="image" as="element()"/>
+    <xsl:sequence select="$image/@scope = 'external'
+      or (matches($image/@href, '^[a-zA-Z][a-zA-Z0-9+.\-]*:') and not(starts-with($image/@href, 'data:')))"/>
+  </xsl:function>
 
   <!-- Path of an image inside the EPUB images directory. The Ant build copies images with their
        folders relative to the root map, so the path is the image location relative to that map -->
@@ -440,34 +500,21 @@
     <xsl:sequence select="replace(tokenize($path, '/')[last()], '\.[^.]+$', '')"/>
   </xsl:function>
 
-  <!-- Generate unique filename from topicref -->
+  <!-- Content document file name of a topicref (see epub:topic-outputs) -->
   <xsl:function name="epub:get-topic-filename" as="xs:string">
     <xsl:param name="topicref" as="element()"/>
+    <xsl:variable name="output" select="if ($topicref/@href) then $epub:topic-outputs(epub:resolve-href($topicref/@href, $topicref)) else ()"/>
+    <xsl:sequence select="
+      if (exists($output)) then $output('file')
+      else if ($topicref/@href) then concat(epub:to-file-name(epub:get-topic-name(epub:get-topic-path($topicref/@href))), '.xhtml')
+      else concat('topic-', generate-id($topicref), '.xhtml')"/>
+  </xsl:function>
 
-    <xsl:variable name="href" select="$topicref/@href"/>
-    <xsl:choose>
-      <xsl:when test="$href">
-        <xsl:variable name="path" select="epub:get-topic-path($href)"/>
-        <xsl:variable name="name" select="epub:get-topic-name($path)"/>
-        <!-- Topics are flattened into one directory: when topics in different folders share a
-             name (e.g. chapter1/overview.dita and chapter2/overview.dita), use their path instead -->
-        <xsl:variable name="same-name-paths" select="distinct-values(
-          for $ref in $topicref/ancestor-or-self::*[last()]//*[contains(@class, ' map/topicref ')][@href]
-          return epub:get-topic-path($ref/@href))[epub:get-topic-name(.) = $name]"/>
-        <xsl:variable name="base" select="
-          if (count($same-name-paths) gt 1)
-          then replace(replace($path, '\.[^./]+$', ''), '[^A-Za-z0-9._-]+', '-')
-          else $name"/>
-        <!-- Never reuse the name of a page the plugin generates itself (e.g. index.dita vs. index.xhtml) -->
-        <xsl:sequence select="concat(
-          if ($base = ('cover', 'titlepage', 'copyright', 'nav', 'glossary', 'index', 'lof', 'lot'))
-          then concat('topic-', $base) else $base,
-          '.xhtml')"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:sequence select="concat('topic-', generate-id($topicref), '.xhtml')"/>
-      </xsl:otherwise>
-    </xsl:choose>
+  <!-- Manifest id of a topicref's content document (see epub:topic-outputs) -->
+  <xsl:function name="epub:get-topic-item-id" as="xs:string">
+    <xsl:param name="topicref" as="element()"/>
+    <xsl:variable name="output" select="if ($topicref/@href) then $epub:topic-outputs(epub:resolve-href($topicref/@href, $topicref)) else ()"/>
+    <xsl:sequence select="if (exists($output)) then $output('id') else concat('topic-', generate-id($topicref))"/>
   </xsl:function>
 
 </xsl:stylesheet>
