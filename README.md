@@ -25,26 +25,28 @@
 
 ### Why DITA2ePub?
 
-- **Standards-Compliant**: Full EPUB 3.3 specification compliance with WCAG 2.1 accessibility
+- **Standards-Compliant**: EPUB 3.3 output validated with EPUBCheck, with EPUB Accessibility 1.1 metadata
 - **Professional Output**: Custom cover pages, embedded fonts, optimized images, and typographic features
 - **Production-Ready**: 43 automated tests (unit and end-to-end), EPUBCheck validation with zero errors, CI/CD automation
 - **Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
 - **Modern Stack**: Built and tested on DITA-OT 4.4.1, Java 17+, and latest web standards
 
-### What's New in v1.5.0?
+### What's New in v2.0.0?
 
-- **Font obfuscation** — IDPF XOR algorithm per OCF 3.3 Section 4.2
-- **Image optimization pipeline** — JPEG quality control, ARGB-to-RGB conversion, recursive directory scanning
-- **Back-of-book index** — Automatic generation from `<indexterm>` elements with alphabetical grouping and anchor links
-- **Consolidated glossary** — Alphabetically grouped glossary page from `<glossentry>` topics
-- **List of Figures / List of Tables** — Auto-generated from bookmap when `<figurelist/>` or `<tablelist/>` is present
-- **Auto-generated copyright page** — From bookmap metadata (title, copyright, publisher, ISBN, license)
-- **Drop caps** — Decorative initial capitals on chapter openings (suppressed for CJK)
-- **Improved accessibility** — Correct `epub:type` semantics, skip-navigation links, WCAG-AA metadata
-- **Bug fixes** — Title/subtitle swap, copyright year extraction, double file extensions, JPEG ARGB corruption, XML injection in font paths, and more
+- **Theme system** — 5 built-in themes (`default`, `academic`, `fiction`, `technical`, `training`) built on CSS custom properties
+- **Platform variants** — Target-specific output for Amazon KDP, Apple Books, Kobo, or generic EPUB
+- **Fixed Layout EPUB** — Viewport dimensions, orientation and spread controls, `rendition:*` OPF metadata
+- **RTL language support** — Arabic, Hebrew, Farsi, Urdu with CSS logical properties and tuned font stacks
+- **Global figure/table numbering** — Sequential numbering across topics
+- **DITA-OT 4.4.1** — Built and tested against DITA-OT 4.4.1, with the full integration test suite running end to end
+- **Bug fixes** — Font embedding no longer aborts on an invalid Ant copy condition; topics sharing a file name in
+  different folders no longer overwrite each other; OPF `<guide>` only emitted for KDP
+
+See [CHANGELOG.md](docs/CHANGELOG.md) for the full list of changes.
 
 ### Previous Releases
 
+- **v1.5.0**: Font obfuscation, image optimization, back-of-book index, consolidated glossary, List of Figures/Tables, auto-generated copyright page, drop caps
 - **v1.4.0**: ISBN/ASIN identifiers, series metadata, BISAC codes, contributor roles, copyright page, landmarks
 - **v1.3.0**: Custom CSS, footnotes with backlinks, figure/table numbering, pull quotes, sidebars
 - **v1.2.0**: EPUB 3.3 compliance, NCX generation, EPUBCheck integration, cover pages, WCAG-AA metadata
@@ -59,7 +61,7 @@
 - **EPUB 3.3 Standard**: Full compliance with latest EPUB specification and Structural Semantics Vocabulary (SSV)
 - **DITA-OT 4.4+ Integration**: Seamless plugin architecture
 - **XHTML5 Output**: Modern, semantic HTML content with proper `epub:type` annotations
-- **Accessibility Built-in**: WCAG 2.1 AA/AAA metadata, skip-navigation links, alt text validation
+- **Accessibility Built-in**: EPUB Accessibility 1.1 metadata that reflects the actual content, skip-navigation links, alt text checks
 - **Navigation**: Automatic TOC, landmarks, and NCX generation
 
 ### Advanced Features
@@ -74,7 +76,7 @@
 - **Image Optimization**: JPEG quality control, max-width resizing, recursive directory scanning
 - **Typography**: Drop caps, zebra-striped tables, figure/table numbering, locale-aware quotation marks
 - **EPUBCheck 5.3.0 Integration**: Built-in validation with zero errors
-- **Comprehensive Testing**: 41 tests across 6 test classes
+- **Comprehensive Testing**: 42 test methods across 6 test classes
 
 ### Developer Experience
 - **Gradle Build System**: Modern build configuration with Kotlin DSL
@@ -142,7 +144,7 @@ $DITA_HOME/bin/dita install build/plugin/io.github.jyjeanne.dita2epub.zip
 dita plugins | grep epub
 
 # Expected output:
-# io.github.jyjeanne.dita2epub@1.5.0
+# io.github.jyjeanne.dita2epub@2.0.0
 ```
 
 ### 3. Generate Your First EPUB
@@ -346,9 +348,11 @@ dita --input=mybook.ditamap \
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `epub.version` | string | `3.3` | EPUB specification version (3.3, 3.0, 2.0.1) |
-| `epub.accessibility` | enum | `wcag-aa` | Accessibility level (wcag-a, wcag-aa, wcag-aaa) |
+| `epub.accessibility` | enum | `wcag-aa` | WCAG level the content targets (wcag-a, wcag-aa, wcag-aaa); not a conformance claim, see [Accessibility Metadata](#accessibility-metadata) |
 | `epub.toc.depth` | integer | `5` | Maximum table of contents depth |
 | `epub.nav.depth` | integer | `5` | Maximum navigation document depth |
+| `epub.aria.landmarks` | enum | `yes` | Generate ARIA landmarks |
+| `epub.generate.ncx` | enum | `no` | Generate an EPUB 2 NCX file (always generated for `epub.platform=kdp`) |
 
 ### Cover Page Parameters
 
@@ -373,6 +377,13 @@ When set to `auto`, index generation triggers automatically when a `<indexlist/>
 | `epub.generate.glossary` | enum | `auto` | Generate consolidated glossary: `auto` (detect from bookmap), `yes`, `no` |
 
 When set to `auto`, glossary generation triggers automatically when a `<glossarylist>` element with topicrefs is present in the bookmap. The glossary collects `<glossterm>` and `<glossdef>` from all referenced `<glossentry>` topics, groups them alphabetically, and generates a `glossary.xhtml` file with EPUB 3.3 `<dl epub:type="glossary">` markup.
+
+### List of Figures / Tables Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `epub.generate.lof` | enum | `no` | Generate List of Figures: `auto` (detect `<figurelist/>` in bookmap), `yes`, `no` |
+| `epub.generate.lot` | enum | `no` | Generate List of Tables: `auto` (detect `<tablelist/>` in bookmap), `yes`, `no` |
 
 ### Font Parameters
 
@@ -420,6 +431,8 @@ When set to `auto`, glossary generation triggers automatically when a `<glossary
 | `epub.code.line.numbers` | enum | `no` | Line numbers in code blocks |
 | `epub.code.syntax.classes` | enum | `yes` | Language CSS class on code blocks |
 | `epub.drop.caps` | enum | `no` | Drop caps on chapter first paragraphs |
+| `epub.hyphenation` | enum | `auto` | CSS hyphenation mode: `auto`, `yes`, `no` |
+| `epub.locale.quotes` | enum | `no` | Locale-aware quotation marks |
 
 ### Theme Parameters
 
@@ -449,6 +462,28 @@ When set to `auto`, glossary generation triggers automatically when a `<glossary
 |-----------|------|---------|-------------|
 | `epub.validate` | boolean | `yes` | Run EPUBCheck validation (if available) |
 
+### Accessibility Metadata
+
+The package document gets [EPUB Accessibility 1.1](https://www.w3.org/TR/epub-a11y-11/) discovery metadata
+that describes the generated content: access modes (`visual` only when there are images), sufficient access
+modes, features (`structuralNavigation`, `tableOfContents`, `readingOrder`, `ARIA`, plus `index` and
+`alternativeText` when they apply), hazards, and a summary that reports images without a text alternative.
+
+The plugin does not claim WCAG conformance by itself, since that requires an evaluation. After evaluating the
+publication, declare the claim and the evaluator in the bookmap:
+
+```xml
+<bookmeta>
+  <data name="accessibility-conformance" value="EPUB Accessibility 1.1 - WCAG 2.2 Level AA"/>
+  <data name="accessibility-certifier" value="Example Accessibility Services"/>
+  <!-- Optional: replaces the generated summary -->
+  <data name="accessibility-summary" value="..."/>
+</bookmeta>
+```
+
+These become `dcterms:conformsTo` and `a11y:certifiedBy`. A conformance value without a certifier is ignored
+with a warning, because EPUB Accessibility 1.1 requires both.
+
 **Complete Reference**: See [SPECIFICATION.md](docs/SPECIFICATION.md) for all parameters
 
 ---
@@ -471,7 +506,7 @@ dita2epub/
 │   │   │   ├── epub3-glossary.xsl     # Consolidated glossary generation
 │   │   │   └── epub3-platform.xsl     # Platform-specific logic
 │   │   └── resources/
-│   │       ├── css/            # Stylesheets (7 files)
+│   │       ├── css/            # Stylesheets (8 files)
 │   │       │   ├── epub-default.css         # Default styles (CSS custom properties)
 │   │       │   ├── epub-theme-*.css         # Theme overrides (4 themes)
 │   │       │   ├── epub-platform-kdp.css    # KDP-safe CSS
@@ -479,10 +514,12 @@ dita2epub/
 │   │       │   └── epub-fonts.css           # Font declarations
 │   │       └── fonts/          # Font directory (empty template)
 │   └── test/
-│       ├── java/               # Test classes (41 tests)
+│       ├── java/               # Test classes (42 test methods)
 │       └── resources/
-│           ├── dita/           # Complete English bookmap (18 topics, 10 glossary entries)
-│           └── epub/           # Reference EPUB for validation
+│           ├── dita/               # Complete English bookmap (18 topics, 10 glossary entries)
+│           ├── dita-kdp/           # Amazon KDP commercial novel
+│           ├── dita-comprehensive/ # Feature-coverage map
+│           └── epub/               # Reference EPUB for validation
 ├── plugin.xml                  # DITA-OT plugin descriptor
 ├── build-epub3.xml             # Ant build integration
 ├── build.gradle.kts            # Gradle build configuration
@@ -493,6 +530,7 @@ dita2epub/
     ├── GITHUB_CHECKLIST.md     # GitHub procedures
     ├── PROJECT_STATUS.md       # Project status and metrics
     ├── QUICKSTART.md           # Quick start guide
+    ├── REGISTRY.md             # Publishing to the DITA-OT plugin registry
     ├── RELEASE_NOTES.md        # Version history
     ├── SPECIFICATION.md        # Complete technical specification
     ├── TEST_COVERAGE.md        # Test documentation
@@ -580,13 +618,14 @@ that share a file name across folders).
 | Document | Description | Details |
 |----------|-------------|---------|
 | **[Font Embedding Guide](src/main/resources/fonts/README.md)** | Font setup and configuration | 200+ lines with examples |
-| **[RELEASE_NOTES.md](docs/RELEASE_NOTES.md)** | Version history and changelog | v1.0.1 release details |
+| **[CHANGELOG.md](docs/CHANGELOG.md)** | Version changelog | All releases up to v2.0.0 |
+| **[RELEASE_NOTES.md](docs/RELEASE_NOTES.md)** | Early release notes | v1.0.1 release details |
 
 ### Testing & Quality
 
 | Document | Description | Coverage |
 |----------|-------------|----------|
-| **[TEST_COVERAGE.md](docs/TEST_COVERAGE.md)** | Detailed test documentation | 41 tests across 6 classes |
+| **[TEST_COVERAGE.md](docs/TEST_COVERAGE.md)** | Detailed test documentation | 42 test methods across 6 classes |
 | **[TEST_SUMMARY.md](docs/TEST_SUMMARY.md)** | Executive test summary | 100% unit test pass rate |
 
 ### Development & CI/CD
@@ -595,6 +634,7 @@ that share a file name across folders).
 |----------|-------------|---------|
 | **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** | Contribution guidelines | 500+ lines with code examples |
 | **[.github/ACTIONS_SETUP.md](.github/ACTIONS_SETUP.md)** | CI/CD setup summary | Workflow descriptions |
+| **[REGISTRY.md](docs/REGISTRY.md)** | Publishing to the DITA-OT plugin registry | Release and checksum steps |
 
 ### External Resources
 
@@ -793,7 +833,7 @@ You may obtain a copy of the License at
 ![Coverage](https://img.shields.io/badge/coverage-70%25-green)
 ![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
 
-**Last Updated**: March 9, 2026
+**Last Updated**: October 27, 2026
 **Version**: 2.0.0
 **Status**: Production Ready
 

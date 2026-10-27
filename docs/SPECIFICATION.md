@@ -189,7 +189,6 @@ dita2epub/
 ├── settings.gradle.kts                 # Gradle settings
 ├── gradle.properties                   # Gradle JVM and cache settings
 ├── README.md                           # Project documentation
-├── CLAUDE.md                           # Claude Code guidance
 ├── LICENSE                             # Apache License 2.0
 │
 ├── src/
@@ -304,7 +303,7 @@ Defines all XSLT parameters with typed defaults. Also provides utility functions
 
 **File:** `src/main/xsl/epub3-common.xsl`
 
-- `epub:generate-uuid()` — UUID generation for EPUB identifiers
+- `epub:generate-uuid()` — UUID derived from the title, language and root map file name, so the identifier stays the same across builds of the same publication
 - `epub:get-identifier()` — Extract publication identifier (ISBN from param/bookmap, fallback to UUID)
 - `epub:marc-relator()` — MARC relator code lookup (author→aut, editor→edt, translator→trl, etc.)
 - `epub:get-title()` — Extract map title with fallbacks
@@ -556,7 +555,7 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `epub.accessibility` | enum | `wcag-aa` | WCAG level: `wcag-a`, `wcag-aa`, `wcag-aaa` |
+| `epub.accessibility` | enum | `wcag-aa` | WCAG level the content targets: `wcag-a`, `wcag-aa`, `wcag-aaa`. Not a conformance claim: declare one with bookmap `<data name="accessibility-conformance">` and `<data name="accessibility-certifier">` |
 | `epub.aria.landmarks` | enum | `yes` | Generate ARIA landmarks: `yes`, `no` |
 | `epub.skip.nav` | enum | `yes` | Include skip navigation links: `yes`, `no` |
 
@@ -793,7 +792,7 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Sidebars** — `<section outputclass="sidebar">` → `<aside class="sidebar">`
 - [x] **i18n note labels** — language-aware labels for tip, warning, important, caution, danger, note
 
-### v1.4.0 (Current — Released 2026-03-05)
+### v1.4.0 (Released 2026-03-05)
 *Goal: Produce EPUBs that pass Amazon KDP, Apple Books, and Kobo ingestion validation.*
 
 - [x] **ISBN/ASIN identifier support** — Extract from bookmap `<bookid><isbn>` or override via `epub.isbn` parameter; ONIX codelist5 identifier-type refinement (ISBN-13, ISBN-10, ASIN)
@@ -835,6 +834,6 @@ Apache License 2.0 — Copyright 2025 J. Jeanne
 
 ---
 
-**Document Version:** 1.4.0
+**Document Version:** 2.0.0
 **Last Updated:** 2026-10-12
 **Status:** Current Release

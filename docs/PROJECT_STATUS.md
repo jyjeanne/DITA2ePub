@@ -16,13 +16,13 @@
 - **Discussions:** `https://github.com/jyjeanne/dita2epub/discussions`
 
 ### Version Consistency
-All project files updated to version **1.0.1**:
-- ✅ `plugin.xml` - v1.0.1
-- ✅ `plugin-info.xml` - v1.0.1
-- ✅ `build.gradle.kts` - v1.0.1
-- ✅ `README.md` - References v1.0.1
-- ✅ `SPECIFICATION.md` - Documents v1.0.1
-- ✅ `RELEASE_NOTES.md` - v1.0.1 as current release
+The version is set once, in `build.gradle.kts` (**2.0.0**). `plugin.xml` (plugin `@version` and
+`package.version`) and `plugin-info.xml` must declare the same value: the `verifyPluginVersion` task,
+run by `check` and before every plugin package, fails the build otherwise.
+- ✅ `build.gradle.kts` - v2.0.0
+- ✅ `plugin.xml` - v2.0.0
+- ✅ `plugin-info.xml` - v2.0.0
+- ✅ `README.md`, `SPECIFICATION.md`, `CHANGELOG.md` - v2.0.0
 
 ---
 
