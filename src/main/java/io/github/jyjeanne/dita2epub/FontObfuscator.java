@@ -11,7 +11,7 @@ import java.util.List;
  * EPUB font obfuscation using the Adobe/IDPF algorithm.
  *
  * Per EPUB OCF 3.3 Section 4.2:
- * 1. Derive a 20-byte key from SHA-1 hash of the unique identifier (stripped of whitespace/hyphens)
+ * 1. Derive a 20-byte key from SHA-1 hash of the unique identifier (stripped of whitespace only)
  * 2. XOR the first 1040 bytes of each font file with the key (cycling every 20 bytes)
  * 3. Record obfuscated fonts in META-INF/encryption.xml
  */
@@ -97,13 +97,14 @@ public class FontObfuscator {
 
     /**
      * Derive a 20-byte obfuscation key from the unique identifier.
-     * Per the spec: strip all whitespace and hyphens, then SHA-1 hash.
+     * Per EPUB 3.3 section 4.4.3: remove all whitespace, then SHA-1 hash.
      */
     static byte[] deriveKey(String identifier) throws NoSuchAlgorithmException {
-        // Per EPUB OCF 3.3 Section 4.2: trim leading/trailing whitespace,
-        // then remove all U+0020 (space) and U+002D (hyphen-minus) characters.
+        // Only the XML whitespace code points U+0020, U+0009, U+000D and U+000A are removed.
+        // Hyphens and every other character stay: removing them would give reading systems a
+        // different key, and they would de-obfuscate the fonts into garbage.
         // The full identifier (including any urn:uuid: scheme) is used.
-        String cleaned = identifier.trim().replaceAll("[ \\-]", "");
+        String cleaned = identifier.replaceAll("[\\u0020\\u0009\\u000D\\u000A]", "");
 
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
         byte[] hash = sha1.digest(cleaned.getBytes(java.nio.charset.StandardCharsets.UTF_8));
