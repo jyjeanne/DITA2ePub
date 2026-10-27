@@ -30,7 +30,7 @@
       <xsl:message>Generating back-of-book index...</xsl:message>
 
       <!-- Collect all topicrefs with content -->
-      <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
+      <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)"/>
 
       <!-- Build chapter number lookup: map each topicref href to its chapter label -->
       <xsl:variable name="chapter-labels" as="element()*">
@@ -61,9 +61,10 @@
       <xsl:variable name="index-entries" as="element()*">
         <xsl:for-each select="$all-topicrefs">
           <xsl:variable name="topicref" select="."/>
-          <xsl:variable name="topic-doc" select="document(@href, .)"/>
+          <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
           <xsl:variable name="topic-filename" select="epub:get-topic-filename(.)"/>
-          <xsl:variable name="topic" select="$topic-doc/*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference]"/>
+          <!-- First topic, as in epub3-content.xsl (a <dita> file holds several) -->
+          <xsl:variable name="topic" select="($topic-doc//*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference])[1]"/>
           <xsl:variable name="topic-title" select="normalize-space(($topic/*[contains(@class, ' topic/title ') or self::title])[1])"/>
           <!-- Look up chapter label for this topic -->
           <xsl:variable name="chapter-label" select="($chapter-labels[@file = $topic-filename]/@num, '')[1]"/>

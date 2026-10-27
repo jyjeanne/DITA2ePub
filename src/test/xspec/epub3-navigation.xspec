@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Navigation built by epub3-impl.xsl: the EPUB 3 navigation document's table of contents, the
+  navigation titles, and the NCX navigation points (EPUB 2 reading systems, Kindle). The fixture
+  bookmap is the global context item, as the link targets depend on the whole publication.
+-->
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:ncx="http://www.daisy.org/z3986/2005/ncx/"
+               xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               stylesheet="epub3-modules.xsl" run-as="external">
+
+  <x:scenario label="The table of contents of the fixture bookmap">
+    <x:context href="fixtures/book.ditamap"/>
+    <x:call template="generate-toc-list">
+      <x:param name="topicrefs" href="fixtures/book.ditamap" select="/*/*[contains(@class, ' map/topicref ')]"/>
+      <x:param name="map" href="fixtures/book.ditamap" select="/*"/>
+    </x:call>
+
+    <x:scenario label="from the top level">
+      <x:call>
+        <x:param name="depth" select="1"/>
+      </x:call>
+      <x:expect label="lists the topics, nested as in the map, with headings as text, and leaves out key definitions, external links, missing topics and book lists">
+        <ol xmlns="http://www.w3.org/1999/xhtml">
+          <li><a href="intro.xhtml">Introduction</a>
+            <ol><li><a href="guide-install.xhtml">Installing</a></li></ol>
+          </li>
+          <li><a href="reference-install.xhtml">Installation reference</a></li>
+          <li><span>More topics</span>
+            <ol>
+              <li><a href="reference-Intro.xhtml">Reference introduction</a></li>
+              <li><a href="topic-index.xhtml">Index of commands</a></li>
+              <li><a href="2-start.xhtml">Getting started</a></li>
+              <li><a href="multi.xhtml#second">Second topic</a></li>
+              <li><a href="intro.xhtml">Introduction again</a></li>
+            </ol>
+          </li>
+        </ol>
+      </x:expect>
+    </x:scenario>
+
+    <x:scenario label="at the depth limit (epub.toc.depth)">
+      <x:call>
+        <x:param name="depth" select="5"/>
+      </x:call>
+      <x:expect label="has no nested lists, and links a heading to its first topic, as a heading needs a nested list (EPUB 3.3, 7.3)">
+        <ol xmlns="http://www.w3.org/1999/xhtml">
+          <li><a href="intro.xhtml">Introduction</a></li>
+          <li><a href="reference-install.xhtml">Installation reference</a></li>
+          <li><a href="reference-Intro.xhtml">More topics</a></li>
+        </ol>
+      </x:expect>
+    </x:scenario>
+
+    <x:scenario label="beyond the depth limit">
+      <x:call>
+        <x:param name="depth" select="6"/>
+      </x:call>
+      <x:expect label="is empty" select="()"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="A table of contents of key definitions only">
+    <x:context href="fixtures/book.ditamap"/>
+    <x:call template="generate-toc-list">
+      <x:param name="topicrefs" href="fixtures/book.ditamap" select="//*[@processing-role = 'resource-only']"/>
+      <x:param name="depth" select="1"/>
+    </x:call>
+    <x:expect label="is empty, not an empty list, which the navigation document does not allow" select="()"/>
+  </x:scenario>
+
+  <x:scenario label="The generated pages appended to the table of contents of a French publication">
+    <x:call template="generate-toc-list">
+      <x:param name="topicrefs" select="()"/>
+      <x:param name="depth" select="1"/>
+      <x:param name="append-glossary" select="true()"/>
+      <x:param name="append-lof" select="true()"/>
+      <x:param name="append-index" select="true()"/>
+      <x:param name="map">
+        <map class="- map/map " xml:lang="fr-FR"/>
+      </x:param>
+    </x:call>
+    <x:expect label="come in glossary, figures, index order with French titles">
+      <ol xmlns="http://www.w3.org/1999/xhtml">
+        <li><a href="glossary.xhtml">Glossaire</a></li>
+        <li><a href="lof.xhtml">Liste des figures</a></li>
+        <li><a href="index.xhtml">Index</a></li>
+      </ol>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Navigation titles                                                -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="The navigation title">
+    <x:call template="get-navtitle"/>
+
+    <x:scenario label="of a topicref with a navtitle attribute">
+      <x:call>
+        <x:param name="topicref">
+          <topicref class="- map/topicref " href="a.dita" navtitle="From the attribute"/>
+        </x:param>
+      </x:call>
+      <x:expect label="is that attribute" test="string($x:result)" select="'From the attribute'"/>
+    </x:scenario>
+
+    <x:scenario label="of a topicref with a navtitle element">
+      <x:call>
+        <x:param name="topicref">
+          <topicref class="- map/topicref " href="a.dita">
+            <topicmeta class="- map/topicmeta "><navtitle class="- topic/navtitle "> From the
+              element </navtitle></topicmeta>
+          </topicref>
+        </x:param>
+      </x:call>
+      <x:expect label="is that element's normalized text" test="string($x:result)" select="'From the element'"/>
+    </x:scenario>
+
+    <x:scenario label="of a topicref without title">
+      <x:call>
+        <x:param name="topicref">
+          <topicref class="- map/topicref " href="guide/install.dita"/>
+        </x:param>
+      </x:call>
+      <x:expect label="is its file name" test="string($x:result)" select="'install.dita'"/>
+    </x:scenario>
+
+    <x:scenario label="of German appendices">
+      <x:call>
+        <x:param name="topicref" select="//*[contains(@class, ' bookmap/appendices ')]">
+          <bookmap class="- map/map bookmap/bookmap " xml:lang="de">
+            <appendices class="- map/topicref bookmap/appendices "/>
+          </bookmap>
+        </x:param>
+      </x:call>
+      <x:expect label="is translated" test="string($x:result)" select="'Anhang'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- NCX                                                              -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="The NCX reading order of the fixture bookmap">
+    <x:context href="fixtures/book.ditamap"/>
+    <x:call function="epub:ncx-play-order-targets">
+      <x:param href="fixtures/book.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="lists each target once, where the map first references it"
+              select="'intro.xhtml', 'guide-install.xhtml', 'reference-install.xhtml', 'reference-Intro.xhtml',
+                      'topic-index.xhtml', '2-start.xhtml', 'multi.xhtml#second'"/>
+  </x:scenario>
+
+  <x:scenario label="The NCX navigation points of the fixture bookmap">
+    <x:context href="fixtures/book.ditamap"/>
+    <x:call template="generate-ncx-navpoints">
+      <x:param name="topicrefs" href="fixtures/book.ditamap" select="/*/*[contains(@class, ' map/topicref ')]"/>
+      <x:param name="depth" select="1"/>
+      <!-- As epub:ncx-play-order-targets computes it for this map -->
+      <x:param name="play-order-targets"
+               select="'intro.xhtml', 'guide-install.xhtml', 'reference-install.xhtml', 'reference-Intro.xhtml',
+                       'topic-index.xhtml', '2-start.xhtml', 'multi.xhtml#second'"/>
+    </x:call>
+    <x:expect label="are one per table of contents entry, nested like it"
+              test="count($x:result/descendant-or-self::ncx:navPoint), count($x:result)" select="9, 3"/>
+    <x:expect label="link to the content documents in the content directory"
+              test="$x:result[1]/ncx:content/@src = 'content/intro.xhtml'
+                    and $x:result[1]/ncx:navPoint/ncx:content/@src = 'content/guide-install.xhtml'"/>
+    <x:expect label="link a heading without content to its first topic, with the same playOrder"
+              test="$x:result[3]/ncx:content/@src = 'content/reference-Intro.xhtml'
+                    and $x:result[3]/@playOrder = $x:result[3]/ncx:navPoint[1]/@playOrder"/>
+    <x:expect label="give navigation points to the same document the same playOrder, as NCX requires (EPUBCheck RSC-005)"
+              test="every $src in distinct-values($x:result/descendant-or-self::ncx:navPoint/ncx:content/@src)
+                    satisfies count(distinct-values($x:result/descendant-or-self::ncx:navPoint[ncx:content/@src = $src]/@playOrder)) = 1"/>
+    <x:expect label="give a topic referenced twice the playOrder of its first reference"
+              test="$x:result//ncx:navPoint[ncx:navLabel/ncx:text = 'Introduction again']/@playOrder/string()" select="'1'"/>
+    <x:expect label="number the playOrder from 1 without gaps"
+              test="let $orders := distinct-values($x:result/descendant-or-self::ncx:navPoint/@playOrder ! xs:integer(.))
+                    return deep-equal(sort($orders), 1 to count($orders))"/>
+  </x:scenario>
+
+</x:description>

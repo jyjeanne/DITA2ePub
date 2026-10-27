@@ -4,7 +4,7 @@
 
 **Project Name:** DITA2ePub
 **Plugin ID:** io.github.jyjeanne.dita2epub
-**Version:** 2.0.0
+**Version:** 2.1.0
 **Target DITA-OT Version:** 4.4+
 **License:** Apache License 2.0
 **Author:** J. Jeanne
@@ -189,7 +189,6 @@ dita2epub/
 ├── settings.gradle.kts                 # Gradle settings
 ├── gradle.properties                   # Gradle JVM and cache settings
 ├── README.md                           # Project documentation
-├── CLAUDE.md                           # Claude Code guidance
 ├── LICENSE                             # Apache License 2.0
 │
 ├── src/
@@ -304,7 +303,7 @@ Defines all XSLT parameters with typed defaults. Also provides utility functions
 
 **File:** `src/main/xsl/epub3-common.xsl`
 
-- `epub:generate-uuid()` — UUID generation for EPUB identifiers
+- `epub:generate-uuid()` — UUID derived from the title, language and root map file name, so the identifier stays the same across builds of the same publication
 - `epub:get-identifier()` — Extract publication identifier (ISBN from param/bookmap, fallback to UUID)
 - `epub:marc-relator()` — MARC relator code lookup (author→aut, editor→edt, translator→trl, etc.)
 - `epub:get-title()` — Extract map title with fallbacks
@@ -556,7 +555,7 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `epub.accessibility` | enum | `wcag-aa` | WCAG level: `wcag-a`, `wcag-aa`, `wcag-aaa` |
+| `epub.accessibility` | enum | `wcag-aa` | No effect on the output, kept so existing build scripts keep working (`wcag-a`, `wcag-aa`, `wcag-aaa`). Accessibility metadata is derived from the content; declare a conformance claim with bookmap `<data name="accessibility-conformance">` and `<data name="accessibility-certifier">` |
 | `epub.aria.landmarks` | enum | `yes` | Generate ARIA landmarks: `yes`, `no` |
 | `epub.skip.nav` | enum | `yes` | Include skip navigation links: `yes`, `no` |
 
@@ -793,7 +792,7 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Sidebars** — `<section outputclass="sidebar">` → `<aside class="sidebar">`
 - [x] **i18n note labels** — language-aware labels for tip, warning, important, caution, danger, note
 
-### v1.4.0 (Current — Released 2026-03-05)
+### v1.4.0 (Released 2026-03-05)
 *Goal: Produce EPUBs that pass Amazon KDP, Apple Books, and Kobo ingestion validation.*
 
 - [x] **ISBN/ASIN identifier support** — Extract from bookmap `<bookid><isbn>` or override via `epub.isbn` parameter; ONIX codelist5 identifier-type refinement (ISBN-13, ISBN-10, ASIN)
@@ -804,7 +803,7 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Extended landmarks navigation** — Conditional entries for preface, dedication, appendix, colophon, copyright page; all labels i18n-aware (10 languages)
 - [x] **Auto-generated copyright page** — `copyright.xhtml` from bookmap metadata with title, copyright notice, "All rights reserved" (i18n), publisher, license, ISBN
 
-### v2.0.0 — Theme System, Platform Variants & Fixed Layout (Current)
+### v2.0.0 — Theme System, Platform Variants & Fixed Layout (Released 2026-03-09)
 *Goal: Enable publishers to produce branded, series-consistent output across multiple retail channels.*
 
 - [x] **CSS Foundation** — Refactored to CSS custom properties for theme overridability, extracted inline styles
@@ -819,13 +818,20 @@ The `EpubPackager.java` class exists because standard ZIP utilities don't guaran
 - [x] **Fix: font embedding** — Builds using `epub.embed.fonts` no longer abort on an invalid Ant `<copy>` condition
 - [x] **Fix: same-named topics** — Topics sharing a file name in different folders get unique output files instead of colliding
 
+### v2.1.0 — Real-World DITA (Current)
+*Goal: Publications made of many maps, folders and topic types build as valid EPUB 3.3.*
+
+- [x] **Multi-map publications** — Only the root map is transformed; external links, non-DITA resources, key definitions and relationship tables are not treated as topics
+- [x] **More DITA content** — Nested and multi-topic files, definition and parameter lists, simple tables, examples, task blocks, related links, programming/software/UI/XML/highlighting domains
+- [x] **Package and accessibility metadata** — Read from the publication's own metadata; EPUB Accessibility 1.1 metadata derived from the content, conformance only when declared with its evaluator
+- [x] **EPUB 3.3 conformance** — File names, manifest ids, font obfuscation key, navigation at the TOC depth limit, remote, `data:` and unreferenced images, `file:` links (see [EPUB33_CONFORMANCE.md](EPUB33_CONFORMANCE.md))
+- [x] **XSpec tests** of the XSLT modules, and a check that every plugin descriptor declares the project version
+
+See [CHANGELOG.md](CHANGELOG.md) for the complete list.
+
 ### Future
-- [ ] **Windows support for Gradle EPUB tasks** — Pass DITA properties via `--propertyfile` in `dita-ot-gradle` to stay under the `cmd.exe` line limit
-- [ ] **Cross-folder xref resolution** — Map cross-references to the flattened output file names
-- [ ] **DITA 2.0 support** — full compatibility with DITA 2.0 specializations and processing
-- [ ] **MathML / equation rendering** — for STEM publishing with proper fallback images
-- [ ] **Per-spine-item layout overrides** — mixed reflowable/fixed content within a single EPUB
-- [ ] **Extended image descriptions** — long descriptions beyond `alt` text (WCAG AAA)
+
+Planned milestones and improvements are maintained in [ROADMAP.md](ROADMAP.md).
 
 ---
 
@@ -835,6 +841,6 @@ Apache License 2.0 — Copyright 2025 J. Jeanne
 
 ---
 
-**Document Version:** 1.4.0
-**Last Updated:** 2026-10-12
+**Document Version:** 2.1.0
+**Last Updated:** 2026-10-27
 **Status:** Current Release

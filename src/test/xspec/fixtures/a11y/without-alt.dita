@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- One image without text alternative, one decorative image, one animated image -->
+<topic class="- topic/topic " id="without-alt">
+  <title class="- topic/title ">Images without text alternatives</title>
+  <body class="- topic/body ">
+    <image class="- topic/image " href="screenshot.png" placement="break"/>
+    <image class="- topic/image " href="rule.png" outputclass="decorative" placement="break"/>
+    <image class="- topic/image " href="spinner.GIF" alt="Loading" placement="break"/>
+  </body>
+</topic>

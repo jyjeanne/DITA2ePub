@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<topic class="- topic/topic " id="intro" xml:lang="en-US">
+  <title class="- topic/title ">Introduction</title>
+  <body class="- topic/body ">
+    <p class="- topic/p " id="p1">First paragraph.</p>
+    <p class="- topic/p ">Links:
+      <xref class="- topic/xref " href="guide/install.dita#install/step1">the first step</xref>
+      <xref class="- topic/xref " href="guide/install.dita#install/kw">a prolog keyword</xref>
+      <xref class="- topic/xref " href="#intro/p1">the first paragraph</xref>
+      <xref class="- topic/xref " href="#intro/unknown">an unknown element</xref>
+      <xref class="- topic/xref " href="multi.dita#second">the second topic</xref>
+      <xref class="- topic/xref " href="missing.dita">a missing topic</xref>
+      <xref class="- topic/xref " href="shared.dita">a resource-only topic</xref>
+      <xref class="- topic/xref " href="file:///C:/notes/readme.txt">a local file</xref>
+      <xref class="- topic/xref " href="https://www.dita-ot.org/" scope="external" format="html">DITA-OT</xref>
+      <xref class="- topic/xref " href="mailto:docs@example.com" format="html">the authors</xref>
+    </p>
+    <image class="- topic/image " href="images/diagram.png" placement="break"><alt class="- topic/alt ">Processing diagram</alt></image>
+    <image class="- topic/image " href="images/my%20diagram.png" placement="break"/>
+    <image class="- topic/image " href="https://www.dita-ot.org/images/logo.png" scope="external" placement="break"/>
+    <image class="- topic/image " href="data:image/png;base64,iVBORw0KGgo=" scope="external" alt="Inline pixel"/>
+  </body>
+</topic>

@@ -47,7 +47,7 @@
   <!-- Root template -->
   <xsl:template match="/">
     <xsl:message>
-      <xsl:text>DITA2ePub v2.0.0 - Starting EPUB3 transformation</xsl:text>
+      <xsl:text>DITA2ePub v2.1.0 - Starting EPUB3 transformation</xsl:text>
     </xsl:message>
     <xsl:message>
       <xsl:text>DITA-OT Version: </xsl:text>

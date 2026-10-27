@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Package metadata of epub3-metadata.xsl: Dublin Core read from the publication's own metadata, and
+  EPUB Accessibility 1.1 metadata derived from the rendered content.
+-->
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:opf="http://www.idpf.org/2007/opf"
+               stylesheet="epub3-modules.xsl" run-as="external">
+
+  <!-- ================================================================ -->
+  <!-- Whole metadata element                                           -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="The metadata of the fixture bookmap">
+    <x:call template="extract-metadata">
+      <x:param name="root" href="fixtures/book.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="identifies the book by its ISBN" test="$x:result/dc:identifier[@id = 'pub-id'] = '978-0-00-000000-2'"/>
+    <x:expect label="declares that ISBN as an ISBN-13 (ONIX code 15)"
+              test="$x:result/opf:meta[@refines = '#pub-id'][@property = 'identifier-type'][@scheme = 'onix:codelist5'] = '15'"/>
+    <x:expect label="has the main book title" test="$x:result/dc:title[@id = 'title'] = 'Fixture Guide'"/>
+    <x:expect label="has the alternative title as a refined subtitle"
+              test="$x:result/dc:title[@id = 'subtitle'] = 'Unit test edition'
+                    and $x:result/opf:meta[@refines = '#subtitle'][@property = 'title-type'] = 'subtitle'"/>
+    <x:expect label="has the map language" test="$x:result/dc:language = 'en-US'"/>
+    <x:expect label="has a modification date in the required form"
+              test="matches($x:result/opf:meta[@property = 'dcterms:modified'], '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')"/>
+  </x:scenario>
+
+  <x:scenario label="The metadata of a map without bookmap metadata">
+    <x:call template="extract-metadata">
+      <x:param name="root">
+        <map class="- map/map " xml:lang="de"><title class="- topic/title ">Handbuch</title></map>
+      </x:param>
+    </x:call>
+    <x:expect label="takes the title from the map" test="$x:result/dc:title = 'Handbuch'"/>
+    <x:expect label="has a stable UUID as identifier"
+              test="starts-with($x:result/dc:identifier, 'urn:uuid:') and empty($x:result/opf:meta[@refines = '#pub-id'])"/>
+    <x:expect label="has no creator or publisher placeholder" test="empty($x:result/(dc:creator | dc:publisher))"/>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Dublin Core elements                                             -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="The authors of the fixture bookmap">
+    <x:call template="extract-authors">
+      <x:param name="root" href="fixtures/book.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="are creators with the author role, sorted by last name when it is given">
+      <dc:creator id="author-1">Jane Doe</dc:creator>
+      <opf:meta refines="#author-1" property="role" scheme="marc:relators">aut</opf:meta>
+      <dc:creator id="author-2">John Smith</dc:creator>
+      <opf:meta refines="#author-2" property="role" scheme="marc:relators">aut</opf:meta>
+      <opf:meta refines="#author-2" property="file-as">Smith, John</opf:meta>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="An editor declared in the book metadata">
+    <x:call template="extract-contributors">
+      <x:param name="root">
+        <bookmap class="- map/map bookmap/bookmap ">
+          <bookmeta class="- map/topicmeta bookmap/bookmeta "><data class="- topic/data " name="editor" value="Ann Editor"/></bookmeta>
+        </bookmap>
+      </x:param>
+    </x:call>
+    <x:expect label="is a contributor with the edt role">
+      <dc:contributor id="editor-1">Ann Editor</dc:contributor>
+      <opf:meta refines="#editor-1" property="role" scheme="marc:relators">edt</opf:meta>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="The publisher of the fixture bookmap">
+    <x:call template="extract-publisher">
+      <x:param name="root" href="fixtures/book.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="is its publisher organization">
+      <dc:publisher>Fixture Press</dc:publisher>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="The publication date of the fixture bookmap">
+    <x:call template="extract-publication-date">
+      <x:param name="root" href="fixtures/book.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="is its completion date with two-digit month and day" test="string($x:result)" select="'2026-03-09'"/>
+  </x:scenario>
+
+  <x:scenario label="The publication date of a map with a creation date">
+    <x:call template="extract-publication-date">
+      <x:param name="root">
+        <map class="- map/map ">
+          <topicmeta class="- map/topicmeta ">
+            <critdates class="- topic/critdates "><created class="- topic/created " date="2025-12-01"/></critdates>
+          </topicmeta>
+        </map>
+      </x:param>
+    </x:call>
+    <x:expect label="is that date" test="string($x:result)" select="'2025-12-01'"/>
+  </x:scenario>
+
+  <x:scenario label="The rights of a bookmap with a copyright">
+    <x:call template="extract-rights">
+      <x:param name="root">
+        <bookmap class="- map/map bookmap/bookmap ">
+          <bookmeta class="- map/topicmeta bookmap/bookmeta ">
+            <bookrights class="- topic/data bookmap/bookrights ">
+              <copyrfirst class="- topic/data bookmap/copyrfirst "><year class="- topic/ph bookmap/year ">2025</year></copyrfirst>
+              <bookowner class="- topic/data bookmap/bookowner "><organization class="- topic/data bookmap/organization ">Fixture Press</organization></bookowner>
+            </bookrights>
+          </bookmeta>
+        </bookmap>
+      </x:param>
+    </x:call>
+    <x:expect label="are a copyright statement with year and owner">
+      <dc:rights>Copyright &#xA9; 2025 Fixture Press</dc:rights>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="The description of a map">
+    <x:call template="extract-description">
+      <x:param name="root">
+        <map class="- map/map ">
+          <topicmeta class="- map/topicmeta "><shortdesc class="- topic/shortdesc ">About the book.</shortdesc></topicmeta>
+          <topicref class="- map/topicref " href="topic.dita">
+            <topicmeta class="- map/topicmeta "><shortdesc class="- topic/shortdesc ">About one topic.</shortdesc></topicmeta>
+          </topicref>
+        </map>
+      </x:param>
+    </x:call>
+    <x:expect label="is the map's own short description, not a topic's">
+      <dc:description>About the book.</dc:description>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="The subjects of the fixture bookmap">
+    <x:call template="extract-subjects">
+      <x:param name="root" href="fixtures/book.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="are its keywords, category and BISAC code, but not the keywords of key definitions">
+      <dc:subject>DITA</dc:subject>
+      <dc:subject>EPUB</dc:subject>
+      <dc:subject>Technical Documentation</dc:subject>
+      <dc:subject>COM051000</dc:subject>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A keyword repeated in the map metadata">
+    <x:call template="extract-subjects">
+      <x:param name="root">
+        <map class="- map/map ">
+          <topicmeta class="- map/topicmeta ">
+            <keywords class="- topic/keywords "><keyword class="- topic/keyword ">DITA</keyword><keyword class="- topic/keyword "> DITA </keyword></keywords>
+          </topicmeta>
+        </map>
+      </x:param>
+    </x:call>
+    <x:expect label="is a single subject">
+      <dc:subject>DITA</dc:subject>
+    </x:expect>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Accessibility metadata (EPUB Accessibility 1.1)                  -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="The accessibility metadata of a publication whose images all have a text alternative">
+    <x:call template="generate-accessibility-metadata">
+      <x:param name="root" href="fixtures/a11y/with-alt.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="describe textual and visual content readable as text, without hazard or conformance claim">
+      <opf:meta property="schema:accessMode">textual</opf:meta>
+      <opf:meta property="schema:accessMode">visual</opf:meta>
+      <opf:meta property="schema:accessModeSufficient">textual</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">structuralNavigation</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">tableOfContents</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">readingOrder</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">ARIA</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">alternativeText</opf:meta>
+      <opf:meta property="schema:accessibilityHazard">none</opf:meta>
+      <opf:meta property="schema:accessibilitySummary">Structured headings, a table of contents and a logical reading order support navigation with assistive technologies. All images have a text alternative. No conformance to EPUB Accessibility or WCAG is claimed.</opf:meta>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="The accessibility metadata of a bookmap with an index, an image without text alternative, an animated image and a declared conformance">
+    <x:call template="generate-accessibility-metadata">
+      <x:param name="root" href="fixtures/a11y/claimed.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="need vision for the image, list the index, leave flashing unknown and state the declared claim">
+      <opf:meta property="schema:accessMode">textual</opf:meta>
+      <opf:meta property="schema:accessMode">visual</opf:meta>
+      <opf:meta property="schema:accessModeSufficient">textual,visual</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">structuralNavigation</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">tableOfContents</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">readingOrder</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">ARIA</opf:meta>
+      <opf:meta property="schema:accessibilityFeature">index</opf:meta>
+      <opf:meta property="schema:accessibilityHazard">unknown</opf:meta>
+      <opf:meta property="dcterms:conformsTo">EPUB Accessibility 1.1 - WCAG 2.2 Level AA</opf:meta>
+      <opf:meta property="a11y:certifiedBy">Fixture Accessibility Lab</opf:meta>
+      <opf:meta property="schema:accessibilitySummary">Structured headings, a table of contents and a logical reading order support navigation with assistive technologies. A back-of-book index is included. 1 of 3 images has no text alternative.</opf:meta>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario label="A conformance declared without its evaluator">
+    <x:call template="generate-accessibility-metadata">
+      <x:param name="root">
+        <bookmap class="- map/map bookmap/bookmap " xml:lang="en">
+          <bookmeta class="- map/topicmeta bookmap/bookmeta ">
+            <data class="- topic/data " name="accessibility-conformance" value="EPUB Accessibility 1.1 - WCAG 2.2 Level AA"/>
+          </bookmeta>
+        </bookmap>
+      </x:param>
+    </x:call>
+    <x:expect label="is not claimed, as EPUB Accessibility 1.1 requires the evaluator"
+              test="empty($x:result[@property = ('dcterms:conformsTo', 'a11y:certifiedBy')])"/>
+    <x:expect label="is reported as not claimed in the summary"
+              test="ends-with($x:result[@property = 'schema:accessibilitySummary'], 'No conformance to EPUB Accessibility or WCAG is claimed.')"/>
+  </x:scenario>
+
+  <x:scenario label="The accessibility metadata of a French publication without images">
+    <x:call template="generate-accessibility-metadata">
+      <x:param name="root">
+        <map class="- map/map " xml:lang="fr-FR"><title class="- topic/title ">Guide</title></map>
+      </x:param>
+    </x:call>
+    <x:expect label="only have the textual access mode" test="$x:result[@property = 'schema:accessMode']/string()" select="'textual'"/>
+    <x:expect label="mark the generated English summary as English" test="$x:result[@property = 'schema:accessibilitySummary']/@xml:lang = 'en'"/>
+  </x:scenario>
+
+  <x:scenario label="An accessibility summary declared in the book metadata">
+    <x:call template="generate-accessibility-metadata">
+      <x:param name="root">
+        <bookmap class="- map/map bookmap/bookmap " xml:lang="fr">
+          <bookmeta class="- map/topicmeta bookmap/bookmeta ">
+            <data class="- topic/data " name="accessibility-summary" value="Ce livre respecte les règles d'accessibilité."/>
+          </bookmeta>
+        </bookmap>
+      </x:param>
+    </x:call>
+    <x:expect label="replaces the generated one, in the publication language"
+              test="$x:result[@property = 'schema:accessibilitySummary']">
+      <opf:meta property="schema:accessibilitySummary">Ce livre respecte les règles d'accessibilité.</opf:meta>
+    </x:expect>
+  </x:scenario>
+
+</x:description>

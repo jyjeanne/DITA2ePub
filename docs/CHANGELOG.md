@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-27
+
+Publications made of many maps, folders and topic types now build as valid EPUB 3.3: the DITA-OT 4.4.1 user guide
+(234 topics) passes EPUBCheck with no errors or warnings. See [EPUB33_CONFORMANCE.md](EPUB33_CONFORMANCE.md) for
+the conformance review behind several of the fixes.
+
+### Added
+- **More DITA content rendered**: nested topics and multi-topic (`<dita>`) files, definition and parameter lists,
+  simple tables (with key columns), simple lists, examples, divisions, task blocks, related links, and the
+  programming, software, user interface, XML mention and highlighting domains. Review comments, data and foreign
+  content are not published
+- **XSpec tests** of the XSLT modules (`xspecTest` Gradle suite, run by `check`), on Saxon-HE 12.9 as in DITA-OT 4.4.1
+- **`verifyPluginVersion`** check: the version is set once, in `build.gradle.kts`, and the build fails when
+  `plugin.xml` or `plugin-info.xml` declares another one
+
+### Changed
+- **Accessibility metadata** follows EPUB Accessibility 1.1 and describes the generated content: access modes,
+  features, hazards and a summary. Conformance is claimed only when the bookmap declares it with its evaluator
+  (`accessibility-conformance` and `accessibility-certifier` data elements)
+- **Package metadata** is read from the publication's own metadata (bookmap `bookmeta` or map `topicmeta`), not
+  from key definitions, and no placeholder creator or publisher is written
+- **Fallback identifier**: a UUID derived from the title, language and map file name, the same on every build
+- **Content file names** have no spaces or characters OCF forbids; names of generated pages get a `topic-` prefix,
+  and names that clash ignoring case are based on the topic path
+- **Images**: only the images the publication references are packaged, `data:` images are kept as they are, remote
+  images become links (EPUB requires images inside the publication), and DITA-OT no longer copies images into the
+  output folder
+- The viewport `meta` element is written for fixed layout only
+
+### Deprecated
+- `epub.accessibility` has no effect; it is kept so that existing build scripts keep working
+
+### Fixed
+- Only the root map is transformed; external links, non-DITA resources, key definitions and relationship tables are
+  no longer treated as topics
+- Cross-references across folders resolve to the flattened content documents, including links to elements and to
+  topics of multi-topic files; a link whose target is not in the publication keeps its text
+- Block content inside paragraphs produces valid XHTML; duplicate ids within a content document are dropped
+- Index anchors for index terms in the topic prolog
+- Image paths, and image sizes in units other than pixels (written as CSS)
+- The font obfuscation key keeps the hyphens of the identifier (EPUB 3.3 OCF)
+- Valid manifest ids; a TOC heading cut by `epub.toc.depth` links to its first topic
+- `file:` URLs in cross-references are kept as text (EPUB 3.3 forbids them)
+- NCX: a topic referenced twice keeps the `playOrder` of its first reference (EPUBCheck `RSC-005` on KDP builds)
+
 ## [2.0.0] - 2026-03-09
 
 ### Added

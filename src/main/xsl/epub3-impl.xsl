@@ -70,7 +70,15 @@
         $epub.generate.glossary = 'auto'
       )
     "/>
-    <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')][not($consolidate-glossary and ancestor::*[contains(@class, ' bookmap/glossarylist ')])]"/>
+    <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)[not($consolidate-glossary and ancestor::*[contains(@class, ' bookmap/glossarylist ')])]"/>
+
+    <!-- Images to package, for the Ant copy step: one file system path per line, relative to the root
+         map. The first line matches no file, because a fileset whose includes file has no pattern at
+         all would include every file -->
+    <xsl:variable name="image-paths" select="epub:get-image-paths($all-topicrefs)"/>
+    <xsl:result-document href=".epub-images" method="text" encoding="UTF-8">
+      <xsl:value-of select="'.no-images-placeholder', $image-paths ! epub:decode-uri-path(.)" separator="&#10;"/>
+    </xsl:result-document>
 
     <!-- Determine if index should be generated -->
     <xsl:variable name="has-indexlist" select="exists($map//*[contains(@class, ' bookmap/indexlist ')])"/>
@@ -201,11 +209,8 @@
 
           <!-- Content documents -->
           <xsl:for-each select="$all-topicrefs">
-            <xsl:variable name="filename" select="epub:get-topic-filename(.)"/>
-            <xsl:variable name="topic-id" select="replace($filename, '\.xhtml$', '')"/>
-
-            <item id="{$topic-id}"
-                  href="{$filename}"
+            <item id="{epub:get-topic-item-id(.)}"
+                  href="{epub:get-topic-filename(.)}"
                   media-type="application/xhtml+xml"/>
           </xsl:for-each>
 
@@ -237,21 +242,11 @@
                   media-type="application/xhtml+xml"/>
           </xsl:if>
 
-          <!-- Add images referenced in topics - load each topic document and scan for image elements -->
-          <xsl:variable name="all-image-hrefs" as="xs:string*">
-            <xsl:for-each select="$all-topicrefs[@href]">
-              <xsl:variable name="topic-doc" select="document(@href, .)"/>
-              <xsl:if test="$topic-doc">
-                <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/image ')]/@href">
-                  <xsl:sequence select="string(.)"/>
-                </xsl:for-each>
-              </xsl:if>
-            </xsl:for-each>
-          </xsl:variable>
-          <xsl:for-each select="distinct-values($all-image-hrefs)">
+          <!-- Images referenced in topics (the same list the Ant build copies) -->
+          <xsl:for-each select="$image-paths">
             <xsl:variable name="image-filename" select="tokenize(., '/')[last()]"/>
-            <xsl:variable name="image-id" select="concat('image-', replace($image-filename, '[\.\s]', '-'))"/>
-            <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', $image-filename))"/>
+            <xsl:variable name="image-id" select="concat('image-', replace(., '[^A-Za-z0-9_-]', '-'))"/>
+            <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', .))"/>
 
             <item id="{$image-id}"
                   href="{$image-path}"
@@ -287,9 +282,7 @@
 
           <!-- Main content -->
           <xsl:for-each select="$all-topicrefs">
-            <xsl:variable name="filename" select="epub:get-topic-filename(.)"/>
-            <xsl:variable name="topic-id" select="replace($filename, '\.xhtml$', '')"/>
-            <itemref idref="{$topic-id}"/>
+            <itemref idref="{epub:get-topic-item-id(.)}"/>
           </xsl:for-each>
 
           <!-- Glossary (if generated) -->
@@ -686,7 +679,7 @@
       not(contains(@class, ' bookmap/tablelist ')) and
       not(contains(@class, ' bookmap/indexlist ')) and
       not(contains(@class, ' bookmap/glossarylist ')) and
-      (@href or *[contains(@class, ' map/topicref ')][@href])
+      (epub:is-content-topicref(.) or .//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])
     ]"/>
 
     <xsl:if test="($valid-topicrefs or $append-glossary or $append-lof or $append-lot or $append-index) and $depth &lt;= $epub.toc.depth">
@@ -694,8 +687,18 @@
         <xsl:for-each select="$valid-topicrefs">
           <li xmlns="http://www.w3.org/1999/xhtml">
             <xsl:choose>
-              <xsl:when test="@href">
-                <a xmlns="http://www.w3.org/1999/xhtml" href="{epub:get-topic-filename(.)}">
+              <xsl:when test="epub:is-content-topicref(.)">
+                <a xmlns="http://www.w3.org/1999/xhtml" href="{epub:get-topicref-link(.)}">
+                  <xsl:call-template name="get-navtitle">
+                    <xsl:with-param name="topicref" select="."/>
+                  </xsl:call-template>
+                </a>
+              </xsl:when>
+              <!-- A heading without content of its own needs a nested list (EPUB 3.3, 7.3): at the
+                   depth limit, where its entries are not listed, link it to its first topic instead -->
+              <xsl:when test="$depth ge $epub.toc.depth">
+                <a xmlns="http://www.w3.org/1999/xhtml"
+                   href="{epub:get-topicref-link((.//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])[1])}">
                   <xsl:call-template name="get-navtitle">
                     <xsl:with-param name="topicref" select="."/>
                   </xsl:call-template>
@@ -1248,20 +1251,7 @@
 
     <xsl:message>Generating NCX table of contents...</xsl:message>
 
-    <!-- Pre-compute flat list of all topicrefs WITH @href in document order for unique playOrder.
-         Only topicrefs with @href get their own playOrder number; containers without @href
-         share their first child's playOrder to avoid "different playOrder for same target" errors. -->
-    <xsl:variable name="all-valid-ncx-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][
-      not(@processing-role = 'resource-only') and
-      not(contains(@class, ' bookmap/booklists ')) and
-      not(contains(@class, ' bookmap/toc ')) and
-      not(contains(@class, ' bookmap/figurelist ')) and
-      not(contains(@class, ' bookmap/tablelist ')) and
-      not(contains(@class, ' bookmap/indexlist ')) and
-      not(contains(@class, ' bookmap/glossarylist ')) and
-      not(ancestor::*[contains(@class, ' bookmap/glossarylist ')]) and
-      @href
-    ]"/>
+    <xsl:variable name="play-order-targets" select="epub:ncx-play-order-targets($map)"/>
 
     <!-- NCX must be at root level for compatibility with older readers like Calibre -->
     <xsl:result-document href="toc.ncx"
@@ -1292,7 +1282,7 @@
                 /*[contains(@class, ' map/topicref ')]
             "/>
             <xsl:with-param name="depth" select="1"/>
-            <xsl:with-param name="all-valid" select="$all-valid-ncx-topicrefs"/>
+            <xsl:with-param name="play-order-targets" select="$play-order-targets"/>
           </xsl:call-template>
         </navMap>
       </ncx>
@@ -1301,11 +1291,33 @@
     <xsl:message>NCX table of contents generated.</xsl:message>
   </xsl:template>
 
-  <!-- Generate NCX navPoints recursively with unique playOrder values -->
+  <!-- Reading order of the NCX targets: the link of every content topicref in document order, each
+       target once. Navigation points to the same target must share their playOrder (EPUBCheck RSC-005),
+       so a topic referenced twice keeps the playOrder of its first reference, and a heading without
+       content of its own takes the one of its first topic -->
+  <xsl:function name="epub:ncx-play-order-targets" as="xs:string*">
+    <xsl:param name="map" as="element()"/>
+    <xsl:for-each-group select="$map//*[contains(@class, ' map/topicref ')][
+      not(@processing-role = 'resource-only') and
+      not(contains(@class, ' bookmap/booklists ')) and
+      not(contains(@class, ' bookmap/toc ')) and
+      not(contains(@class, ' bookmap/figurelist ')) and
+      not(contains(@class, ' bookmap/tablelist ')) and
+      not(contains(@class, ' bookmap/indexlist ')) and
+      not(contains(@class, ' bookmap/glossarylist ')) and
+      not(ancestor::*[contains(@class, ' bookmap/glossarylist ')]) and
+      epub:is-content-topicref(.)
+    ]" group-by="epub:get-topicref-link(.)">
+      <xsl:sequence select="current-grouping-key()"/>
+    </xsl:for-each-group>
+  </xsl:function>
+
+  <!-- Generate NCX navPoints recursively; the playOrder of a navPoint is the position of its target
+       in $play-order-targets -->
   <xsl:template name="generate-ncx-navpoints">
     <xsl:param name="topicrefs" as="element()*"/>
     <xsl:param name="depth" as="xs:integer"/>
-    <xsl:param name="all-valid" as="element()*"/>
+    <xsl:param name="play-order-targets" as="xs:string*"/>
 
     <!-- Filter out booklists/frontmatter elements -->
     <xsl:variable name="valid-topicrefs" select="$topicrefs[
@@ -1317,18 +1329,17 @@
       not(contains(@class, ' bookmap/indexlist ')) and
       not(contains(@class, ' bookmap/glossarylist ')) and
       not(ancestor::*[contains(@class, ' bookmap/glossarylist ')]) and
-      (@href or *[contains(@class, ' map/topicref ')][@href])
+      (epub:is-content-topicref(.) or .//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])
     ]"/>
 
     <xsl:if test="$valid-topicrefs and $depth &lt;= $epub.toc.depth">
       <xsl:for-each select="$valid-topicrefs">
-        <!-- Use position in the pre-computed flat list for unique playOrder.
-             When a container has no @href, use the same playOrder as its first child
-             to avoid "different playOrder values for same target" NCX errors. -->
-        <xsl:variable name="play-order-target" select="if (@href) then . else (*[contains(@class, ' map/topicref ')][@href])[1]"/>
-        <xsl:variable name="play-order" select="count($all-valid[. &lt;&lt; $play-order-target]) + 1"/>
+        <!-- A container without content of its own links to its first content descendant -->
+        <xsl:variable name="first-content" select="(.//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])[1]"/>
+        <xsl:variable name="target" select="epub:get-topicref-link(if (epub:is-content-topicref(.)) then . else $first-content)"/>
 
-        <navPoint xmlns="http://www.daisy.org/z3986/2005/ncx/" id="navpoint-{generate-id(.)}" playOrder="{$play-order}">
+        <navPoint xmlns="http://www.daisy.org/z3986/2005/ncx/" id="navpoint-{generate-id(.)}"
+                  playOrder="{index-of($play-order-targets, $target)[1]}">
           <navLabel>
             <text>
               <xsl:call-template name="get-navtitle">
@@ -1336,25 +1347,14 @@
               </xsl:call-template>
             </text>
           </navLabel>
-          <xsl:choose>
-            <xsl:when test="@href">
-              <content src="{concat($epub.topics.dir, '/', epub:get-topic-filename(.))}"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <!-- For container elements without href, link to first child -->
-              <xsl:variable name="first-child" select="(*[contains(@class, ' map/topicref ')][@href])[1]"/>
-              <xsl:if test="$first-child">
-                <content src="{concat($epub.topics.dir, '/', epub:get-topic-filename($first-child))}"/>
-              </xsl:if>
-            </xsl:otherwise>
-          </xsl:choose>
+          <content src="{concat($epub.topics.dir, '/', $target)}"/>
 
           <!-- Process nested topicrefs -->
           <xsl:if test="*[contains(@class, ' map/topicref ')]">
             <xsl:call-template name="generate-ncx-navpoints">
               <xsl:with-param name="topicrefs" select="*[contains(@class, ' map/topicref ')]"/>
               <xsl:with-param name="depth" select="$depth + 1"/>
-              <xsl:with-param name="all-valid" select="$all-valid"/>
+              <xsl:with-param name="play-order-targets" select="$play-order-targets"/>
             </xsl:call-template>
           </xsl:if>
         </navPoint>
@@ -1379,12 +1379,12 @@
       <xsl:message>Generating List of Figures...</xsl:message>
 
       <xsl:variable name="lang" select="epub:get-language($map)"/>
-      <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
+      <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)"/>
 
       <!-- Collect all figures with titles from all topics (in document order) -->
       <xsl:variable name="fig-entries" as="element()*">
         <xsl:for-each select="$all-topicrefs">
-          <xsl:variable name="topic-doc" select="document(@href, .)"/>
+          <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
           <xsl:variable name="topic-filename" select="epub:get-topic-filename(.)"/>
           <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/fig ')][*[contains(@class, ' topic/title ')]]">
             <xsl:variable name="fig-id" select="if (@id) then @id else generate-id(.)"/>
@@ -1479,12 +1479,12 @@
       <xsl:message>Generating List of Tables...</xsl:message>
 
       <xsl:variable name="lang" select="epub:get-language($map)"/>
-      <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
+      <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)"/>
 
       <!-- Collect all tables with titles from all topics (in document order) -->
       <xsl:variable name="table-entries" as="element()*">
         <xsl:for-each select="$all-topicrefs">
-          <xsl:variable name="topic-doc" select="document(@href, .)"/>
+          <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
           <xsl:variable name="topic-filename" select="epub:get-topic-filename(.)"/>
           <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/table ')][*[contains(@class, ' topic/title ')]]">
             <xsl:variable name="table-id" select="if (@id) then @id else generate-id(.)"/>

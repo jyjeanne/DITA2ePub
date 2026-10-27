@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="my-topic">
+  <title>Topic whose file name has a space</title>
+  <body>
+    <p>A remote image, which EPUB does not allow:
+      <image href="https://www.w3.org/assets/logos/w3c-2025/svg/w3c.svg" scope="external" format="svg"><alt>W3C logo</alt></image>
+    </p>
+    <p>A local image: <image href="media/used.svg"><alt>Used image</alt></image> (media/unused.svg is not referenced).</p>
+    <p>An image whose file name is not ASCII: <image href="media/diagramme-%C3%A9.svg"><alt>Diagram</alt></image></p>
+    <p>An image given as a data URL:
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg=="><alt>Blue dot</alt></image>
+    </p>
+    <p>A link to a local file, which EPUB does not allow:
+      <xref href="file:///C:/Windows/win.ini" scope="external" format="ini">win.ini</xref>
+    </p>
+  </body>
+</topic>

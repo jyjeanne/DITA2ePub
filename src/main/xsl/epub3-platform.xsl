@@ -72,14 +72,14 @@
       <xsl:message>[KDP] OPF guide element will be generated (required by older Kindle devices).</xsl:message>
 
       <!-- Check for SVG images in content -->
-      <xsl:variable name="all-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
+      <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)"/>
       <xsl:variable name="has-svg-images" as="xs:boolean">
         <xsl:variable name="svg-count" as="xs:integer">
           <xsl:sequence select="count(
             for $ref in $all-topicrefs[@href]
             return
-              if (doc-available(resolve-uri($ref/@href, base-uri($ref))))
-              then document($ref/@href, $ref)//*[contains(@class, ' topic/image ')][ends-with(lower-case(@href), '.svg')]
+              if (doc-available(epub:resolve-href($ref/@href, $ref)))
+              then epub:topic-document($ref)//*[contains(@class, ' topic/image ')][ends-with(lower-case(@href), '.svg')]
               else ()
           )"/>
         </xsl:variable>

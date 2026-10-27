@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Functions of epub3-common.xsl: output file names, manifest ids, link targets, image paths and
+  identifiers. Scenarios that need the publication give the fixture bookmap as context: the modules
+  read it as the global context item, as in a real build.
+-->
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               stylesheet="epub3-modules.xsl" run-as="external">
+
+  <!-- ================================================================ -->
+  <!-- File names (EPUB 3.3, 4.2.3)                                       -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="A file name">
+    <x:call function="epub:to-file-name"/>
+
+    <x:scenario label="with a space">
+      <x:call><x:param select="'My Topic'"/></x:call>
+      <x:expect label="gets a hyphen instead" select="'My-Topic'"/>
+    </x:scenario>
+
+    <x:scenario label="with a percent-encoded space">
+      <x:call><x:param select="'My%20Topic'"/></x:call>
+      <x:expect label="gets a hyphen instead" select="'My-Topic'"/>
+    </x:scenario>
+
+    <x:scenario label="with characters OCF forbids">
+      <x:call><x:param select="'a:b*c?d&quot;e&lt;f&gt;g|h\i#j'"/></x:call>
+      <x:expect label="gets hyphens instead" select="'a-b-c-d-e-f-g-h-i-j'"/>
+    </x:scenario>
+
+    <x:scenario label="with a run of forbidden characters">
+      <x:call><x:param select="'What is new?  (2026)'"/></x:call>
+      <x:expect label="gets a single hyphen" select="'What-is-new-(2026)'"/>
+    </x:scenario>
+
+    <x:scenario label="ending with full stops">
+      <x:call><x:param select="'notes..'"/></x:call>
+      <x:expect label="loses them" select="'notes'"/>
+    </x:scenario>
+
+    <x:scenario label="in decomposed Unicode form">
+      <x:call><x:param select="'Cafe&#x301;'"/></x:call>
+      <x:expect label="is NFC-normalized" select="'Caf&#xE9;'"/>
+    </x:scenario>
+
+    <x:scenario label="with nothing left after cleaning">
+      <x:call><x:param select="'...'"/></x:call>
+      <x:expect label="becomes topic" select="'topic'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="A name already used">
+    <x:call function="epub:unused-name">
+      <x:param select="'install'"/>
+      <x:param select="('install', 'install-2')"/>
+    </x:call>
+    <x:expect label="gets the first free numeric suffix" select="'install-3'"/>
+  </x:scenario>
+
+  <x:scenario label="A name used with another case">
+    <x:call function="epub:unused-name">
+      <x:param select="'Index'"/>
+      <x:param select="'index'"/>
+    </x:call>
+    <x:expect label="counts as used" select="'Index-2'"/>
+  </x:scenario>
+
+  <x:scenario label="A topicref href">
+    <x:call function="epub:get-topic-path"/>
+
+    <x:scenario label="with a fragment and backslashes">
+      <x:call><x:param select="'guide\install.dita#install/step1'"/></x:call>
+      <x:expect label="becomes a slash path without fragment" select="'guide/install.dita'"/>
+    </x:scenario>
+
+    <x:scenario label="starting with ./ and ../">
+      <x:call><x:param select="'./../shared/common.dita'"/></x:call>
+      <x:expect label="loses the leading relative steps" select="'shared/common.dita'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Content documents of a publication                               -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="In the fixture bookmap,">
+    <x:context href="fixtures/book.ditamap"/>
+
+    <x:scenario label="the content topicrefs">
+      <x:call function="epub:content-topicrefs">
+        <x:param href="fixtures/book.ditamap" select="/*"/>
+      </x:call>
+      <x:expect label="are the local DITA topics, each file once, in document order"
+                test="$x:result/@href/string()"
+                select="'intro.dita', 'guide/install.dita', 'reference/install.dita', 'reference/Intro.dita',
+                        'index.dita', '2-start.dita', 'multi.dita#second'"/>
+    </x:scenario>
+
+    <x:scenario label="the content document of a topic">
+      <x:call function="epub:get-topic-filename"/>
+
+      <x:scenario label="whose name is also used in another folder">
+        <x:call><x:param href="fixtures/book.ditamap" select="//*[@href = 'guide/install.dita']"/></x:call>
+        <x:expect label="is named after its path" select="'guide-install.xhtml'"/>
+      </x:scenario>
+
+      <x:scenario label="whose name clashes with another one ignoring case">
+        <x:call><x:param href="fixtures/book.ditamap" select="//*[@href = 'reference/Intro.dita']"/></x:call>
+        <x:expect label="is named after its path" select="'reference-Intro.xhtml'"/>
+      </x:scenario>
+
+      <x:scenario label="named like a generated page">
+        <x:call><x:param href="fixtures/book.ditamap" select="//*[@href = 'index.dita']"/></x:call>
+        <x:expect label="gets a topic- prefix" select="'topic-index.xhtml'"/>
+      </x:scenario>
+
+      <x:scenario label="referenced twice">
+        <x:call><x:param href="fixtures/book.ditamap" select="//*[@navtitle = 'Introduction again']"/></x:call>
+        <x:expect label="is the document of its first reference" select="'intro.xhtml'"/>
+      </x:scenario>
+    </x:scenario>
+
+    <x:scenario label="the manifest id of a topic">
+      <x:call function="epub:get-topic-item-id"/>
+
+      <x:scenario label="whose file name starts with a digit">
+        <x:call><x:param href="fixtures/book.ditamap" select="//*[@href = '2-start.dita']"/></x:call>
+        <x:expect label="gets a topic- prefix to be an XML name" select="'topic-2-start'"/>
+      </x:scenario>
+
+      <x:scenario label="named like a generated page">
+        <x:call><x:param href="fixtures/book.ditamap" select="//*[@href = 'index.dita']"/></x:call>
+        <x:expect label="does not take the generated page's id" select="'topic-index'"/>
+      </x:scenario>
+    </x:scenario>
+
+    <x:scenario label="the navigation link to one topic of a multi-topic file">
+      <x:call function="epub:get-topicref-link">
+        <x:param href="fixtures/book.ditamap" select="//*[@href = 'multi.dita#second']"/>
+      </x:call>
+      <x:expect label="points to that topic in the file's content document" select="'multi.xhtml#second'"/>
+    </x:scenario>
+
+    <!-- Cross-references, from fixtures/intro.dita -->
+    <x:scenario label="a cross-reference">
+      <x:call function="epub:get-xref-href"/>
+
+      <x:scenario label="to an element of another topic">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[@href = 'guide/install.dita#install/step1']"/></x:call>
+        <x:expect label="points to that element in the topic's content document" select="'guide-install.xhtml#step1'"/>
+      </x:scenario>
+
+      <x:scenario label="to an element that is not rendered (prolog)">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[@href = 'guide/install.dita#install/kw']"/></x:call>
+        <x:expect label="points to the topic's content document" select="'guide-install.xhtml'"/>
+      </x:scenario>
+
+      <x:scenario label="to an element of the same topic">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[@href = '#intro/p1']"/></x:call>
+        <x:expect label="is a fragment link" select="'#p1'"/>
+      </x:scenario>
+
+      <x:scenario label="to an unknown element of the same topic">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[@href = '#intro/unknown']"/></x:call>
+        <x:expect label="has no target" select="''"/>
+      </x:scenario>
+
+      <x:scenario label="to a topic of a multi-topic file">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[@href = 'multi.dita#second']"/></x:call>
+        <x:expect label="points to that topic" select="'multi.xhtml#second'"/>
+      </x:scenario>
+
+      <x:scenario label="to a missing topic">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[@href = 'missing.dita']"/></x:call>
+        <x:expect label="has no target" select="''"/>
+      </x:scenario>
+
+      <x:scenario label="to a topic that is not packaged (resource-only)">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[@href = 'shared.dita']"/></x:call>
+        <x:expect label="has no target" select="''"/>
+      </x:scenario>
+
+      <x:scenario label="to a file: URL, which EPUB forbids">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[starts-with(@href, 'file:')]"/></x:call>
+        <x:expect label="has no target" select="''"/>
+      </x:scenario>
+
+      <x:scenario label="to an external web page">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[@scope = 'external'][contains(@class, ' topic/xref ')]"/></x:call>
+        <x:expect label="keeps its URL" select="'https://www.dita-ot.org/'"/>
+      </x:scenario>
+
+      <x:scenario label="with a URL scheme but no external scope">
+        <x:call><x:param href="fixtures/intro.dita" select="//*[starts-with(@href, 'mailto:')]"/></x:call>
+        <x:expect label="keeps its URL" select="'mailto:docs@example.com'"/>
+      </x:scenario>
+    </x:scenario>
+
+    <!-- Images, from fixtures/intro.dita and fixtures/guide/install.dita -->
+    <x:scenario label="the image files of two topics">
+      <x:call function="epub:get-image-paths">
+        <x:param href="fixtures/book.ditamap" select="//*[@href = ('intro.dita', 'guide/install.dita')]"/>
+      </x:call>
+      <x:expect label="are their local images relative to the map, each once, without remote and data: images"
+                select="'images/diagram.png', 'images/my%20diagram.png', 'guide/screenshot.png'"/>
+    </x:scenario>
+
+    <x:scenario label="the src of a local image">
+      <x:call function="epub:get-image-src">
+        <x:param href="fixtures/intro.dita" select="//*[@href = 'images/diagram.png']"/>
+      </x:call>
+      <x:expect label="is its map-relative path in the images directory, from the content directory"
+                select="'../images/images/diagram.png'"/>
+    </x:scenario>
+
+    <x:scenario label="the src of a data: image">
+      <x:call function="epub:get-image-src">
+        <x:param href="fixtures/intro.dita" select="//*[starts-with(@href, 'data:')]"/>
+      </x:call>
+      <x:expect label="is the data: URL itself" select="'data:image/png;base64,iVBORw0KGgo='"/>
+    </x:scenario>
+
+    <x:scenario label="the identifier of a bookmap with an ISBN">
+      <x:call function="epub:get-identifier">
+        <x:param href="fixtures/book.ditamap" select="/*"/>
+      </x:call>
+      <x:expect label="is the ISBN" select="'978-0-00-000000-2'"/>
+    </x:scenario>
+
+    <x:scenario label="the derived identifier">
+      <x:call function="epub:generate-uuid">
+        <x:param href="fixtures/book.ditamap" select="/*"/>
+      </x:call>
+      <x:expect label="is a version 8 UUID URN"
+                test="matches($x:result, '^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-8[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$')"/>
+      <x:expect label="stays the same from one build to the next (reading positions and the font obfuscation key depend on it)"
+                select="'urn:uuid:52feeb23-a64a-87ab-9360-0be37a4e079d'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="Whether an image is remote:">
+    <x:call function="epub:is-remote-image"/>
+
+    <x:scenario label="an https: image">
+      <x:call><x:param href="fixtures/intro.dita" select="//*[starts-with(@href, 'https:')][contains(@class, ' topic/image ')]"/></x:call>
+      <x:expect label="is remote" select="true()"/>
+    </x:scenario>
+
+    <x:scenario label="a data: image, although DITA-OT marks it external">
+      <x:call><x:param href="fixtures/intro.dita" select="//*[starts-with(@href, 'data:')]"/></x:call>
+      <x:expect label="is not remote" select="false()"/>
+    </x:scenario>
+
+    <x:scenario label="a local image">
+      <x:call><x:param href="fixtures/intro.dita" select="//*[@href = 'images/diagram.png']"/></x:call>
+      <x:expect label="is not remote" select="false()"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="A URI path">
+    <x:call function="epub:decode-uri-path"/>
+
+    <x:scenario label="with an encoded space">
+      <x:call><x:param select="'images/my%20diagram.png'"/></x:call>
+      <x:expect label="is decoded" select="'images/my diagram.png'"/>
+    </x:scenario>
+
+    <x:scenario label="with two-, three- and four-byte UTF-8 characters, in either case">
+      <x:call><x:param select="'diagramme-%C3%A9-%e2%82%ac-%F0%9F%98%80.svg'"/></x:call>
+      <x:expect label="is decoded" select="'diagramme-&#xE9;-&#x20AC;-&#x1F600;.svg'"/>
+    </x:scenario>
+
+    <x:scenario label="with bytes that are not UTF-8">
+      <x:call><x:param select="'a%FFb'"/></x:call>
+      <x:expect label="keeps them encoded" select="'a%FFb'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="Whether an href is a file: URL:">
+    <x:call function="epub:is-file-url"/>
+
+    <x:scenario label="FILE:/ in capitals, after spaces">
+      <x:call><x:param select="'  FILE:/C:/notes.txt'"/></x:call>
+      <x:expect label="is one" select="true()"/>
+    </x:scenario>
+
+    <x:scenario label="a relative path">
+      <x:call><x:param select="'files/notes.txt'"/></x:call>
+      <x:expect label="is not one" select="false()"/>
+    </x:scenario>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Media types, languages, roles, fonts                             -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="The media type">
+    <x:call function="epub:get-media-type"/>
+
+    <x:scenario label="of an upper-case JPG file">
+      <x:call><x:param select="'cover.JPG'"/></x:call>
+      <x:expect label="is image/jpeg" select="'image/jpeg'"/>
+    </x:scenario>
+
+    <x:scenario label="of an SVG file">
+      <x:call><x:param select="'images/diagram.svg'"/></x:call>
+      <x:expect label="is image/svg+xml" select="'image/svg+xml'"/>
+    </x:scenario>
+
+    <x:scenario label="of a WOFF2 font">
+      <x:call><x:param select="'fonts/Inter.woff2'"/></x:call>
+      <x:expect label="is font/woff2" select="'font/woff2'"/>
+    </x:scenario>
+
+    <x:scenario label="of an unknown extension">
+      <x:call><x:param select="'data.bin'"/></x:call>
+      <x:expect label="is application/octet-stream" select="'application/octet-stream'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="The text direction">
+    <x:call function="epub:get-dir"/>
+
+    <x:scenario label="of Arabic">
+      <x:call><x:param select="'ar-EG'"/></x:call>
+      <x:expect label="is right to left" select="'rtl'"/>
+    </x:scenario>
+
+    <x:scenario label="of Hebrew">
+      <x:call><x:param select="'he'"/></x:call>
+      <x:expect label="is right to left" select="'rtl'"/>
+    </x:scenario>
+
+    <x:scenario label="of English">
+      <x:call><x:param select="'en-US'"/></x:call>
+      <x:expect label="is left to right" select="'ltr'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="The quotation marks">
+    <x:call function="epub:get-quotes"/>
+
+    <x:scenario label="of French">
+      <x:call><x:param select="'fr-FR'"/></x:call>
+      <x:expect label="are guillemets with no-break spaces" select="'&#xAB;&#xA0;', '&#xA0;&#xBB;'"/>
+    </x:scenario>
+
+    <x:scenario label="of German">
+      <x:call><x:param select="'de'"/></x:call>
+      <x:expect label="are low-high quotes" select="'&#x201E;', '&#x201C;'"/>
+    </x:scenario>
+
+    <x:scenario label="of an unlisted language">
+      <x:call><x:param select="'fi'"/></x:call>
+      <x:expect label="are English quotes" select="'&#x201C;', '&#x201D;'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="The MARC relator">
+    <x:call function="epub:marc-relator"/>
+
+    <x:scenario label="of the role Editor">
+      <x:call><x:param select="'Editor'"/></x:call>
+      <x:expect label="is edt" select="'edt'"/>
+    </x:scenario>
+
+    <x:scenario label="of a role given as a MARC code">
+      <x:call><x:param select="'ILL'"/></x:call>
+      <x:expect label="is that code in lower case" select="'ill'"/>
+    </x:scenario>
+
+    <x:scenario label="of an unknown role">
+      <x:call><x:param select="'Ghostwriter'"/></x:call>
+      <x:expect label="is oth" select="'oth'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <x:scenario label="A font file name">
+    <x:scenario label="with a hyphenated family and a weight-style suffix">
+      <x:call function="epub:get-font-family"><x:param select="'Source-Code-Pro-BoldItalic.woff2'"/></x:call>
+      <x:expect label="gives the family without the suffix" select="'Source-Code-Pro'"/>
+    </x:scenario>
+
+    <x:scenario label="that is only a weight">
+      <x:call function="epub:get-font-family"><x:param select="'Bold.woff2'"/></x:call>
+      <x:expect label="keeps its base name as the family" select="'Bold'"/>
+    </x:scenario>
+
+    <x:scenario label="with SemiBold">
+      <x:call function="epub:get-font-weight"><x:param select="'Inter-SemiBold.ttf'"/></x:call>
+      <x:expect label="gives weight 600, not bold" select="'600'"/>
+    </x:scenario>
+
+    <x:scenario label="with ExtraLight">
+      <x:call function="epub:get-font-weight"><x:param select="'Inter-ExtraLight.ttf'"/></x:call>
+      <x:expect label="gives weight 200, not light" select="'200'"/>
+    </x:scenario>
+
+    <x:scenario label="with Italic">
+      <x:call function="epub:get-font-style"><x:param select="'Lato-Italic.woff'"/></x:call>
+      <x:expect label="gives the italic style" select="'italic'"/>
+    </x:scenario>
+
+    <x:scenario label="with the otf extension">
+      <x:call function="epub:get-font-format"><x:param select="'Lato.otf'"/></x:call>
+      <x:expect label="gives the opentype format" select="'opentype'"/>
+    </x:scenario>
+  </x:scenario>
+
+</x:description>

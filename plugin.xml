@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin id="io.github.jyjeanne.dita2epub" version="1.5.0">
-  <feature extension="package.version" value="1.5.0"/>
+<plugin id="io.github.jyjeanne.dita2epub" version="2.1.0">
+  <feature extension="package.version" value="2.1.0"/>
 
   <!-- Require DITA-OT 4.4 or later -->
   <require plugin="org.dita.base"/>
@@ -39,7 +39,7 @@
            desc="Directory name for CSS files"
            type="string">styles</param>
     <param name="epub.accessibility"
-           desc="WCAG accessibility level"
+           desc="No effect, kept for existing build scripts (accessibility metadata is derived from the content)"
            type="enum">
       <val>wcag-a</val>
       <val default="true">wcag-aa</val>

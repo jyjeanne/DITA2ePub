@@ -25,13 +25,13 @@
          The preceding:: axis only works within a single document tree, so when each
          topic is loaded via document(), numbering restarts from 1. This pre-computes
          cumulative counts so each topic can offset its local numbers correctly. -->
-    <xsl:variable name="all-content-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][@href][not(@processing-role = 'resource-only')]"/>
+    <xsl:variable name="all-content-topicrefs" select="epub:content-topicrefs($map)"/>
     <xsl:variable name="numbering-offsets" as="element()*">
       <xsl:iterate select="$all-content-topicrefs">
         <xsl:param name="fig-total" as="xs:integer" select="0"/>
         <xsl:param name="table-total" as="xs:integer" select="0"/>
 
-        <xsl:variable name="topic-doc" select="document(@href, .)"/>
+        <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
         <xsl:variable name="fig-count" select="if ($topic-doc) then count($topic-doc//*[contains(@class, ' topic/fig ')]) else 0"/>
         <xsl:variable name="table-count" select="if ($topic-doc) then count($topic-doc//*[contains(@class, ' topic/table ')]) else 0"/>
 
@@ -44,8 +44,8 @@
       </xsl:iterate>
     </xsl:variable>
 
-    <!-- Process all topicrefs in the map -->
-    <xsl:apply-templates select="$map//*[contains(@class, ' map/topicref ')]" mode="generate-content">
+    <!-- Process every content topicref once (external links, resources and duplicates are skipped) -->
+    <xsl:apply-templates select="$all-content-topicrefs" mode="generate-content">
       <xsl:with-param name="numbering-offsets" select="$numbering-offsets" tunnel="yes"/>
     </xsl:apply-templates>
 
@@ -87,9 +87,9 @@
     <xsl:param name="filename" as="xs:string"/>
     <xsl:param name="numbering-offsets" as="element()*" select="()"/>
 
-    <!-- Load topic to get its language and title -->
-    <xsl:variable name="topic-doc" select="if ($topicref/@href) then document($topicref/@href, $topicref) else ()"/>
-    <xsl:variable name="topic" select="$topic-doc/*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference]"/>
+    <!-- Load topic to get its language and title (first topic: a <dita> file holds several) -->
+    <xsl:variable name="topic-doc" select="epub:topic-document($topicref)"/>
+    <xsl:variable name="topic" select="($topic-doc//*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference])[1]"/>
     <xsl:variable name="topic-lang" select="($topic/@xml:lang, epub:get-language(/*))[1]"/>
 
     <xsl:variable name="topic-title">
@@ -116,21 +116,19 @@
       <head>
         <meta charset="UTF-8"/>
         <title><xsl:value-of select="epub:clean-text($topic-title)"/></title>
+        <!-- Also writes the fixed-layout viewport. Reflowable pages get none: reading systems must ignore
+             it there (EPUB 3.3) -->
         <xsl:call-template name="emit-css-links"/>
-
-        <!-- Accessibility viewport (reflowable only — FXL viewport is emitted by emit-css-links) -->
-        <xsl:if test="not($is-fixed-layout) and normalize-space($epub.accessibility) != '' and not(lower-case($epub.accessibility) = ('no', 'false', '0', 'none'))">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        </xsl:if>
       </head>
       <body>
         <!-- Skip navigation link for accessibility -->
         <xsl:if test="epub:is-true($epub.skip.nav)">
-          <a href="#content" class="skip-nav">Skip to main content</a>
+          <a href="#epub-main-content" class="skip-nav">Skip to main content</a>
         </xsl:if>
 
         <!-- Main content -->
-        <main id="content" role="main">
+        <!-- Prefixed id: topics may use "content" themselves -->
+        <main id="epub-main-content" role="main">
           <xsl:call-template name="generate-topic-body">
             <xsl:with-param name="topicref" select="$topicref"/>
             <xsl:with-param name="numbering-offsets" select="$numbering-offsets"/>
@@ -147,8 +145,10 @@
 
     <!-- Load the DITA topic file -->
     <xsl:variable name="topic-href" select="$topicref/@href"/>
-    <xsl:variable name="topic-doc" select="if ($topic-href) then document($topic-href, $topicref) else ()"/>
-    <xsl:variable name="topic" select="$topic-doc/*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference]"/>
+    <xsl:variable name="topic-doc" select="epub:topic-document($topicref)"/>
+    <xsl:variable name="topic" select="($topic-doc//*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference])[1]"/>
+    <!-- Nested topics, then the other topics of a <dita> file, are rendered after the main topic -->
+    <xsl:variable name="more-topics" select="$topic/*[contains(@class, ' topic/topic ')] | $topic/following-sibling::*[contains(@class, ' topic/topic ')]"/>
 
     <!-- Look up global numbering offsets for this topic -->
     <xsl:variable name="current-offset" select="$numbering-offsets[@href = $topic-href]"/>
@@ -211,14 +211,18 @@
         <xsl:when test="$topic">
           <!-- Process actual topic content -->
           <xsl:apply-templates select="$topic/*[contains(@class, ' topic/title ') or self::title]" mode="topic-content"/>
-          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/shortdesc ') or self::shortdesc]" mode="topic-content"/>
-          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/body ') or self::body or self::conbody or self::taskbody or self::refbody]" mode="topic-content">
+          <!-- The prolog is not rendered, but the back-of-book index links to its index terms -->
+          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/prolog ')]//*[contains(@class, ' topic/indexterm ')]
+                                         [not(parent::*[contains(@class, ' topic/indexterm ')])]" mode="topic-content"/>
+          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/shortdesc ') or contains(@class, ' topic/abstract ') or self::shortdesc]" mode="topic-content"/>
+          <xsl:apply-templates select="$topic/*[contains(@class, ' topic/body ') or self::body or self::conbody or self::taskbody or self::refbody]
+                                       | $topic/*[contains(@class, ' topic/related-links ')] | $more-topics" mode="topic-content">
             <xsl:with-param name="fig-offset" select="$fig-offset" tunnel="yes"/>
             <xsl:with-param name="table-offset" select="$table-offset" tunnel="yes"/>
           </xsl:apply-templates>
 
           <!-- Collect footnotes from this topic -->
-          <xsl:variable name="footnotes" select="$topic//*[contains(@class, ' topic/fn ')]"/>
+          <xsl:variable name="footnotes" select="($topic | $more-topics)//*[contains(@class, ' topic/fn ')]"/>
           <xsl:if test="count($footnotes) > 0">
             <aside xmlns="http://www.w3.org/1999/xhtml" epub:type="footnotes" class="footnotes">
               <hr class="fn-separator"/>
@@ -264,14 +268,29 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- Transform DITA topic title to HTML h1 -->
+  <!-- Transform DITA topic title to HTML h1 (h2... for nested topics) -->
   <xsl:template match="*[contains(@class, ' topic/title ')] | title" mode="topic-content">
-    <h1 xmlns="http://www.w3.org/1999/xhtml">
-      <xsl:if test="parent::*/@id">
+    <xsl:variable name="level" select="max((1, min((count(ancestor::*[contains(@class, ' topic/topic ')]), 6))))"/>
+    <xsl:element name="h{$level}" namespace="http://www.w3.org/1999/xhtml">
+      <!-- A topic's id goes on its heading; other titled elements (example...) keep their own -->
+      <xsl:if test="parent::*[contains(@class, ' topic/topic ')]/@id">
         <xsl:attribute name="id" select="parent::*/@id"/>
       </xsl:if>
       <xsl:apply-templates mode="topic-content"/>
-    </h1>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- Nested topic, or further topic of a <dita> file: a section of the same content document -->
+  <xsl:template match="*[contains(@class, ' topic/topic ')]" mode="topic-content">
+    <section xmlns="http://www.w3.org/1999/xhtml" class="topic">
+      <xsl:call-template name="emit-lang-dir"/>
+      <xsl:apply-templates select="*[contains(@class, ' topic/title ')]" mode="topic-content"/>
+      <xsl:apply-templates select="*[contains(@class, ' topic/prolog ')]//*[contains(@class, ' topic/indexterm ')]
+                                     [not(parent::*[contains(@class, ' topic/indexterm ')])]" mode="topic-content"/>
+      <xsl:apply-templates select="*[contains(@class, ' topic/shortdesc ') or contains(@class, ' topic/abstract ')
+                                     or contains(@class, ' topic/body ') or contains(@class, ' topic/related-links ')
+                                     or contains(@class, ' topic/topic ')]" mode="topic-content"/>
+    </section>
   </xsl:template>
 
   <!-- Transform DITA shortdesc to HTML p with class -->
@@ -293,31 +312,33 @@
       parent::*[contains(@class, ' topic/body ') or self::body or self::conbody or self::taskbody or self::refbody] and
       not(preceding-sibling::*[contains(@class, ' topic/p ')])
     "/>
-    <p xmlns="http://www.w3.org/1999/xhtml">
+    <!-- DITA paragraphs may hold lists, code blocks, notes...; HTML <p> may not -->
+    <xsl:element name="{if (epub:has-block-content(.)) then 'div' else 'p'}" namespace="http://www.w3.org/1999/xhtml">
       <xsl:call-template name="emit-lang-dir"/>
-      <xsl:if test="@id">
-        <xsl:attribute name="id" select="@id"/>
-      </xsl:if>
-      <xsl:if test="$is-first-body-p">
-        <xsl:attribute name="class">drop-cap</xsl:attribute>
-      </xsl:if>
+      <xsl:call-template name="emit-id"/>
+      <xsl:choose>
+        <xsl:when test="$is-first-body-p">
+          <xsl:attribute name="class">drop-cap</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="epub:has-block-content(.)">
+          <xsl:attribute name="class">p</xsl:attribute>
+        </xsl:when>
+      </xsl:choose>
       <xsl:apply-templates mode="topic-content"/>
-    </p>
+    </xsl:element>
   </xsl:template>
 
   <!-- Transform DITA section to HTML section -->
   <xsl:template match="*[contains(@class, ' topic/section ')] | section" mode="topic-content">
     <section xmlns="http://www.w3.org/1999/xhtml">
       <xsl:call-template name="emit-lang-dir"/>
-      <xsl:if test="@id">
-        <xsl:attribute name="id" select="@id"/>
-      </xsl:if>
+      <xsl:call-template name="emit-id"/>
       <xsl:apply-templates mode="topic-content"/>
     </section>
   </xsl:template>
 
-  <!-- Transform section title to h2 -->
-  <xsl:template match="*[contains(@class, ' topic/section ')]/*[contains(@class, ' topic/title ')] | section/title" mode="topic-content" priority="10">
+  <!-- Transform section (and example) title to h2 -->
+  <xsl:template match="*[contains(@class, ' topic/section ') or contains(@class, ' topic/example ')]/*[contains(@class, ' topic/title ')] | section/title" mode="topic-content" priority="10">
     <h2 xmlns="http://www.w3.org/1999/xhtml">
       <xsl:apply-templates mode="topic-content"/>
     </h2>
@@ -326,6 +347,7 @@
   <!-- Transform DITA ul to HTML ul -->
   <xsl:template match="*[contains(@class, ' topic/ul ')] | ul" mode="topic-content">
     <ul xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-id"/>
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </ul>
   </xsl:template>
@@ -333,6 +355,7 @@
   <!-- Transform DITA ol to HTML ol -->
   <xsl:template match="*[contains(@class, ' topic/ol ')] | ol" mode="topic-content">
     <ol xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-id"/>
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </ol>
   </xsl:template>
@@ -340,6 +363,7 @@
   <!-- Transform DITA li to HTML li -->
   <xsl:template match="*[contains(@class, ' topic/li ')] | li" mode="topic-content">
     <li xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-id"/>
       <xsl:apply-templates select="node()" mode="topic-content"/>
     </li>
   </xsl:template>
@@ -355,6 +379,7 @@
           <xsl:otherwise>note</xsl:otherwise>
         </xsl:choose>
       </xsl:attribute>
+      <xsl:call-template name="emit-id"/>
       <xsl:if test="@type">
         <xsl:variable name="lang" select="(ancestor-or-self::*/@xml:lang, $epub.language)[1]"/>
         <strong class="note-label">
@@ -467,44 +492,81 @@
 
   <!-- Transform DITA xref to HTML a -->
   <xsl:template match="*[contains(@class, ' topic/xref ')] | xref" mode="topic-content">
-    <a xmlns="http://www.w3.org/1999/xhtml">
-      <xsl:attribute name="href">
-        <xsl:choose>
-          <xsl:when test="@scope = 'external'">
-            <xsl:value-of select="@href"/>
-          </xsl:when>
-          <xsl:when test="@format = 'dita' or ends-with(@href, '.dita')">
-            <!-- Convert .dita to .xhtml -->
-            <xsl:value-of select="replace(@href, '\.dita$', '.xhtml')"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="@href"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:attribute>
-      <xsl:if test="@scope = 'external'">
+    <xsl:variable name="target" select="epub:get-xref-href(.)"/>
+    <xsl:if test="epub:is-file-url(@href)">
+      <xsl:message>[WARN] Link to a file: URL kept as text, because EPUB does not allow file URLs: <xsl:value-of select="@href"/></xsl:message>
+    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="$target != ''">
+        <a xmlns="http://www.w3.org/1999/xhtml" href="{$target}">
+          <xsl:if test="@scope = 'external'">
+            <xsl:attribute name="rel">noopener noreferrer</xsl:attribute>
+          </xsl:if>
+          <xsl:call-template name="xref-label"/>
+        </a>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- Target is not in the EPUB (resource not packaged, element not rendered): keep the text -->
+        <span xmlns="http://www.w3.org/1999/xhtml" class="xref">
+          <xsl:call-template name="xref-label"/>
+        </span>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- Link text of an xref. DITA-OT adds the target's short description as <desc>, which is not
+       part of the text (it may even contain links, and <a> cannot be nested) -->
+  <xsl:template name="xref-label">
+    <xsl:variable name="label" select="node()[not(self::*[contains(@class, ' topic/desc ')])]"/>
+    <xsl:choose>
+      <xsl:when test="$label[self::* or normalize-space(.) != '']">
+        <xsl:apply-templates select="$label" mode="topic-content"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="@href"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- Remote image: EPUB 3.3 (3.6) requires images to be inside the publication, so the image is
+       replaced by a link to it, labelled with its alternative text -->
+  <xsl:template match="*[contains(@class, ' topic/image ')][epub:is-remote-image(.)]" mode="topic-content" priority="20">
+    <xsl:variable name="alt-text" select="normalize-space((@alt, *[contains(@class, ' topic/alt ')])[1])"/>
+    <xsl:message>[WARN] Remote image replaced by a link, because EPUB requires images inside the publication: <xsl:value-of select="@href"/></xsl:message>
+    <!-- The text alone is kept inside a cross-reference (links cannot be nested) and for file: URLs,
+         which EPUB 3.3 forbids -->
+    <xsl:variable name="as-link" select="not(ancestor::*[contains(@class, ' topic/xref ')]) and not(epub:is-file-url(@href))"/>
+    <xsl:element name="{if ($as-link) then 'a' else 'span'}" namespace="http://www.w3.org/1999/xhtml">
+      <xsl:if test="$as-link">
+        <xsl:attribute name="href" select="@href"/>
         <xsl:attribute name="rel">noopener noreferrer</xsl:attribute>
       </xsl:if>
-      <xsl:choose>
-        <xsl:when test="node()">
-          <xsl:apply-templates mode="topic-content"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="@href"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </a>
+      <xsl:attribute name="class">remote-image</xsl:attribute>
+      <xsl:call-template name="emit-id"/>
+      <xsl:value-of select="if ($alt-text != '') then $alt-text else @href"/>
+    </xsl:element>
   </xsl:template>
 
   <!-- Transform DITA image to HTML img -->
   <xsl:template match="*[contains(@class, ' topic/image ')]" mode="topic-content">
-    <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', tokenize(@href, '/')[last()]))"/>
+    <xsl:variable name="image-path" select="epub:get-image-src(.)"/>
     <xsl:variable name="is-decorative" select="@outputclass = 'decorative' or @alt = ''"/>
+    <!-- Alt text: DITA 1.2+ <alt> element, or the older @alt attribute -->
+    <xsl:variable name="alt-text" select="(@alt, *[contains(@class, ' topic/alt ')])[1]"/>
     <xsl:variable name="desc-sibling" select="following-sibling::*[contains(@class, ' topic/desc ')][1]"/>
     <xsl:variable name="desc-id" select="if ($desc-sibling) then concat('desc-', generate-id(.)) else ''"/>
+    <!-- An inline image inside running text stays an <img>; <figure> is block content -->
+    <xsl:variable name="is-inline" select="not(@placement = 'break') and parent::*[
+      contains(@class, ' topic/p ') or contains(@class, ' topic/ph ') or contains(@class, ' topic/xref ')
+      or contains(@class, ' topic/title ') or contains(@class, ' topic/shortdesc ') or contains(@class, ' topic/q ')
+      or contains(@class, ' topic/term ') or contains(@class, ' topic/keyword ')]"/>
 
-    <figure xmlns="http://www.w3.org/1999/xhtml">
-      <img src="{$image-path}">
+    <xsl:variable name="img" as="element()">
+      <img xmlns="http://www.w3.org/1999/xhtml" src="{$image-path}">
+        <xsl:if test="$is-inline">
+          <xsl:attribute name="class">inline</xsl:attribute>
+        </xsl:if>
+        <xsl:call-template name="emit-id"/>
         <xsl:choose>
           <!-- Decorative image: empty alt, presentation role -->
           <xsl:when test="$is-decorative">
@@ -512,8 +574,8 @@
             <xsl:attribute name="role">presentation</xsl:attribute>
           </xsl:when>
           <!-- Image with alt text -->
-          <xsl:when test="@alt">
-            <xsl:attribute name="alt" select="@alt"/>
+          <xsl:when test="exists($alt-text)">
+            <xsl:attribute name="alt" select="normalize-space($alt-text)"/>
           </xsl:when>
           <!-- Missing alt text: warn and use empty alt -->
           <xsl:otherwise>
@@ -522,42 +584,61 @@
           </xsl:otherwise>
         </xsl:choose>
         <!-- Extended description via aria-describedby -->
-        <xsl:if test="$desc-sibling and not($is-decorative)">
+        <xsl:if test="$desc-sibling and not($is-decorative) and not($is-inline)">
           <xsl:attribute name="aria-describedby" select="$desc-id"/>
         </xsl:if>
-        <xsl:if test="@width">
-          <xsl:attribute name="width" select="@width"/>
-        </xsl:if>
-        <xsl:if test="@height">
-          <xsl:attribute name="height" select="@height"/>
-        </xsl:if>
+        <xsl:call-template name="emit-image-size"/>
       </img>
+    </xsl:variable>
 
-      <!-- Caption from desc (visible) -->
-      <xsl:if test="$desc-sibling">
-        <figcaption>
-          <xsl:apply-templates select="$desc-sibling/node()" mode="topic-content"/>
-        </figcaption>
-        <!-- Hidden extended description for screen readers -->
-        <xsl:if test="not($is-decorative)">
-          <div id="{$desc-id}" class="visually-hidden">
-            <xsl:apply-templates select="$desc-sibling/node()" mode="topic-content"/>
-          </div>
-        </xsl:if>
-      </xsl:if>
-    </figure>
+    <xsl:choose>
+      <xsl:when test="$is-inline">
+        <xsl:sequence select="$img"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <figure xmlns="http://www.w3.org/1999/xhtml">
+          <xsl:sequence select="$img"/>
+
+          <!-- Caption from desc (visible) -->
+          <xsl:if test="$desc-sibling">
+            <figcaption>
+              <xsl:apply-templates select="$desc-sibling/node()" mode="topic-content"/>
+            </figcaption>
+            <!-- Hidden extended description for screen readers -->
+            <xsl:if test="not($is-decorative)">
+              <div id="{$desc-id}" class="visually-hidden">
+                <xsl:apply-templates select="$desc-sibling/node()" mode="topic-content"/>
+              </div>
+            </xsl:if>
+          </xsl:if>
+        </figure>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- Image size: HTML width/height only take pixels, so other DITA units (in, cm, %...) go to CSS -->
+  <xsl:template name="emit-image-size">
+    <xsl:variable name="pixel-pattern" select="'^[0-9]+(px)?$'"/>
+    <xsl:for-each select="(@width, @height)[matches(normalize-space(.), $pixel-pattern)]">
+      <xsl:attribute name="{local-name()}" select="replace(normalize-space(.), 'px$', '')"/>
+    </xsl:for-each>
+    <xsl:variable name="css" select="string-join(
+      for $size in (@width, @height)[normalize-space(.) != ''][not(matches(normalize-space(.), $pixel-pattern))]
+      return concat(local-name($size), ': ', normalize-space($size),
+                    if (matches(normalize-space($size), '^[0-9.]+$')) then 'px' else ''), '; ')"/>
+    <xsl:if test="$css != ''">
+      <xsl:attribute name="style" select="$css"/>
+    </xsl:if>
   </xsl:template>
 
   <!-- Transform DITA table to HTML table -->
   <xsl:template match="*[contains(@class, ' topic/table ')]" mode="topic-content">
     <xsl:param name="table-offset" as="xs:integer" select="0" tunnel="yes"/>
     <table xmlns="http://www.w3.org/1999/xhtml">
-      <xsl:if test="@id">
-        <xsl:attribute name="id" select="@id"/>
-      </xsl:if>
-      <xsl:if test="*[contains(@class, ' topic/title ')]">
+      <xsl:call-template name="emit-id"/>
+      <xsl:if test="*[contains(@class, ' topic/title ') or contains(@class, ' topic/desc ')]">
         <caption>
-          <xsl:if test="$epub.table.numbering = 'global'">
+          <xsl:if test="$epub.table.numbering = 'global' and *[contains(@class, ' topic/title ')]">
             <xsl:variable name="table-number" select="count(preceding::*[contains(@class, ' topic/table ')]) + 1 + $table-offset"/>
             <xsl:variable name="lang" select="(ancestor-or-self::*/@xml:lang, $epub.language)[1]"/>
             <span class="table-label">
@@ -579,6 +660,7 @@
             </span>
           </xsl:if>
           <xsl:apply-templates select="*[contains(@class, ' topic/title ')]/node()" mode="topic-content"/>
+          <xsl:apply-templates select="*[contains(@class, ' topic/desc ')]" mode="topic-content"/>
         </caption>
       </xsl:if>
       <xsl:apply-templates select="*[contains(@class, ' topic/tgroup ')]" mode="topic-content"/>
@@ -693,6 +775,7 @@
                                              then concat('language-', $raw-lang)
                                              else ''"/>
     <pre xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-id"/>
       <xsl:if test="string-length($lang-class) > 0">
         <xsl:attribute name="class" select="$lang-class"/>
       </xsl:if>
@@ -793,28 +876,25 @@
 
   <!-- Image inside fig: no wrapping figure element -->
   <xsl:template match="*[contains(@class, ' topic/fig ')]//*[contains(@class, ' topic/image ')]" mode="topic-content" priority="15">
-    <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', tokenize(@href, '/')[last()]))"/>
+    <xsl:variable name="image-path" select="epub:get-image-src(.)"/>
     <xsl:variable name="is-decorative" select="@outputclass = 'decorative' or @alt = ''"/>
+    <xsl:variable name="alt-text" select="(@alt, *[contains(@class, ' topic/alt ')])[1]"/>
     <img xmlns="http://www.w3.org/1999/xhtml" src="{$image-path}">
+      <xsl:call-template name="emit-id"/>
       <xsl:choose>
         <xsl:when test="$is-decorative">
           <xsl:attribute name="alt"/>
           <xsl:attribute name="role">presentation</xsl:attribute>
         </xsl:when>
-        <xsl:when test="@alt">
-          <xsl:attribute name="alt" select="@alt"/>
+        <xsl:when test="exists($alt-text)">
+          <xsl:attribute name="alt" select="normalize-space($alt-text)"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:message>[WARN] Image missing alt text: <xsl:value-of select="@href"/></xsl:message>
           <xsl:attribute name="alt"/>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:if test="@width">
-        <xsl:attribute name="width" select="@width"/>
-      </xsl:if>
-      <xsl:if test="@height">
-        <xsl:attribute name="height" select="@height"/>
-      </xsl:if>
+      <xsl:call-template name="emit-image-size"/>
     </img>
   </xsl:template>
 
@@ -822,15 +902,25 @@
   <xsl:template match="*[contains(@class, ' topic/lq ')]" mode="topic-content">
     <blockquote xmlns="http://www.w3.org/1999/xhtml" class="pull-quote">
       <xsl:call-template name="emit-lang-dir"/>
+      <xsl:call-template name="emit-id"/>
       <xsl:apply-templates select="node()" mode="topic-content"/>
       <xsl:if test="@href or *[contains(@class, ' topic/longquoteref ')]">
         <footer class="quote-attribution">
-          <xsl:variable name="source-href" select="(@href, *[contains(@class, ' topic/longquoteref ')]/@href)[1]"/>
-          <xsl:variable name="source-label" select="if (@reftitle and string-length(@reftitle) > 0) then @reftitle else $source-href"/>
+          <!-- Resolved like a cross-reference: a source outside the publication or a file: URL stays text -->
+          <xsl:variable name="source" select="(self::*[@href], *[contains(@class, ' topic/longquoteref ')][@href])[1]"/>
+          <xsl:variable name="source-href" select="if ($source) then epub:get-xref-href($source) else ''"/>
+          <xsl:variable name="source-label" select="if (@reftitle and string-length(@reftitle) > 0) then @reftitle else $source/@href"/>
           <cite>
-            <a href="{$source-href}" rel="noopener noreferrer">
-              <xsl:value-of select="$source-label"/>
-            </a>
+            <xsl:choose>
+              <xsl:when test="$source-href != ''">
+                <a href="{$source-href}" rel="noopener noreferrer">
+                  <xsl:value-of select="$source-label"/>
+                </a>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$source-label"/>
+              </xsl:otherwise>
+            </xsl:choose>
           </cite>
         </footer>
       </xsl:if>
@@ -861,12 +951,352 @@
   <!-- Sidebar section (outputclass='sidebar') -->
   <xsl:template match="*[contains(@class, ' topic/section ')][@outputclass='sidebar']" mode="topic-content" priority="10">
     <aside xmlns="http://www.w3.org/1999/xhtml" class="sidebar" role="complementary">
-      <xsl:if test="@id">
-        <xsl:attribute name="id" select="@id"/>
-      </xsl:if>
+      <xsl:call-template name="emit-id"/>
       <xsl:apply-templates mode="topic-content"/>
     </aside>
   </xsl:template>
+
+  <!-- ================================================================== -->
+  <!-- Lists, simple tables, divisions, task blocks and domain phrases    -->
+  <!-- ================================================================== -->
+
+  <!-- Copy @id, unless an earlier element of the content document already uses it -->
+  <xsl:template name="emit-id">
+    <xsl:if test="@id and epub:is-first-id(.)">
+      <xsl:attribute name="id" select="@id"/>
+    </xsl:if>
+  </xsl:template>
+
+  <!-- Definition list, and parameter list (parml) -->
+  <xsl:template match="*[contains(@class, ' topic/dl ')]" mode="topic-content">
+    <dl xmlns="http://www.w3.org/1999/xhtml" class="{local-name()}">
+      <xsl:call-template name="emit-lang-dir"/>
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates select="*[contains(@class, ' topic/dlhead ') or contains(@class, ' topic/dlentry ')]" mode="topic-content"/>
+    </dl>
+  </xsl:template>
+
+  <!-- List entry (dlentry, plentry) and list heading: no HTML wrapper, only their terms and definitions -->
+  <xsl:template match="*[contains(@class, ' topic/dlentry ') or contains(@class, ' topic/dlhead ')]" mode="topic-content">
+    <xsl:apply-templates select="*" mode="topic-content"/>
+  </xsl:template>
+
+  <!-- Term (dt, pt) and heading term; the first term also carries the entry's id -->
+  <xsl:template match="*[contains(@class, ' topic/dt ') or contains(@class, ' topic/dthd ')]" mode="topic-content">
+    <dt xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:if test="contains(@class, ' topic/dthd ')">
+        <xsl:attribute name="class">dlhead</xsl:attribute>
+      </xsl:if>
+      <xsl:call-template name="emit-id"/>
+      <xsl:if test="not(preceding-sibling::*) and ../@id and epub:is-first-id(..)">
+        <span id="{../@id}"/>
+      </xsl:if>
+      <xsl:apply-templates mode="topic-content"/>
+    </dt>
+  </xsl:template>
+
+  <!-- Definition (dd, pd) and heading definition -->
+  <xsl:template match="*[contains(@class, ' topic/dd ') or contains(@class, ' topic/ddhd ')]" mode="topic-content">
+    <dd xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:if test="contains(@class, ' topic/ddhd ')">
+        <xsl:attribute name="class">dlhead</xsl:attribute>
+      </xsl:if>
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </dd>
+  </xsl:template>
+
+  <!-- Simple list -->
+  <xsl:template match="*[contains(@class, ' topic/sl ')]" mode="topic-content">
+    <ul xmlns="http://www.w3.org/1999/xhtml" class="sl">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates select="*[contains(@class, ' topic/sli ')]" mode="topic-content"/>
+    </ul>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/sli ')]" mode="topic-content">
+    <li xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </li>
+  </xsl:template>
+
+  <!-- Simple table (also properties and choicetable); @keycol turns that column into row headers -->
+  <xsl:template match="*[contains(@class, ' topic/simpletable ')]" mode="topic-content">
+    <table xmlns="http://www.w3.org/1999/xhtml" class="{distinct-values(('simpletable', local-name()))}">
+      <xsl:call-template name="emit-id"/>
+      <xsl:if test="*[contains(@class, ' topic/title ')]">
+        <caption>
+          <xsl:apply-templates select="*[contains(@class, ' topic/title ')]/node()" mode="topic-content"/>
+        </caption>
+      </xsl:if>
+      <xsl:if test="*[contains(@class, ' topic/sthead ')]">
+        <thead>
+          <xsl:apply-templates select="*[contains(@class, ' topic/sthead ')]" mode="topic-content"/>
+        </thead>
+      </xsl:if>
+      <tbody>
+        <xsl:apply-templates select="*[contains(@class, ' topic/strow ')]" mode="topic-content"/>
+      </tbody>
+    </table>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/sthead ') or contains(@class, ' topic/strow ')]" mode="topic-content">
+    <tr xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:if test="contains(@class, ' topic/strow ') and epub:is-true($epub.table.zebra)">
+        <xsl:variable name="pos" select="count(preceding-sibling::*[contains(@class, ' topic/strow ')]) + 1"/>
+        <xsl:attribute name="class" select="if ($pos mod 2 = 1) then 'row-odd' else 'row-even'"/>
+      </xsl:if>
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates select="*[contains(@class, ' topic/stentry ')]" mode="topic-content"/>
+    </tr>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/stentry ')]" mode="topic-content">
+    <xsl:variable name="keycol" select="ancestor::*[contains(@class, ' topic/simpletable ')][1]/@keycol"/>
+    <xsl:variable name="in-head" select="exists(parent::*[contains(@class, ' topic/sthead ')])"/>
+    <xsl:variable name="is-key" select="$keycol castable as xs:integer
+      and count(preceding-sibling::*[contains(@class, ' topic/stentry ')]) + 1 = xs:integer($keycol)"/>
+    <xsl:element name="{if ($in-head or $is-key) then 'th' else 'td'}" namespace="http://www.w3.org/1999/xhtml">
+      <xsl:if test="$in-head or $is-key">
+        <xsl:attribute name="scope" select="if ($in-head) then 'col' else 'row'"/>
+      </xsl:if>
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- Example: a section of its own (its title is handled with section titles) -->
+  <xsl:template match="*[contains(@class, ' topic/example ')]" mode="topic-content">
+    <section xmlns="http://www.w3.org/1999/xhtml" class="example">
+      <xsl:call-template name="emit-lang-dir"/>
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </section>
+  </xsl:template>
+
+  <!-- Divisions: div, bodydiv, sectiondiv, figgroup (syntax diagram groups), and task item groups
+       (info, stepxmp, stepresult, tutorialinfo); abstract (also glossdef) -->
+  <xsl:template match="*[contains(@class, ' topic/div ') or contains(@class, ' topic/bodydiv ') or contains(@class, ' topic/sectiondiv ')
+                         or contains(@class, ' topic/figgroup ') or contains(@class, ' topic/itemgroup ') or contains(@class, ' topic/abstract ')]" mode="topic-content">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="{local-name()}">
+      <xsl:call-template name="emit-lang-dir"/>
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </div>
+  </xsl:template>
+
+  <!-- Description of a figure or object (xref and link descriptions are not rendered as text) -->
+  <xsl:template match="*[contains(@class, ' topic/desc ')]" mode="topic-content">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="desc">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </div>
+  </xsl:template>
+
+  <!-- Preformatted text other than code blocks: pre, screen, msgblock (codeblock has its own template) -->
+  <xsl:template match="*[contains(@class, ' topic/pre ')]" mode="topic-content" priority="0.4">
+    <pre xmlns="http://www.w3.org/1999/xhtml" class="{local-name()}">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </pre>
+  </xsl:template>
+
+  <!-- Lines: line breaks are significant (kept by CSS white-space) -->
+  <xsl:template match="*[contains(@class, ' topic/lines ')]" mode="topic-content">
+    <p xmlns="http://www.w3.org/1999/xhtml" class="lines">
+      <xsl:call-template name="emit-lang-dir"/>
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </p>
+  </xsl:template>
+
+  <!-- Related links: child topics first, then related information (relationship tables and authored
+       links). Parent, sibling and sequence links are left out: reading systems provide that navigation -->
+  <xsl:template match="*[contains(@class, ' topic/related-links ')]" mode="topic-content">
+    <xsl:variable name="links" as="element()*">
+      <xsl:for-each-group select=".//*[contains(@class, ' topic/link ')][not(@role = ('parent', 'ancestor', 'sibling', 'cousin', 'next', 'previous'))]"
+                          group-by="epub:get-xref-href(.)">
+        <xsl:if test="current-grouping-key() != ''">
+          <xsl:sequence select="(current-group()[@role = ('child', 'descendant')], .)[1]"/>
+        </xsl:if>
+      </xsl:for-each-group>
+    </xsl:variable>
+    <xsl:variable name="child-links" select="$links[@role = ('child', 'descendant')]"/>
+    <xsl:variable name="other-links" select="$links except $child-links"/>
+    <xsl:if test="exists($links)">
+      <xsl:variable name="lang" select="(ancestor-or-self::*[@xml:lang][1]/@xml:lang, $epub.language)[1]"/>
+      <section xmlns="http://www.w3.org/1999/xhtml" class="related-links">
+        <xsl:if test="exists($child-links)">
+          <ul class="child-links">
+            <xsl:apply-templates select="$child-links" mode="related-link"/>
+          </ul>
+        </xsl:if>
+        <xsl:if test="exists($other-links)">
+          <h2 class="related-links-title">
+            <xsl:choose>
+              <xsl:when test="starts-with($lang, 'fr')">Informations associées</xsl:when>
+              <xsl:when test="starts-with($lang, 'de')">Zugehörige Informationen</xsl:when>
+              <xsl:when test="starts-with($lang, 'es')">Información relacionada</xsl:when>
+              <xsl:when test="starts-with($lang, 'it')">Informazioni correlate</xsl:when>
+              <xsl:when test="starts-with($lang, 'pt')">Informações relacionadas</xsl:when>
+              <xsl:when test="starts-with($lang, 'nl')">Gerelateerde informatie</xsl:when>
+              <xsl:when test="starts-with($lang, 'ja')">関連情報</xsl:when>
+              <xsl:when test="starts-with($lang, 'zh')">相关信息</xsl:when>
+              <xsl:when test="starts-with($lang, 'ar')">معلومات ذات صلة</xsl:when>
+              <xsl:when test="starts-with($lang, 'he')">מידע קשור</xsl:when>
+              <xsl:otherwise>Related information</xsl:otherwise>
+            </xsl:choose>
+          </h2>
+          <ul>
+            <xsl:apply-templates select="$other-links" mode="related-link"/>
+          </ul>
+        </xsl:if>
+      </section>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/link ')]" mode="related-link">
+    <li xmlns="http://www.w3.org/1999/xhtml">
+      <a href="{epub:get-xref-href(.)}">
+        <xsl:if test="@scope = 'external'">
+          <xsl:attribute name="rel">noopener noreferrer</xsl:attribute>
+        </xsl:if>
+        <xsl:choose>
+          <xsl:when test="*[contains(@class, ' topic/linktext ')][normalize-space(.) != '']">
+            <xsl:apply-templates select="*[contains(@class, ' topic/linktext ')]/node()" mode="topic-content"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@href"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </a>
+      <!-- Child links show the child topic's short description, as in DITA-OT HTML5 output -->
+      <xsl:if test="@role = ('child', 'descendant') and *[contains(@class, ' topic/desc ')][normalize-space(.) != '']">
+        <div class="link-desc">
+          <xsl:apply-templates select="*[contains(@class, ' topic/desc ')]/node()" mode="topic-content"/>
+        </div>
+      </xsl:if>
+    </li>
+  </xsl:template>
+
+  <!-- Code-like phrases: programming, software and markup names -->
+  <xsl:template match="*[contains(@class, ' pr-d/parmname ') or contains(@class, ' pr-d/option ') or contains(@class, ' pr-d/apiname ')
+                         or contains(@class, ' pr-d/kwd ') or contains(@class, ' pr-d/synph ') or contains(@class, ' sw-d/cmdname ')
+                         or contains(@class, ' sw-d/filepath ') or contains(@class, ' sw-d/msgnum ') or contains(@class, ' markup-d/markupname ')]" mode="topic-content">
+    <code xmlns="http://www.w3.org/1999/xhtml" class="{local-name()}">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </code>
+  </xsl:template>
+
+  <!-- XML mention domain: names shown with their markup delimiters (<element>, @attribute, &entity;...) -->
+  <xsl:template match="*[contains(@class, ' xml-d/')]" mode="topic-content" priority="0.6">
+    <xsl:variable name="delimiters" as="xs:string+">
+      <xsl:choose>
+        <xsl:when test="contains(@class, ' xml-d/xmlelement ')"><xsl:sequence select="('&lt;', '&gt;')"/></xsl:when>
+        <xsl:when test="contains(@class, ' xml-d/xmlatt ')"><xsl:sequence select="('@', '')"/></xsl:when>
+        <xsl:when test="contains(@class, ' xml-d/textentity ')"><xsl:sequence select="('&amp;', ';')"/></xsl:when>
+        <xsl:when test="contains(@class, ' xml-d/parameterentity ')"><xsl:sequence select="('%', ';')"/></xsl:when>
+        <xsl:when test="contains(@class, ' xml-d/numcharref ')"><xsl:sequence select="('&amp;#', ';')"/></xsl:when>
+        <xsl:when test="contains(@class, ' xml-d/xmlpi ')"><xsl:sequence select="('&lt;?', '?&gt;')"/></xsl:when>
+        <xsl:otherwise><xsl:sequence select="('', '')"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <code xmlns="http://www.w3.org/1999/xhtml" class="{local-name()}">
+      <xsl:call-template name="emit-id"/>
+      <xsl:value-of select="$delimiters[1]"/>
+      <xsl:apply-templates mode="topic-content"/>
+      <xsl:value-of select="$delimiters[2]"/>
+    </code>
+  </xsl:template>
+
+  <!-- Variables (varname, var) -->
+  <xsl:template match="*[contains(@class, ' sw-d/varname ') or contains(@class, ' pr-d/var ')]" mode="topic-content">
+    <var xmlns="http://www.w3.org/1999/xhtml" class="{local-name()}">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </var>
+  </xsl:template>
+
+  <!-- User input and system output -->
+  <xsl:template match="*[contains(@class, ' sw-d/userinput ')]" mode="topic-content">
+    <kbd xmlns="http://www.w3.org/1999/xhtml" class="userinput">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </kbd>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' sw-d/systemoutput ') or contains(@class, ' sw-d/msgph ')]" mode="topic-content">
+    <samp xmlns="http://www.w3.org/1999/xhtml" class="{local-name()}">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </samp>
+  </xsl:template>
+
+  <!-- Menu path: its controls joined with ">" -->
+  <xsl:template match="*[contains(@class, ' ui-d/menucascade ')]" mode="topic-content">
+    <span xmlns="http://www.w3.org/1999/xhtml" class="menucascade">
+      <xsl:call-template name="emit-id"/>
+      <xsl:for-each select="*[contains(@class, ' ui-d/uicontrol ')]">
+        <xsl:if test="position() gt 1">
+          <xsl:text> &gt; </xsl:text>
+        </xsl:if>
+        <xsl:apply-templates select="." mode="topic-content"/>
+      </xsl:for-each>
+    </span>
+  </xsl:template>
+
+  <!-- Phrases styled by CSS class: UI labels, task commands, syntax punctuation, highlighting -->
+  <xsl:template match="*[contains(@class, ' ui-d/uicontrol ') or contains(@class, ' ui-d/wintitle ') or contains(@class, ' ui-d/shortcut ')
+                         or contains(@class, ' task/cmd ') or contains(@class, ' pr-d/oper ') or contains(@class, ' pr-d/delim ')
+                         or contains(@class, ' pr-d/sep ') or contains(@class, ' pr-d/repsep ') or contains(@class, ' hi-d/tt ')
+                         or contains(@class, ' hi-d/line-through ') or contains(@class, ' hi-d/overline ')]" mode="topic-content">
+    <span xmlns="http://www.w3.org/1999/xhtml" class="{local-name()}">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </span>
+  </xsl:template>
+
+  <!-- Highlighting with a direct HTML equivalent (b and i have their own templates) -->
+  <xsl:template match="*[contains(@class, ' hi-d/sup ') or contains(@class, ' hi-d/sub ') or contains(@class, ' hi-d/u ')]" mode="topic-content">
+    <xsl:element name="{if (contains(@class, ' hi-d/sup ')) then 'sup' else if (contains(@class, ' hi-d/sub ')) then 'sub' else 'u'}"
+                 namespace="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- Term and citation -->
+  <xsl:template match="*[contains(@class, ' topic/term ')]" mode="topic-content">
+    <dfn xmlns="http://www.w3.org/1999/xhtml" class="term">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </dfn>
+  </xsl:template>
+
+  <xsl:template match="*[contains(@class, ' topic/cite ')]" mode="topic-content">
+    <cite xmlns="http://www.w3.org/1999/xhtml">
+      <xsl:call-template name="emit-id"/>
+      <xsl:apply-templates mode="topic-content"/>
+    </cite>
+  </xsl:template>
+
+  <!-- Trademark: text followed by its symbol -->
+  <xsl:template match="*[contains(@class, ' topic/tm ')]" mode="topic-content">
+    <xsl:apply-templates mode="topic-content"/>
+    <xsl:choose>
+      <xsl:when test="@tmtype = 'reg'">&#x00AE;</xsl:when>
+      <xsl:when test="@tmtype = 'service'">&#x2120;</xsl:when>
+      <xsl:otherwise>&#x2122;</xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- Not part of the published text: review comments, metadata, DITA-OT filtering markers -->
+  <xsl:template match="*[contains(@class, ' topic/draft-comment ') or contains(@class, ' topic/required-cleanup ')
+                         or contains(@class, ' topic/data ') or contains(@class, ' topic/data-about ') or contains(@class, ' topic/foreign ')
+                         or contains(@class, ' topic/unknown ') or contains(@class, ' topic/titlealts ') or contains(@class, ' topic/indextermref ')]"
+                mode="topic-content"/>
 
   <!-- Insert index anchor spans for indexterm elements (linked from back-of-book index) -->
   <xsl:template match="indexterm | *[contains(@class, ' topic/indexterm ')]" mode="topic-content">
@@ -879,8 +1309,12 @@
     <xsl:apply-templates select="*[self::indexterm or contains(@class, ' topic/indexterm ')]" mode="topic-content"/>
   </xsl:template>
 
-  <!-- Default template - ignore unknown elements but process children -->
+  <!-- Default template - ignore unknown elements but process children; keep their id as an
+       anchor so cross-references to them still resolve -->
   <xsl:template match="*" mode="topic-content">
+    <xsl:if test="@id and epub:is-first-id(.)">
+      <span xmlns="http://www.w3.org/1999/xhtml" id="{@id}"/>
+    </xsl:if>
     <xsl:apply-templates select="node()" mode="topic-content"/>
   </xsl:template>
 

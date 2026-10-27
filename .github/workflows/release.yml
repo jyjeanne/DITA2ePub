@@ -33,6 +33,12 @@ jobs:
       - name: Build, test, and package
         run: ./gradlew clean compileJava test distChecksum --no-daemon
 
+      - name: Check the registry entry of this version
+        run: |
+          DIST_ZIP=$(ls build/dist/io.github.jyjeanne.dita2epub-*.zip | head -1)
+          VERSION=$(basename "$DIST_ZIP" .zip | sed 's/io.github.jyjeanne.dita2epub-//')
+          node .github/scripts/registry-entry.js "$VERSION" "$DIST_ZIP" "check" "$RUNNER_TEMP/registry-entry.json" > /dev/null
+
       - name: Install plugin in DITA-OT and test
         run: |
           wget -q https://github.com/dita-ot/dita-ot/releases/download/4.4.1/dita-ot-4.4.1.zip
@@ -127,6 +133,14 @@ jobs:
           name: release-artifacts-${{ steps.get_version.outputs.VERSION }}
           path: dist/
 
+      - name: Generate the DITA-OT registry entry
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          node .github/scripts/registry-entry.js "$VERSION" \
+            "dist/io.github.jyjeanne.dita2epub-${VERSION}.zip" \
+            "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/io.github.jyjeanne.dita2epub-${VERSION}.zip" \
+            dist/io.github.jyjeanne.dita2epub.json
+
       - name: Extract release notes from CHANGELOG
         id: release_notes
         run: |
@@ -160,6 +174,7 @@ jobs:
           files: |
             dist/io.github.jyjeanne.dita2epub-${{ steps.get_version.outputs.VERSION }}.zip
             dist/io.github.jyjeanne.dita2epub-${{ steps.get_version.outputs.VERSION }}.zip.SHA-256
+            dist/io.github.jyjeanne.dita2epub.json
           draft: false
           prerelease: false
         env:
@@ -173,8 +188,14 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Next: Submit to DITA-OT Registry" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "1. Update \`cksum\` in \`io.github.jyjeanne.dita2epub.json\` with the SHA-256 from the release" >> $GITHUB_STEP_SUMMARY
-          echo "2. Fork [dita-ot/registry](https://github.com/dita-ot/registry)" >> $GITHUB_STEP_SUMMARY
-          echo "3. Copy the JSON file and submit a signed-off PR" >> $GITHUB_STEP_SUMMARY
+          echo "Registry entry of this release (also attached to the release as \`io.github.jyjeanne.dita2epub.json\`):" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          cat dist/io.github.jyjeanne.dita2epub.json >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. Copy its \`cksum\` into \`io.github.jyjeanne.dita2epub.json\` of this repository" >> $GITHUB_STEP_SUMMARY
+          echo "2. Add the entry to \`io.github.jyjeanne.dita2epub.json\` in a fork of [dita-ot/registry](https://github.com/dita-ot/registry)" >> $GITHUB_STEP_SUMMARY
+          echo "3. Commit with \`git commit -s\` and open one pull request for this version" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "See \`docs/REGISTRY.md\` for detailed instructions." >> $GITHUB_STEP_SUMMARY

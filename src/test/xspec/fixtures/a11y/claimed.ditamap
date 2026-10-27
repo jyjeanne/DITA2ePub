@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Conformance declared with its evaluator, an index list, and images that are not all described -->
+<bookmap class="- map/map bookmap/bookmap " xml:lang="en">
+  <bookmeta class="- map/topicmeta bookmap/bookmeta ">
+    <data class="- topic/data " name="accessibility-conformance" value="EPUB Accessibility 1.1 - WCAG 2.2 Level AA"/>
+    <data class="- topic/data " name="accessibility-certifier" value="Fixture Accessibility Lab"/>
+  </bookmeta>
+  <chapter class="- map/topicref bookmap/chapter " href="without-alt.dita"/>
+  <backmatter class="- map/topicref bookmap/backmatter ">
+    <booklists class="- map/topicref bookmap/booklists "><indexlist class="- map/topicref bookmap/indexlist "/></booklists>
+  </backmatter>
+</bookmap>

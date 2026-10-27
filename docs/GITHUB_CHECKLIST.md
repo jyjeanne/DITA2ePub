@@ -37,7 +37,6 @@
 - [x] Removed org.dita4publishers.epub-develop/
 - [x] Removed temporary documentation files
 - [x] Removed test scripts
-- [x] Updated .gitignore to exclude .claude/
 
 ## Verification
 - [x] EPUB generation tested and working

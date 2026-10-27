@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic-b">
+  <title>index in folder b</title>
+  <prolog>
+    <metadata>
+      <keywords><indexterm>index (b)</indexterm></keywords>
+    </metadata>
+  </prolog>
+  <body>
+    <p>This topic is <filepath>b/index.dita</filepath>.</p>
+  </body>
+</topic>
