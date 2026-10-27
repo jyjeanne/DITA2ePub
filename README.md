@@ -6,7 +6,7 @@
 [![DITA-OT](https://img.shields.io/badge/DITA--OT-4.4.1-green.svg)](https://www.dita-ot.org/)
 [![EPUB](https://img.shields.io/badge/EPUB-3.3-purple.svg)](https://www.w3.org/publishing/epub3/)
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://adoptium.net/)
-[![Tests](https://img.shields.io/badge/tests-43%20passing-success.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-48%20passing-success.svg)](#testing)
 
 [![CI Build](https://github.com/jyjeanne/dita2epub/actions/workflows/ci.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/ci.yml)
 [![Documentation](https://github.com/jyjeanne/dita2epub/actions/workflows/docs.yml/badge.svg)](https://github.com/jyjeanne/dita2epub/actions/workflows/docs.yml)
@@ -27,7 +27,7 @@
 
 - **Standards-Compliant**: EPUB 3.3 output validated with EPUBCheck, with EPUB Accessibility 1.1 metadata
 - **Professional Output**: Custom cover pages, embedded fonts, optimized images, and typographic features
-- **Production-Ready**: 43 automated tests (unit and end-to-end), EPUBCheck validation with zero errors, CI/CD automation
+- **Production-Ready**: 48 automated tests (unit and end-to-end), EPUBCheck validation with zero errors, CI/CD automation
 - **Developer-Friendly**: XSLT 3.0 modular architecture, Gradle build system, complete documentation
 - **Modern Stack**: Built and tested on DITA-OT 4.4.1, Java 17+, and latest web standards
 
@@ -76,7 +76,7 @@ See [CHANGELOG.md](docs/CHANGELOG.md) for the full list of changes.
 - **Image Optimization**: JPEG quality control, max-width resizing, recursive directory scanning
 - **Typography**: Drop caps, zebra-striped tables, figure/table numbering, locale-aware quotation marks
 - **EPUBCheck 5.3.0 Integration**: Built-in validation with zero errors
-- **Comprehensive Testing**: 42 test methods across 6 test classes
+- **Comprehensive Testing**: 47 test methods across 8 test classes
 
 ### Developer Experience
 - **Gradle Build System**: Modern build configuration with Kotlin DSL
@@ -514,11 +514,12 @@ dita2epub/
 │   │       │   └── epub-fonts.css           # Font declarations
 │   │       └── fonts/          # Font directory (empty template)
 │   └── test/
-│       ├── java/               # Test classes (42 test methods)
+│       ├── java/               # Test classes (47 test methods)
 │       └── resources/
 │           ├── dita/               # Complete English bookmap (18 topics, 10 glossary entries)
 │           ├── dita-kdp/           # Amazon KDP commercial novel
 │           ├── dita-comprehensive/ # Feature-coverage map
+│           ├── dita-edge-cases/    # EPUB 3.3 conformance edge cases
 │           └── epub/               # Reference EPUB for validation
 ├── plugin.xml                  # DITA-OT plugin descriptor
 ├── build-epub3.xml             # Ant build integration
@@ -527,6 +528,7 @@ dita2epub/
     ├── ANATOMY_EPUB_THREE.md   # EPUB 3 file structure reference
     ├── CHANGELOG.md            # Version changelog
     ├── CONTRIBUTING.md         # Contribution guidelines
+    ├── EPUB33_CONFORMANCE.md   # EPUB 3.3 conformance review and open findings
     ├── GITHUB_CHECKLIST.md     # GitHub procedures
     ├── PROJECT_STATUS.md       # Project status and metrics
     ├── QUICKSTART.md           # Quick start guide
@@ -543,8 +545,8 @@ dita2epub/
 
 ### Test Suite Overview
 
-- **42 test methods** (43 test runs) across 6 test classes, all passing against DITA-OT 4.4.1
-- **3 test datasets**: complete English bookmap, Amazon KDP novel, and a comprehensive feature map
+- **47 test methods** (48 test runs) across 8 test classes, all passing against DITA-OT 4.4.1
+- **4 test datasets**: complete English bookmap, Amazon KDP novel, a comprehensive feature map, and EPUB 3.3 edge cases
 - **0 EPUBCheck errors** on generated EPUBs
 
 ### Running Tests
@@ -583,9 +585,11 @@ The sample dataset at `src/test/resources/dita/` is a complete bookmap exercisin
 | Note types | 6 | Default, tip, important, warning, caution, danger |
 | Bookmap features | All | Cover, title page, copyright, TOC, LOF, LOT, glossary, index |
 
-Two more datasets are used by the build and integration tests: `src/test/resources/dita-kdp/` (commercial novel built
-with the KDP platform profile) and `src/test/resources/dita-comprehensive/` (feature-coverage map, including topics
-that share a file name across folders).
+Three more datasets are used by the build and integration tests: `src/test/resources/dita-kdp/` (commercial novel
+built with the KDP platform profile), `src/test/resources/dita-comprehensive/` (feature-coverage map, including topics
+that share a file name across folders), and `src/test/resources/dita-edge-cases/` (inputs behind the
+[EPUB 3.3 conformance review](docs/EPUB33_CONFORMANCE.md): file names that differ only in case, a file name with a
+space, a remote image, a TOC heading cut by `epub.toc.depth`), whose EPUB must pass EPUBCheck with no errors or warnings.
 
 ### Test Coverage
 
@@ -625,7 +629,8 @@ that share a file name across folders).
 
 | Document | Description | Coverage |
 |----------|-------------|----------|
-| **[TEST_COVERAGE.md](docs/TEST_COVERAGE.md)** | Detailed test documentation | 42 test methods across 6 classes |
+| **[TEST_COVERAGE.md](docs/TEST_COVERAGE.md)** | Detailed test documentation | 47 test methods across 8 classes |
+| **[EPUB33_CONFORMANCE.md](docs/EPUB33_CONFORMANCE.md)** | EPUB 3.3 conformance review | Fixed and open findings |
 | **[TEST_SUMMARY.md](docs/TEST_SUMMARY.md)** | Executive test summary | 100% unit test pass rate |
 
 ### Development & CI/CD
