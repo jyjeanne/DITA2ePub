@@ -555,7 +555,7 @@ Parameters are declared in `plugin.xml` and defined with defaults in `epub3-para
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `epub.accessibility` | enum | `wcag-aa` | WCAG level the content targets: `wcag-a`, `wcag-aa`, `wcag-aaa`. Not a conformance claim: declare one with bookmap `<data name="accessibility-conformance">` and `<data name="accessibility-certifier">` |
+| `epub.accessibility` | enum | `wcag-aa` | No effect on the output, kept so existing build scripts keep working (`wcag-a`, `wcag-aa`, `wcag-aaa`). Accessibility metadata is derived from the content; declare a conformance claim with bookmap `<data name="accessibility-conformance">` and `<data name="accessibility-certifier">` |
 | `epub.aria.landmarks` | enum | `yes` | Generate ARIA landmarks: `yes`, `no` |
 | `epub.skip.nav` | enum | `yes` | Include skip navigation links: `yes`, `no` |
 

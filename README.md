@@ -348,7 +348,7 @@ dita --input=mybook.ditamap \
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `epub.version` | string | `3.3` | EPUB specification version (3.3, 3.0, 2.0.1) |
-| `epub.accessibility` | enum | `wcag-aa` | WCAG level the content targets (wcag-a, wcag-aa, wcag-aaa); not a conformance claim, see [Accessibility Metadata](#accessibility-metadata) |
+| `epub.accessibility` | enum | `wcag-aa` | No effect on the output, kept so existing build scripts keep working (wcag-a, wcag-aa, wcag-aaa); accessibility metadata is derived from the content, see [Accessibility Metadata](#accessibility-metadata) |
 | `epub.toc.depth` | integer | `5` | Maximum table of contents depth |
 | `epub.nav.depth` | integer | `5` | Maximum navigation document depth |
 | `epub.aria.landmarks` | enum | `yes` | Generate ARIA landmarks |

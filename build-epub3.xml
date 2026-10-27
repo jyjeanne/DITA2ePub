@@ -19,6 +19,10 @@
       </condition>
     </fail>
 
+    <!-- DITA-OT's preprocessing copy of images into the output folder is not used: epub3.copy.images
+         packages the images itself. That copy also fails on data: URL images -->
+    <property name="build-step.copy-image" value="false"/>
+
     <!-- Set default values for EPUB3 parameters -->
     <property name="epub.version" value="3.3"/>
     <property name="epub.topics.dir" value="content"/>
@@ -344,29 +348,17 @@
     <!-- Get the directory containing the input map -->
     <dirname property="input.dir" file="${args.input}"/>
 
-    <!-- Copy all images from source directory -->
+    <!-- Copy the images the topics reference, keeping their folders: the XSLT transform lists them in
+         .epub-images, the same list as the OPF manifest, so no unlisted file reaches the EPUB -->
     <copy todir="${output.dir}/${epub.images.dir}" failonerror="false" flatten="false">
-      <fileset dir="${input.dir}" erroronmissingdir="false">
-        <include name="**/*.png"/>
-        <include name="**/*.jpg"/>
-        <include name="**/*.jpeg"/>
-        <include name="**/*.gif"/>
-        <include name="**/*.svg"/>
-        <include name="**/*.webp"/>
-      </fileset>
+      <fileset dir="${input.dir}" erroronmissingdir="false" includesfile="${output.dir}/.epub-images"/>
     </copy>
 
     <!-- Also check for images in dita.temp.dir (preprocessed) -->
     <copy todir="${output.dir}/${epub.images.dir}" failonerror="false" flatten="false">
-      <fileset dir="${dita.temp.dir}" erroronmissingdir="false">
-        <include name="**/*.png"/>
-        <include name="**/*.jpg"/>
-        <include name="**/*.jpeg"/>
-        <include name="**/*.gif"/>
-        <include name="**/*.svg"/>
-        <include name="**/*.webp"/>
-      </fileset>
+      <fileset dir="${dita.temp.dir}" erroronmissingdir="false" includesfile="${output.dir}/.epub-images"/>
     </copy>
+    <delete file="${output.dir}/.epub-images" quiet="true"/>
 
     <!-- Copy cover image if specified -->
     <antcall target="epub3.copy.cover"/>

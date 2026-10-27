@@ -24,8 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * EPUB 3.3 conformance on inputs the other datasets never exercise (src/test/resources/dita-edge-cases):
- * topic file names that differ only in case, a file name with a space, a remote image, and a topichead
- * cut by the TOC depth. The EPUB is checked with EPUBCheck itself, plus the OCF file name rules.
+ * topic file names that differ only in case, a file name with a space, a topichead cut by the TOC depth,
+ * remote, data: URL, unreferenced and non-ASCII-named images, and a file: URL link. The EPUB is checked
+ * with EPUBCheck itself, plus the rules EPUBCheck reports only as usage messages or not at all.
  * Requires DITA-OT (see EpubGenerationIntegrationTest).
  *
  * @author J. Jeanne
@@ -81,11 +82,26 @@ class EpubConformanceIntegrationTest {
             assertTrue(names.stream().noneMatch(name -> name.contains(" ")), "File names should not contain spaces: " + names);
             assertTrue(names.contains("content/index.xhtml"), "The generated index should keep its name");
 
-            // The remote image becomes a link, not a reference to a missing local file (EPUB 3.3, 3.6)
+            // Only the images the topics reference are packaged, including names that are not ASCII (5.6.1)
+            assertTrue(names.contains("images/media/used.svg"), "A referenced image should be packaged: " + names);
+            assertTrue(names.contains("images/media/diagramme-é.svg"), "A non-ASCII image name should be packaged: " + names);
+            assertFalse(names.contains("images/media/unused.svg"), "An unreferenced image should not be packaged");
+
             String topic = readEntry(zip, "content/My-Topic.xhtml");
+            // The remote image becomes a link, not a reference to a missing local file (3.6)
             assertTrue(topic.contains("href=\"https://www.w3.org/assets/logos/w3c-2025/svg/w3c.svg\""),
                     "The remote image should be linked");
-            assertFalse(topic.contains("<img"), "The remote image should not be embedded");
+            assertFalse(topic.contains("w3c.svg\" alt"), "The remote image should not be embedded");
+            // A data: URL image stays embedded (3.7), a file: URL link is dropped (3.8)
+            assertTrue(topic.contains("<img src=\"data:image/png;base64,"), "The data: URL image should be embedded");
+            assertFalse(topic.contains("file:"), "file: URLs should not appear");
+
+            // Reflowable pages have no viewport meta, which reading systems must ignore
+            for (String name : names) {
+                if (name.startsWith("content/") && name.endsWith(".xhtml")) {
+                    assertFalse(readEntry(zip, name).contains("name=\"viewport\""), name + " should have no viewport meta");
+                }
+            }
         }
     }
 

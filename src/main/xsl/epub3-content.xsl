@@ -116,12 +116,9 @@
       <head>
         <meta charset="UTF-8"/>
         <title><xsl:value-of select="epub:clean-text($topic-title)"/></title>
+        <!-- Also writes the fixed-layout viewport. Reflowable pages get none: reading systems must ignore
+             it there (EPUB 3.3) -->
         <xsl:call-template name="emit-css-links"/>
-
-        <!-- Accessibility viewport (reflowable only — FXL viewport is emitted by emit-css-links) -->
-        <xsl:if test="not($is-fixed-layout) and normalize-space($epub.accessibility) != '' and not(lower-case($epub.accessibility) = ('no', 'false', '0', 'none'))">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        </xsl:if>
       </head>
       <body>
         <!-- Skip navigation link for accessibility -->
@@ -496,6 +493,9 @@
   <!-- Transform DITA xref to HTML a -->
   <xsl:template match="*[contains(@class, ' topic/xref ')] | xref" mode="topic-content">
     <xsl:variable name="target" select="epub:get-xref-href(.)"/>
+    <xsl:if test="epub:is-file-url(@href)">
+      <xsl:message>[WARN] Link to a file: URL kept as text, because EPUB does not allow file URLs: <xsl:value-of select="@href"/></xsl:message>
+    </xsl:if>
     <xsl:choose>
       <xsl:when test="$target != ''">
         <a xmlns="http://www.w3.org/1999/xhtml" href="{$target}">
@@ -533,9 +533,11 @@
   <xsl:template match="*[contains(@class, ' topic/image ')][epub:is-remote-image(.)]" mode="topic-content" priority="20">
     <xsl:variable name="alt-text" select="normalize-space((@alt, *[contains(@class, ' topic/alt ')])[1])"/>
     <xsl:message>[WARN] Remote image replaced by a link, because EPUB requires images inside the publication: <xsl:value-of select="@href"/></xsl:message>
-    <!-- Inside a cross-reference the text alone is kept: links cannot be nested -->
-    <xsl:element name="{if (ancestor::*[contains(@class, ' topic/xref ')]) then 'span' else 'a'}" namespace="http://www.w3.org/1999/xhtml">
-      <xsl:if test="not(ancestor::*[contains(@class, ' topic/xref ')])">
+    <!-- The text alone is kept inside a cross-reference (links cannot be nested) and for file: URLs,
+         which EPUB 3.3 forbids -->
+    <xsl:variable name="as-link" select="not(ancestor::*[contains(@class, ' topic/xref ')]) and not(epub:is-file-url(@href))"/>
+    <xsl:element name="{if ($as-link) then 'a' else 'span'}" namespace="http://www.w3.org/1999/xhtml">
+      <xsl:if test="$as-link">
         <xsl:attribute name="href" select="@href"/>
         <xsl:attribute name="rel">noopener noreferrer</xsl:attribute>
       </xsl:if>
@@ -547,7 +549,7 @@
 
   <!-- Transform DITA image to HTML img -->
   <xsl:template match="*[contains(@class, ' topic/image ')]" mode="topic-content">
-    <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', epub:get-image-path(.)))"/>
+    <xsl:variable name="image-path" select="epub:get-image-src(.)"/>
     <xsl:variable name="is-decorative" select="@outputclass = 'decorative' or @alt = ''"/>
     <!-- Alt text: DITA 1.2+ <alt> element, or the older @alt attribute -->
     <xsl:variable name="alt-text" select="(@alt, *[contains(@class, ' topic/alt ')])[1]"/>
@@ -874,7 +876,7 @@
 
   <!-- Image inside fig: no wrapping figure element -->
   <xsl:template match="*[contains(@class, ' topic/fig ')]//*[contains(@class, ' topic/image ')]" mode="topic-content" priority="15">
-    <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', epub:get-image-path(.)))"/>
+    <xsl:variable name="image-path" select="epub:get-image-src(.)"/>
     <xsl:variable name="is-decorative" select="@outputclass = 'decorative' or @alt = ''"/>
     <xsl:variable name="alt-text" select="(@alt, *[contains(@class, ' topic/alt ')])[1]"/>
     <img xmlns="http://www.w3.org/1999/xhtml" src="{$image-path}">
@@ -904,12 +906,21 @@
       <xsl:apply-templates select="node()" mode="topic-content"/>
       <xsl:if test="@href or *[contains(@class, ' topic/longquoteref ')]">
         <footer class="quote-attribution">
-          <xsl:variable name="source-href" select="(@href, *[contains(@class, ' topic/longquoteref ')]/@href)[1]"/>
-          <xsl:variable name="source-label" select="if (@reftitle and string-length(@reftitle) > 0) then @reftitle else $source-href"/>
+          <!-- Resolved like a cross-reference: a source outside the publication or a file: URL stays text -->
+          <xsl:variable name="source" select="(self::*[@href], *[contains(@class, ' topic/longquoteref ')][@href])[1]"/>
+          <xsl:variable name="source-href" select="if ($source) then epub:get-xref-href($source) else ''"/>
+          <xsl:variable name="source-label" select="if (@reftitle and string-length(@reftitle) > 0) then @reftitle else $source/@href"/>
           <cite>
-            <a href="{$source-href}" rel="noopener noreferrer">
-              <xsl:value-of select="$source-label"/>
-            </a>
+            <xsl:choose>
+              <xsl:when test="$source-href != ''">
+                <a href="{$source-href}" rel="noopener noreferrer">
+                  <xsl:value-of select="$source-label"/>
+                </a>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$source-label"/>
+              </xsl:otherwise>
+            </xsl:choose>
           </cite>
         </footer>
       </xsl:if>

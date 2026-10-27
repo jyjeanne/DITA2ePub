@@ -414,11 +414,87 @@
   </xsl:function>
 
   <!-- True when an image lives outside the publication (http:, https:..., or scope="external").
-       EPUB 3.3 (3.6) only allows audio, video, fonts and scripts to be remote, so it cannot be embedded -->
+       EPUB 3.3 (3.6) only allows audio, video, fonts and scripts to be remote, so it cannot be embedded.
+       A data: URL is never remote, although DITA-OT marks it scope="external" -->
   <xsl:function name="epub:is-remote-image" as="xs:boolean">
     <xsl:param name="image" as="element()"/>
-    <xsl:sequence select="$image/@scope = 'external'
-      or (matches($image/@href, '^[a-zA-Z][a-zA-Z0-9+.\-]*:') and not(starts-with($image/@href, 'data:')))"/>
+    <xsl:sequence select="not(starts-with($image/@href, 'data:'))
+      and ($image/@scope = 'external' or matches($image/@href, '^[a-zA-Z][a-zA-Z0-9+.\-]*:'))"/>
+  </xsl:function>
+
+  <!-- src of an image in a content document: a data: URL stays as it is (EPUB 3.3, 3.7 allows it for
+       core media types), any other image is referenced in the images directory -->
+  <xsl:function name="epub:get-image-src" as="xs:string">
+    <xsl:param name="image" as="element()"/>
+    <xsl:choose>
+      <xsl:when test="starts-with($image/@href, 'data:')">
+        <xsl:if test="not(matches($image/@href, '^data:image/(gif|jpeg|png|svg\+xml|webp)[;,]', 'i'))">
+          <xsl:message>[WARN] Image data: URL is not a core media type (GIF, JPEG, PNG, SVG, WebP), which EPUB requires: <xsl:value-of select="substring($image/@href, 1, 40)"/>...</xsl:message>
+        </xsl:if>
+        <xsl:sequence select="string($image/@href)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:sequence select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', epub:get-image-path($image)))"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+  <!-- True for file: URLs, which EPUB 3.3 (3.8) forbids anywhere in a publication -->
+  <xsl:function name="epub:is-file-url" as="xs:boolean">
+    <xsl:param name="href" as="xs:string?"/>
+    <xsl:sequence select="matches(normalize-space($href), '^file:', 'i')"/>
+  </xsl:function>
+
+  <!-- Local images of the content topics, as paths relative to the root map, in document order: the
+       manifest lists them and the Ant build copies exactly these (EPUB 3.3, 5.6.1). Remote images and
+       data: URLs are not files of the publication -->
+  <xsl:function name="epub:get-image-paths" as="xs:string*">
+    <xsl:param name="topicrefs" as="element()*"/>
+    <xsl:sequence select="distinct-values(
+      for $ref in $topicrefs, $image in epub:topic-document($ref)//*[contains(@class, ' topic/image ')][@href]
+                                           [not(epub:is-remote-image(.))][not(starts-with(@href, 'data:'))]
+      return epub:get-image-path($image))"/>
+  </xsl:function>
+
+  <!-- File system form of a URI path: percent-encoded UTF-8 decoded (my%20image.png -> my image.png) -->
+  <xsl:function name="epub:decode-uri-path" as="xs:string">
+    <xsl:param name="path" as="xs:string"/>
+    <xsl:variable name="parts" as="xs:string*">
+      <xsl:analyze-string select="$path" regex="(%[0-9A-Fa-f]{{2}})+">
+        <xsl:matching-substring>
+          <xsl:try>
+            <xsl:sequence select="codepoints-to-string(epub:utf8-codepoints(
+              for $hex in tokenize(substring(., 2), '%') return epub:hex-value(upper-case($hex))))"/>
+            <xsl:catch select="."/>
+          </xsl:try>
+        </xsl:matching-substring>
+        <xsl:non-matching-substring>
+          <xsl:sequence select="."/>
+        </xsl:non-matching-substring>
+      </xsl:analyze-string>
+    </xsl:variable>
+    <xsl:sequence select="string-join($parts)"/>
+  </xsl:function>
+
+  <!-- Value of a two-digit uppercase hexadecimal number -->
+  <xsl:function name="epub:hex-value" as="xs:integer">
+    <xsl:param name="hex" as="xs:string"/>
+    <xsl:sequence select="string-length(substring-before('0123456789ABCDEF', substring($hex, 1, 1))) * 16
+                          + string-length(substring-before('0123456789ABCDEF', substring($hex, 2, 1)))"/>
+  </xsl:function>
+
+  <!-- Code points encoded by a sequence of UTF-8 bytes -->
+  <xsl:function name="epub:utf8-codepoints" as="xs:integer*">
+    <xsl:param name="bytes" as="xs:integer*"/>
+    <xsl:if test="exists($bytes)">
+      <xsl:variable name="lead" select="$bytes[1]"/>
+      <xsl:variable name="length" select="if ($lead lt 128) then 1 else if ($lead lt 224) then 2 else if ($lead lt 240) then 3 else 4"/>
+      <xsl:sequence select="
+        fold-left(subsequence($bytes, 2, $length - 1),
+                  if ($length = 1) then $lead else $lead mod (if ($length = 2) then 32 else if ($length = 3) then 16 else 8),
+                  function($codepoint, $byte) { $codepoint * 64 + $byte mod 64 }),
+        epub:utf8-codepoints(subsequence($bytes, $length + 1))"/>
+    </xsl:if>
   </xsl:function>
 
   <!-- Path of an image inside the EPUB images directory. The Ant build copies images with their
@@ -456,7 +532,7 @@
     <xsl:variable name="href" select="normalize-space($xref/@href)"/>
     <xsl:variable name="same-file" select="starts-with($href, '#')"/>
     <xsl:choose>
-      <xsl:when test="$href = ''">
+      <xsl:when test="$href = '' or epub:is-file-url($href)">
         <xsl:sequence select="''"/>
       </xsl:when>
       <xsl:when test="$xref/@scope = 'external' or matches($href, '^[a-zA-Z][a-zA-Z0-9+.\-]*:')">

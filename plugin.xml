@@ -39,7 +39,7 @@
            desc="Directory name for CSS files"
            type="string">styles</param>
     <param name="epub.accessibility"
-           desc="WCAG level the content targets (not a conformance claim; declare one in the bookmap)"
+           desc="No effect, kept for existing build scripts (accessibility metadata is derived from the content)"
            type="enum">
       <val>wcag-a</val>
       <val default="true">wcag-aa</val>

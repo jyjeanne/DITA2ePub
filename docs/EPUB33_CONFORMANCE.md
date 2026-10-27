@@ -8,7 +8,7 @@ Review of the DITA2ePub output against the creator requirements of
 |---|---|
 | **Plugin version** | 2.0.0 |
 | **Review date** | 2026-10-27 |
-| **Last update** | 2026-10-27 — C1 to C5 fixed |
+| **Last update** | 2026-10-27 — C1 to C6, S1, S2 and S9 fixed |
 | **Validator** | EPUBCheck 5.3.0, also run with `--usage` |
 
 ## Method
@@ -28,10 +28,12 @@ Review of the DITA2ePub output against the creator requirements of
 
 | Level | Found | Fixed | Open |
 |-------|-------|-------|------|
-| MUST  | 6     | 5     | 1    |
-| SHOULD / recommended | 9 | 0 | 9 |
+| MUST  | 6     | 6     | 0    |
+| SHOULD / recommended | 9 | 3 | 6 |
 
-All builds above pass EPUBCheck with 0 errors and 0 warnings, including the edge-case map.
+All builds above pass EPUBCheck with 0 errors and 0 warnings, including the edge-case map. The user guide
+and the test datasets also have no usage messages (`--usage`); the edge-case map has one, `PKG-012`, for
+its deliberately non-ASCII image name.
 
 ## Findings
 
@@ -46,21 +48,21 @@ Levels: **MUST** = conformance requirement, **SHOULD** = recommendation. Status:
 | C3 | Manifest item ids were the file name without extension, so `My Topic.dita` gave `id="My Topic"`, an invalid XML name. | 5.3: valid `id` values | **Fixed** | Ids are XML names, unique, and distinct from the plugin's own items (`ncx`, `nav`, `css-*`, `image-*`…). Was EPUBCheck `RSC-005`. Tested by `EpubConformanceIntegrationTest`. |
 | C4 | When `epub.toc.depth` cut below a topichead, the navigation document had an `li` with a `span` and no nested `ol`. | 7.3: a `span` label needs a nested `ol` | **Fixed** | At the depth limit, a heading without content of its own links to its first topic. Was EPUBCheck `RSC-005`. Tested by `EpubConformanceIntegrationTest` (`epub.toc.depth=1`). |
 | C5 | A remote image (`scope="external"`, `https:`) became a reference to a missing local file. | 3.6: only audio, video, fonts and scripts may be remote | **Fixed** | Rendered as a link to the image, labelled with its alt text (text only inside a cross-reference), with a build warning; left out of the manifest and of the accessibility image count. Was EPUBCheck `RSC-007`. Tested by `EpubConformanceIntegrationTest`. |
-| C6 | `file:` URLs in cross-references are kept as links. | 3.8: no `file:` URLs | Open | Treat them as unresolvable (text only), like links to resources outside the publication. |
+| C6 | `file:` URLs in cross-references were kept as links. | 3.8: no `file:` URLs | **Fixed** | Cross-references, related links and long-quote sources with a `file:` URL keep their text without a link, with a build warning; a remote image with a `file:` URL is not linked either. Was EPUBCheck `RSC-030`. Tested by `EpubConformanceIntegrationTest`. |
 
 ### SHOULD / recommended
 
 | ID | Finding | EPUB 3.3 | Status | Evidence / suggestion |
 |----|---------|----------|--------|-----------------------|
-| S1 | Every reflowable page has `<meta name="viewport" content="width=device-width…">`, which reading systems must ignore. | 8.2 (viewport is for fixed layout) | Open | EPUBCheck usage `HTM_060b` (234× in the user guide). Write it for fixed layout only. |
-| S2 | The image copy step packages every image under the map folder, referenced or not. | 5.6.1 | Open | EPUBCheck usage `OPF-003` (2 SVGs in the user guide, unused covers in the datasets). Copy referenced images only. |
+| S1 | Every reflowable page had `<meta name="viewport" content="width=device-width…">`, which reading systems must ignore. | 8.2 (viewport is for fixed layout) | **Fixed** | Only fixed-layout pages get a viewport. Was EPUBCheck usage `HTM_060b` (234× in the user guide). As a result `epub.accessibility` no longer affects the output. Tested by `EpubConformanceIntegrationTest`. |
+| S2 | The image copy step packaged every image under the map folder, referenced or not. | 5.6.1 | **Fixed** | The transform lists the images it puts in the manifest (`.epub-images`, file system paths decoded from URIs); the Ant build copies exactly those. DITA-OT's own copy of images into the output folder is switched off (`build-step.copy-image=false`). Was EPUBCheck usage `OPF-003`. Tested by `EpubConformanceIntegrationTest` (unreferenced and non-ASCII-named images). |
 | S3 | ISBNs are written as plain strings. | 5.5.3.1: identifiers SHOULD be URLs or URNs | Open | Write `urn:isbn:9780134685991`. This changes the identifier, so the obfuscation key and NCX uid too. |
 | S4 | The subtitle is a second `dc:title` with `title-type`. | 5.5.3.1: SHOULD use a single `dc:title` | Open | `title-type` is valid but poorly supported by reading systems; consider "Title: Subtitle". |
 | S5 | BISAC codes are written as the subject text (`COM051360`). | 5.5.3.2: human-readable subjects; codes via `authority` + `term` (Example 94) | Open | `<dc:subject>COMPUTERS / …</dc:subject>` refined by `authority` = `BISAC` and `term` = the code. |
 | S6 | XHTML documents declare `<!DOCTYPE html SYSTEM "about:legacy-compat">`. | 3.9 and Appendix B: no external identifier is listed for XHTML | Open | EPUBCheck accepts it; `<!DOCTYPE html>` is the unambiguous form. Low risk. |
 | S7 | The `package` element has no `dir`. | 5.2: SHOULD set directionality | Open | Matters for RTL titles only; `page-progression-direction` and per-page `dir` are already set. |
 | S8 | `belongs-to-collection` has no `dcterms:identifier` refinement. | D.3 vocabulary | Open | Only when a series identifier is known. |
-| S9 | An image with a `data:` URL is treated as a local file, so its `src` is broken. | 3.7: data URLs are allowed in `img` | Open | Keep `data:` URLs as they are. |
+| S9 | An image with a `data:` URL was treated as a local file, so its `src` was broken; DITA-OT preprocessing also failed on it. | 3.7: data URLs are allowed in `img` | **Fixed** | The `data:` URL is kept as the `src` (a build warning flags non-core media types), and it is never treated as a remote image although DITA-OT marks it `scope="external"`. The preprocessing failure came from DITA-OT's image copy, now switched off (see S2). Tested by `EpubConformanceIntegrationTest`. |
 
 ## Verified compliant
 

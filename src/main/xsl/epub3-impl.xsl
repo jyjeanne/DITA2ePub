@@ -72,6 +72,14 @@
     "/>
     <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)[not($consolidate-glossary and ancestor::*[contains(@class, ' bookmap/glossarylist ')])]"/>
 
+    <!-- Images to package, for the Ant copy step: one file system path per line, relative to the root
+         map. The first line matches no file, because a fileset whose includes file has no pattern at
+         all would include every file -->
+    <xsl:variable name="image-paths" select="epub:get-image-paths($all-topicrefs)"/>
+    <xsl:result-document href=".epub-images" method="text" encoding="UTF-8">
+      <xsl:value-of select="'.no-images-placeholder', $image-paths ! epub:decode-uri-path(.)" separator="&#10;"/>
+    </xsl:result-document>
+
     <!-- Determine if index should be generated -->
     <xsl:variable name="has-indexlist" select="exists($map//*[contains(@class, ' bookmap/indexlist ')])"/>
     <xsl:variable name="generate-index" select="
@@ -234,18 +242,8 @@
                   media-type="application/xhtml+xml"/>
           </xsl:if>
 
-          <!-- Add images referenced in topics - load each topic document and scan for image elements -->
-          <xsl:variable name="all-image-paths" as="xs:string*">
-            <xsl:for-each select="$all-topicrefs[@href]">
-              <xsl:variable name="topic-doc" select="epub:topic-document(.)"/>
-              <xsl:if test="$topic-doc">
-                <xsl:for-each select="$topic-doc//*[contains(@class, ' topic/image ')][@href][not(epub:is-remote-image(.))]">
-                  <xsl:sequence select="epub:get-image-path(.)"/>
-                </xsl:for-each>
-              </xsl:if>
-            </xsl:for-each>
-          </xsl:variable>
-          <xsl:for-each select="distinct-values($all-image-paths)">
+          <!-- Images referenced in topics (the same list the Ant build copies) -->
+          <xsl:for-each select="$image-paths">
             <xsl:variable name="image-filename" select="tokenize(., '/')[last()]"/>
             <xsl:variable name="image-id" select="concat('image-', replace(., '[^A-Za-z0-9_-]', '-'))"/>
             <xsl:variable name="image-path" select="epub:get-relative-path($epub.topics.dir, concat($epub.images.dir, '/', .))"/>

@@ -4,7 +4,8 @@
      - topic file names that differ only in case (a/Index, c/Readme, d/readme), and a name that
        matches a generated page (b/index vs. index.xhtml when the index is generated)
      - a file name with a space (My Topic.dita)
-     - a remote image (in My Topic.dita)
+     - in My Topic.dita: a remote image, a data: URL image, a link to a file: URL, a referenced local image
+       next to an unreferenced one (media/unused.svg), and an image whose file name is not ASCII
      - a topichead, which the navigation document cannot list as a heading when epub.toc.depth=1 -->
 <map xml:lang="en">
   <title>EPUB conformance edge cases</title>
