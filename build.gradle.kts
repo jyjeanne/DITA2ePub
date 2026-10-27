@@ -224,6 +224,7 @@ tasks.named("check") {
 fun Zip.configurePluginContents() {
     dependsOn(epubPackagerJar, verifyPluginVersion)
     from(projectDir) {
+        include("LICENSE")
         include("plugin.xml")
         include("plugin-info.xml")
         include("build-epub3.xml")
