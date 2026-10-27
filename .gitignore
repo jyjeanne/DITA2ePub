@@ -51,6 +51,8 @@ out/
 
 # EPUB output
 *.epub
+# except the reference EPUBs of the tests
+!src/test/resources/epub/*.epub
 
 # Logs
 *.log
