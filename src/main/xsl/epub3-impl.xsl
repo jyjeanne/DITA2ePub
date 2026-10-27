@@ -1251,20 +1251,7 @@
 
     <xsl:message>Generating NCX table of contents...</xsl:message>
 
-    <!-- Pre-compute flat list of all topicrefs WITH @href in document order for unique playOrder.
-         Only topicrefs with @href get their own playOrder number; containers without @href
-         share their first child's playOrder to avoid "different playOrder for same target" errors. -->
-    <xsl:variable name="all-valid-ncx-topicrefs" select="$map//*[contains(@class, ' map/topicref ')][
-      not(@processing-role = 'resource-only') and
-      not(contains(@class, ' bookmap/booklists ')) and
-      not(contains(@class, ' bookmap/toc ')) and
-      not(contains(@class, ' bookmap/figurelist ')) and
-      not(contains(@class, ' bookmap/tablelist ')) and
-      not(contains(@class, ' bookmap/indexlist ')) and
-      not(contains(@class, ' bookmap/glossarylist ')) and
-      not(ancestor::*[contains(@class, ' bookmap/glossarylist ')]) and
-      epub:is-content-topicref(.)
-    ]"/>
+    <xsl:variable name="play-order-targets" select="epub:ncx-play-order-targets($map)"/>
 
     <!-- NCX must be at root level for compatibility with older readers like Calibre -->
     <xsl:result-document href="toc.ncx"
@@ -1295,7 +1282,7 @@
                 /*[contains(@class, ' map/topicref ')]
             "/>
             <xsl:with-param name="depth" select="1"/>
-            <xsl:with-param name="all-valid" select="$all-valid-ncx-topicrefs"/>
+            <xsl:with-param name="play-order-targets" select="$play-order-targets"/>
           </xsl:call-template>
         </navMap>
       </ncx>
@@ -1304,11 +1291,33 @@
     <xsl:message>NCX table of contents generated.</xsl:message>
   </xsl:template>
 
-  <!-- Generate NCX navPoints recursively with unique playOrder values -->
+  <!-- Reading order of the NCX targets: the link of every content topicref in document order, each
+       target once. Navigation points to the same target must share their playOrder (EPUBCheck RSC-005),
+       so a topic referenced twice keeps the playOrder of its first reference, and a heading without
+       content of its own takes the one of its first topic -->
+  <xsl:function name="epub:ncx-play-order-targets" as="xs:string*">
+    <xsl:param name="map" as="element()"/>
+    <xsl:for-each-group select="$map//*[contains(@class, ' map/topicref ')][
+      not(@processing-role = 'resource-only') and
+      not(contains(@class, ' bookmap/booklists ')) and
+      not(contains(@class, ' bookmap/toc ')) and
+      not(contains(@class, ' bookmap/figurelist ')) and
+      not(contains(@class, ' bookmap/tablelist ')) and
+      not(contains(@class, ' bookmap/indexlist ')) and
+      not(contains(@class, ' bookmap/glossarylist ')) and
+      not(ancestor::*[contains(@class, ' bookmap/glossarylist ')]) and
+      epub:is-content-topicref(.)
+    ]" group-by="epub:get-topicref-link(.)">
+      <xsl:sequence select="current-grouping-key()"/>
+    </xsl:for-each-group>
+  </xsl:function>
+
+  <!-- Generate NCX navPoints recursively; the playOrder of a navPoint is the position of its target
+       in $play-order-targets -->
   <xsl:template name="generate-ncx-navpoints">
     <xsl:param name="topicrefs" as="element()*"/>
     <xsl:param name="depth" as="xs:integer"/>
-    <xsl:param name="all-valid" as="element()*"/>
+    <xsl:param name="play-order-targets" as="xs:string*"/>
 
     <!-- Filter out booklists/frontmatter elements -->
     <xsl:variable name="valid-topicrefs" select="$topicrefs[
@@ -1325,14 +1334,12 @@
 
     <xsl:if test="$valid-topicrefs and $depth &lt;= $epub.toc.depth">
       <xsl:for-each select="$valid-topicrefs">
-        <!-- Use position in the pre-computed flat list for unique playOrder.
-             When a container has no content of its own, use the same playOrder as its first
-             content descendant to avoid "different playOrder values for same target" NCX errors. -->
+        <!-- A container without content of its own links to its first content descendant -->
         <xsl:variable name="first-content" select="(.//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])[1]"/>
-        <xsl:variable name="play-order-target" select="if (epub:is-content-topicref(.)) then . else $first-content"/>
-        <xsl:variable name="play-order" select="count($all-valid[. &lt;&lt; $play-order-target]) + 1"/>
+        <xsl:variable name="target" select="epub:get-topicref-link(if (epub:is-content-topicref(.)) then . else $first-content)"/>
 
-        <navPoint xmlns="http://www.daisy.org/z3986/2005/ncx/" id="navpoint-{generate-id(.)}" playOrder="{$play-order}">
+        <navPoint xmlns="http://www.daisy.org/z3986/2005/ncx/" id="navpoint-{generate-id(.)}"
+                  playOrder="{index-of($play-order-targets, $target)[1]}">
           <navLabel>
             <text>
               <xsl:call-template name="get-navtitle">
@@ -1340,22 +1347,14 @@
               </xsl:call-template>
             </text>
           </navLabel>
-          <xsl:choose>
-            <xsl:when test="epub:is-content-topicref(.)">
-              <content src="{concat($epub.topics.dir, '/', epub:get-topicref-link(.))}"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <!-- For containers without content of their own, link to the first content descendant -->
-              <content src="{concat($epub.topics.dir, '/', epub:get-topicref-link($first-content))}"/>
-            </xsl:otherwise>
-          </xsl:choose>
+          <content src="{concat($epub.topics.dir, '/', $target)}"/>
 
           <!-- Process nested topicrefs -->
           <xsl:if test="*[contains(@class, ' map/topicref ')]">
             <xsl:call-template name="generate-ncx-navpoints">
               <xsl:with-param name="topicrefs" select="*[contains(@class, ' map/topicref ')]"/>
               <xsl:with-param name="depth" select="$depth + 1"/>
-              <xsl:with-param name="all-valid" select="$all-valid"/>
+              <xsl:with-param name="play-order-targets" select="$play-order-targets"/>
             </xsl:call-template>
           </xsl:if>
         </navPoint>
