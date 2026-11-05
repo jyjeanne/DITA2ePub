@@ -16,6 +16,7 @@
         "req": ">=4.4.0"
       }
     ],
-    "url": "https://github.com/jyjeanne/dita2epub/releases/download/v2.1.0/io.github.jyjeanne.dita2epub-2.1.0.zip"
+    "url": "https://github.com/jyjeanne/DITA2ePub/releases/download/v2.1.0/io.github.jyjeanne.dita2epub-2.1.0.zip",
+    "cksum": "9219921d022601061cd1d0f3574a245bc8858aa6b2515625faed0805b8da3f09"
   }
 ]
