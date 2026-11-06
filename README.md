@@ -811,6 +811,11 @@ You may obtain a copy of the License at
     http://www.apache.org/licenses/LICENSE-2.0
 ```
 
+### Trademarks
+
+Amazon Kindle Direct Publishing (KDP), Apple Books and Kobo are trademarks of their respective owners. DITA2ePub is an
+independent project and is not affiliated with or endorsed by them.
+
 ---
 
 ## Acknowledgments
