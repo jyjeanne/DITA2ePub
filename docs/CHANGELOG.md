@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Table of contents headings link to their first topic**: a heading without content of its own (a `topichead`)
+  was written as a `<span>` above its nested list. EPUB 3.3 allows it, but calibre shows the entry as a link and
+  reports that the destination does not exist. The heading now links to its first topic at every depth, as it
+  already did at the `epub.toc.depth` limit and in the NCX
+
 ## [2.1.0] - 2026-10-27
 
 Publications made of many maps, folders and topic types now build as valid EPUB 3.3: the DITA-OT 4.4.1 user guide

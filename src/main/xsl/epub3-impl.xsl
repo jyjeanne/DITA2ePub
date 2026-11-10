@@ -694,22 +694,17 @@
                   </xsl:call-template>
                 </a>
               </xsl:when>
-              <!-- A heading without content of its own needs a nested list (EPUB 3.3, 7.3): at the
-                   depth limit, where its entries are not listed, link it to its first topic instead -->
-              <xsl:when test="$depth ge $epub.toc.depth">
+              <!-- A heading without content of its own (topichead, titled topicgroup) links to its
+                   first topic, as in the NCX. EPUB 3.3 (7.3) also allows a span label above a nested
+                   list, but reading systems such as calibre show it as a link to a missing destination;
+                   and at the depth limit a span would have no nested list at all. -->
+              <xsl:otherwise>
                 <a xmlns="http://www.w3.org/1999/xhtml"
                    href="{epub:get-topicref-link((.//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])[1])}">
                   <xsl:call-template name="get-navtitle">
                     <xsl:with-param name="topicref" select="."/>
                   </xsl:call-template>
                 </a>
-              </xsl:when>
-              <xsl:otherwise>
-                <span xmlns="http://www.w3.org/1999/xhtml">
-                  <xsl:call-template name="get-navtitle">
-                    <xsl:with-param name="topicref" select="."/>
-                  </xsl:call-template>
-                </span>
               </xsl:otherwise>
             </xsl:choose>
 
