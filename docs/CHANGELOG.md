@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   was written as a `<span>` above its nested list. EPUB 3.3 allows it, but calibre shows the entry as a link and
   reports that the destination does not exist. The heading now links to its first topic at every depth, as it
   already did at the `epub.toc.depth` limit and in the NCX
+- **Images with non-ASCII file names on Windows**: with Java 17 on Windows, an image such as `diagramme-é.svg` was
+  listed in the OPF manifest but not copied into the EPUB (EPUBCheck `RSC-001`), because the build read the
+  UTF-8 list of images in the system charset. The list, and the identifier read for font obfuscation, are now
+  read as UTF-8
 
 ## [2.1.0] - 2026-10-27
 
