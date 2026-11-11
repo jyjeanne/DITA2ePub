@@ -12,6 +12,12 @@ jobs:
     name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
+    # Publish Test Results creates a check run and a pull request comment
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -59,7 +65,7 @@ jobs:
         files: build/test-results/**/*.xml
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: build-artifacts-${{ matrix.os }}-java${{ matrix.java }}
@@ -69,7 +75,7 @@ jobs:
         retention-days: 7
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results-${{ matrix.os }}-java${{ matrix.java }}
@@ -97,7 +103,7 @@ jobs:
       run: ./gradlew checkstyleMain checkstyleTest || true
 
     - name: Upload code quality reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: code-quality-reports
