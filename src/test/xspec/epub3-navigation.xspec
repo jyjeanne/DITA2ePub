@@ -21,13 +21,13 @@
       <x:call>
         <x:param name="depth" select="1"/>
       </x:call>
-      <x:expect label="lists the topics, nested as in the map, with headings as text, and leaves out key definitions, external links, missing topics and book lists">
+      <x:expect label="lists the topics, nested as in the map, links a heading without content to its first topic, and leaves out key definitions, external links, missing topics and book lists">
         <ol xmlns="http://www.w3.org/1999/xhtml">
           <li><a href="intro.xhtml">Introduction</a>
             <ol><li><a href="guide-install.xhtml">Installing</a></li></ol>
           </li>
           <li><a href="reference-install.xhtml">Installation reference</a></li>
-          <li><span>More topics</span>
+          <li><a href="reference-Intro.xhtml">More topics</a>
             <ol>
               <li><a href="reference-Intro.xhtml">Reference introduction</a></li>
               <li><a href="topic-index.xhtml">Index of commands</a></li>
