@@ -349,14 +349,20 @@
     <dirname property="input.dir" file="${args.input}"/>
 
     <!-- Copy the images the topics reference, keeping their folders: the XSLT transform lists them in
-         .epub-images, the same list as the OPF manifest, so no unlisted file reaches the EPUB -->
+         .epub-images, the same list as the OPF manifest, so no unlisted file reaches the EPUB. The list is
+         UTF-8: read with the default charset (windows-1252 on Windows with Java 17), a non-ASCII file name
+         matches nothing, and the manifest then lists a missing image -->
     <copy todir="${output.dir}/${epub.images.dir}" failonerror="false" flatten="false">
-      <fileset dir="${input.dir}" erroronmissingdir="false" includesfile="${output.dir}/.epub-images"/>
+      <fileset dir="${input.dir}" erroronmissingdir="false">
+        <includesfile name="${output.dir}/.epub-images" encoding="UTF-8"/>
+      </fileset>
     </copy>
 
     <!-- Also check for images in dita.temp.dir (preprocessed) -->
     <copy todir="${output.dir}/${epub.images.dir}" failonerror="false" flatten="false">
-      <fileset dir="${dita.temp.dir}" erroronmissingdir="false" includesfile="${output.dir}/.epub-images"/>
+      <fileset dir="${dita.temp.dir}" erroronmissingdir="false">
+        <includesfile name="${output.dir}/.epub-images" encoding="UTF-8"/>
+      </fileset>
     </copy>
     <delete file="${output.dir}/.epub-images" quiet="true"/>
 
@@ -501,8 +507,8 @@
   <target name="epub3.obfuscate.fonts.do" if="should.obfuscate.fonts">
     <echo message="Obfuscating embedded fonts..."/>
 
-    <!-- Read the unique identifier written by XSLT -->
-    <loadfile property="epub.unique.identifier" srcFile="${output.dir}/.epub-identifier"/>
+    <!-- Read the unique identifier written by XSLT, in UTF-8 like .epub-images -->
+    <loadfile property="epub.unique.identifier" srcFile="${output.dir}/.epub-identifier" encoding="UTF-8"/>
 
     <java classname="io.github.jyjeanne.dita2epub.FontObfuscator"
           classpath="${dita.plugin.io.github.jyjeanne.dita2epub.dir}/lib/epub-packager.jar"
