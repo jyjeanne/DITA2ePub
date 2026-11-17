@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Map as DITA-OT preprocessing leaves it, with entries that lead to no content before the first
+     chapter: subject definitions merged from a subject scheme, and a resource-only key definition.
+     A referenced map's content sits in a group without a title, and a heading groups two topics. -->
+<map class="- map/map " id="numbering" xml:lang="en-US">
+  <title class="- topic/title ">Numbering</title>
+  <subjectdef class="- map/topicref subjectScheme/subjectdef " keys="subjects">
+    <subjectdef class="- map/topicref subjectScheme/subjectdef " keys="varroa"/>
+  </subjectdef>
+  <keydef class="+ map/topicref mapgroup-d/keydef " keys="shared" href="../shared.dita" processing-role="resource-only"/>
+  <topicgroup class="+ map/topicref mapgroup-d/topicgroup ">
+    <topichead class="+ map/topicref mapgroup-d/topichead ">
+      <topicmeta class="- map/topicmeta "><navtitle class="- topic/navtitle ">Getting started</navtitle></topicmeta>
+      <topicref class="- map/topicref " href="../intro.dita"/>
+      <topicref class="- map/topicref " href="../2-start.dita"/>
+    </topichead>
+  </topicgroup>
+  <topicref class="- map/topicref " href="../reference/install.dita">
+    <topicref class="- map/topicref " href="../guide/install.dita"/>
+  </topicref>
+</map>

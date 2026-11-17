@@ -9,10 +9,14 @@
   <!--
     EPUB3 Back-of-Book Index Generation
 
-    Collects <indexterm> elements from all DITA topics, groups them
-    alphabetically, and generates index.xhtml with EPUB 3 semantic markup.
-    Locators use chapter.section numbers (e.g., "6.2") with precise anchor
-    links that jump directly to the indexterm location in content.
+    Collects <indexterm> elements from all DITA topics, groups them by initial letter, and
+    generates index.xhtml with EPUB 3 semantic markup. Groups and entries follow the collation
+    of the publication's language: in French, "élevage" belongs to E; in Swedish, "Å" comes
+    after "Z".
+
+    Each locator links to the first index anchor of a topic, and is labeled with the topic's
+    position in the reading order: "3" for a chapter, "3.2" for the second topic under it,
+    "A.1" in an appendix. Only entries that lead to content are numbered.
   -->
 
   <!-- Generate back-of-book index -->
@@ -32,30 +36,8 @@
       <!-- Collect all topicrefs with content -->
       <xsl:variable name="all-topicrefs" select="epub:content-topicrefs($map)"/>
 
-      <!-- Build chapter number lookup: map each topicref href to its chapter label -->
-      <xsl:variable name="chapter-labels" as="element()*">
-        <!-- Top-level chapters -->
-        <xsl:for-each select="$map/*[contains(@class, ' bookmap/chapter ') or contains(@class, ' map/topicref ')][not(contains(@class, ' bookmap/frontmatter ')) and not(contains(@class, ' bookmap/backmatter ')) and not(contains(@class, ' bookmap/appendices '))]">
-          <xsl:variable name="chapter-pos" select="position()"/>
-          <xsl:if test="@href">
-            <label file="{epub:get-topic-filename(.)}" num="{$chapter-pos}"/>
-          </xsl:if>
-          <!-- Sub-topics of this chapter inherit the chapter number -->
-          <xsl:for-each select=".//*[contains(@class, ' map/topicref ')][@href]">
-            <label file="{epub:get-topic-filename(.)}" num="{$chapter-pos}"/>
-          </xsl:for-each>
-        </xsl:for-each>
-        <!-- Appendices get letters -->
-        <xsl:for-each select="$map//*[contains(@class, ' bookmap/appendix ')][@href]">
-          <xsl:variable name="app-pos" select="position()"/>
-          <xsl:variable name="app-letter" select="codepoints-to-string(string-to-codepoints('A') + $app-pos - 1)"/>
-          <label file="{epub:get-topic-filename(.)}" num="{$app-letter}"/>
-          <!-- Sub-topics of this appendix -->
-          <xsl:for-each select=".//*[contains(@class, ' map/topicref ')][@href]">
-            <label file="{epub:get-topic-filename(.)}" num="{$app-letter}"/>
-          </xsl:for-each>
-        </xsl:for-each>
-      </xsl:variable>
+      <!-- Position of each topic in the reading order, used as its locator label -->
+      <xsl:variable name="chapter-labels" select="epub:index-chapter-labels($map)"/>
 
       <!-- Collect all top-level indexterms from all topics -->
       <xsl:variable name="index-entries" as="element()*">
@@ -66,7 +48,7 @@
           <!-- First topic, as in epub3-content.xsl (a <dita> file holds several) -->
           <xsl:variable name="topic" select="($topic-doc//*[contains(@class, ' topic/topic ') or self::topic or self::concept or self::task or self::reference])[1]"/>
           <xsl:variable name="topic-title" select="normalize-space(($topic/*[contains(@class, ' topic/title ') or self::title])[1])"/>
-          <!-- Look up chapter label for this topic -->
+          <!-- Look up the locator label of this topic (the first reference to a topic wins) -->
           <xsl:variable name="chapter-label" select="($chapter-labels[@file = $topic-filename]/@num, '')[1]"/>
 
           <!-- All indexterms in this document (for anchor position computation) -->
@@ -84,10 +66,6 @@
             <!-- Anchor position for this indexterm (matches epub3-content.xsl anchor generation) -->
             <xsl:variable name="anchor-pos" select="count($all-doc-indexterms[. &lt;&lt; current()]) + 1"/>
             <xsl:variable name="anchor-id" select="concat('ixa-', $topic-root-id, '-', $anchor-pos)"/>
-
-            <!-- Section position within topic for display text (e.g., chapter "6" section "2" = "6.2") -->
-            <xsl:variable name="containing-section" select="ancestor::*[self::section or contains(@class, ' topic/section ')][1]"/>
-            <xsl:variable name="section-pos" select="if ($containing-section) then string(count($containing-section/preceding-sibling::*[self::section or contains(@class, ' topic/section ')]) + 1) else '0'"/>
 
             <xsl:choose>
               <!-- Indexterm with sub-entries -->
@@ -107,8 +85,7 @@
                          topic-file="{$topic-filename}"
                          topic-title="{$topic-title}"
                          chapter-label="{$chapter-label}"
-                         anchor-id="{$sub-anchor-id}"
-                         section-pos="{$section-pos}">
+                         anchor-id="{$sub-anchor-id}">
                     <xsl:if test="$see-also">
                       <xsl:attribute name="primary-see-also" select="normalize-space($see-also)"/>
                     </xsl:if>
@@ -133,7 +110,6 @@
                          topic-title=""
                          chapter-label=""
                          anchor-id=""
-                         section-pos="0"
                          primary-see="{normalize-space($see)}"/>
                 </xsl:if>
                 <xsl:if test="$see-also and not($see)">
@@ -145,7 +121,6 @@
                          topic-title="{$topic-title}"
                          chapter-label="{$chapter-label}"
                          anchor-id="{$anchor-id}"
-                         section-pos="{$section-pos}"
                          primary-see-also="{normalize-space($see-also)}"/>
                 </xsl:if>
               </xsl:when>
@@ -159,8 +134,7 @@
                        topic-file="{if ($see) then '' else $topic-filename}"
                        topic-title="{if ($see) then '' else $topic-title}"
                        chapter-label="{if ($see) then '' else $chapter-label}"
-                       anchor-id="{if ($see) then '' else $anchor-id}"
-                       section-pos="{if ($see) then '0' else $section-pos}">
+                       anchor-id="{if ($see) then '' else $anchor-id}">
                   <xsl:if test="$see">
                     <xsl:attribute name="primary-see" select="normalize-space($see)"/>
                   </xsl:if>
@@ -206,124 +180,10 @@
                   <xsl:otherwise>Index</xsl:otherwise>
                 </xsl:choose>
               </h1>
-
-              <!-- Group by first letter of primary sort key -->
-              <xsl:for-each-group select="$index-entries" group-by="upper-case(substring(@primary-sort, 1, 1))">
-                <xsl:sort select="upper-case(substring(@primary-sort, 1, 1))"/>
-
-                <xsl:variable name="letter" select="upper-case(substring(@primary-sort, 1, 1))"/>
-
-                <section epub:type="index-group" id="index-{$letter}">
-                  <h2><xsl:value-of select="$letter"/></h2>
-                  <ul epub:type="index-entry-list">
-                    <!-- Group by primary term -->
-                    <xsl:for-each-group select="current-group()" group-by="@primary">
-                      <xsl:sort select="lower-case(current-group()[1]/@primary-sort)"/>
-
-                      <xsl:variable name="primary" select="@primary"/>
-                      <xsl:variable name="primary-entries" select="current-group()"/>
-                      <xsl:variable name="primary-see" select="($primary-entries[@primary-see != ''])[1]/@primary-see"/>
-                      <xsl:variable name="primary-see-also" select="($primary-entries[@primary-see-also != ''])[1]/@primary-see-also"/>
-                      <xsl:variable name="has-sub-entries" select="exists($primary-entries[@sub != ''])"/>
-                      <!-- Locators for the primary term itself (entries with no sub-term and a topic-file) -->
-                      <xsl:variable name="primary-locators" select="$primary-entries[@sub = '' and @topic-file != '']"/>
-
-                      <li epub:type="index-entry" id="idx-{generate-id(.)}">
-                        <span epub:type="index-term"><xsl:value-of select="$primary"/></span>
-
-                        <xsl:choose>
-                          <!-- See-only entry: no locators, just cross-reference -->
-                          <xsl:when test="$primary-see and not($has-sub-entries) and count($primary-locators) = 0">
-                            <xsl:text>. </xsl:text>
-                            <span epub:type="index-xref-preferred">
-                              <em>See</em>
-                              <xsl:text> </xsl:text>
-                              <xsl:value-of select="$primary-see"/>
-                            </span>
-                          </xsl:when>
-
-                          <xsl:otherwise>
-                            <!-- Primary-level locators with precise anchor links -->
-                            <xsl:if test="count($primary-locators) > 0">
-                              <xsl:text>, </xsl:text>
-                              <span epub:type="index-locator-list">
-                                <xsl:for-each-group select="$primary-locators" group-by="@anchor-id">
-                                  <xsl:sort select="epub:index-locator-sort-key(.)" data-type="text"/>
-                                  <xsl:if test="position() > 1">
-                                    <xsl:text>, </xsl:text>
-                                  </xsl:if>
-                                  <a epub:type="index-locator" href="{@topic-file}#{@anchor-id}"><xsl:value-of select="epub:index-locator-text(.)"/></a>
-                                </xsl:for-each-group>
-                              </span>
-                            </xsl:if>
-
-                            <!-- See also at primary level -->
-                            <xsl:if test="$primary-see-also">
-                              <xsl:text>. </xsl:text>
-                              <span epub:type="index-xref-related">
-                                <em>See also</em>
-                                <xsl:text> </xsl:text>
-                                <xsl:value-of select="$primary-see-also"/>
-                              </span>
-                            </xsl:if>
-
-                            <!-- Sub-entries -->
-                            <xsl:if test="$has-sub-entries">
-                              <ul epub:type="index-entry-list">
-                                <xsl:for-each-group select="$primary-entries[@sub != '']" group-by="@sub">
-                                  <xsl:sort select="lower-case(current-group()[1]/@sub-sort)"/>
-
-                                  <xsl:variable name="sub-entries" select="current-group()"/>
-                                  <xsl:variable name="sub-see" select="($sub-entries[@sub-see != ''])[1]/@sub-see"/>
-                                  <xsl:variable name="sub-see-also" select="($sub-entries[@sub-see-also != ''])[1]/@sub-see-also"/>
-                                  <xsl:variable name="sub-locators" select="$sub-entries[@topic-file != '']"/>
-
-                                  <li epub:type="index-entry">
-                                    <span epub:type="index-term"><xsl:value-of select="@sub"/></span>
-
-                                    <xsl:choose>
-                                      <xsl:when test="$sub-see and count($sub-locators) = 0">
-                                        <xsl:text>. </xsl:text>
-                                        <span epub:type="index-xref-preferred">
-                                          <em>See</em>
-                                          <xsl:text> </xsl:text>
-                                          <xsl:value-of select="$sub-see"/>
-                                        </span>
-                                      </xsl:when>
-                                      <xsl:otherwise>
-                                        <xsl:if test="count($sub-locators) > 0">
-                                          <xsl:text>, </xsl:text>
-                                          <span epub:type="index-locator-list">
-                                            <xsl:for-each-group select="$sub-locators" group-by="@anchor-id">
-                                              <xsl:sort select="epub:index-locator-sort-key(.)" data-type="text"/>
-                                              <xsl:if test="position() > 1">
-                                                <xsl:text>, </xsl:text>
-                                              </xsl:if>
-                                              <a epub:type="index-locator" href="{@topic-file}#{@anchor-id}"><xsl:value-of select="epub:index-locator-text(.)"/></a>
-                                            </xsl:for-each-group>
-                                          </span>
-                                        </xsl:if>
-                                        <xsl:if test="$sub-see-also">
-                                          <xsl:text>. </xsl:text>
-                                          <span epub:type="index-xref-related">
-                                            <em>See also</em>
-                                            <xsl:text> </xsl:text>
-                                            <xsl:value-of select="$sub-see-also"/>
-                                          </span>
-                                        </xsl:if>
-                                      </xsl:otherwise>
-                                    </xsl:choose>
-                                  </li>
-                                </xsl:for-each-group>
-                              </ul>
-                            </xsl:if>
-                          </xsl:otherwise>
-                        </xsl:choose>
-                      </li>
-                    </xsl:for-each-group>
-                  </ul>
-                </section>
-              </xsl:for-each-group>
+              <xsl:call-template name="index-groups">
+                <xsl:with-param name="entries" select="$index-entries"/>
+                <xsl:with-param name="lang" select="epub:get-language($map)"/>
+              </xsl:call-template>
             </body>
           </html>
         </xsl:result-document>
@@ -333,38 +193,227 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- Compute locator display text: chapter.section if available, chapter only otherwise -->
-  <xsl:function name="epub:index-locator-text" as="xs:string">
-    <xsl:param name="entry" as="element()"/>
-    <xsl:choose>
-      <xsl:when test="$entry/@chapter-label != '' and $entry/@section-pos != '0'">
-        <xsl:sequence select="concat($entry/@chapter-label, '.', $entry/@section-pos)"/>
-      </xsl:when>
-      <xsl:when test="$entry/@chapter-label != ''">
-        <xsl:sequence select="string($entry/@chapter-label)"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:sequence select="string($entry/@topic-title)"/>
-      </xsl:otherwise>
-    </xsl:choose>
+  <!-- The letter groups of the index, from the collected entries -->
+  <xsl:template name="index-groups">
+    <xsl:param name="entries" as="element()*"/>
+    <xsl:param name="lang" as="xs:string"/>
+
+    <!-- Entries sort by the collation of the language; groups compare letters at primary
+         strength, so that a letter and its accented forms share a group where the language
+         treats them as one letter (French É and E), and not where it does not (Swedish Å) -->
+    <xsl:variable name="collation" select="epub:index-collation($lang, false())"/>
+    <xsl:variable name="group-collation" select="epub:index-collation($lang, true())"/>
+
+    <xsl:for-each-group select="$entries" group-by="substring(@primary-sort, 1, 1)" collation="{$group-collation}">
+      <xsl:sort select="current-grouping-key()" collation="{$group-collation}"/>
+
+      <xsl:variable name="first-key" select="sort(current-group()/@primary-sort/string(), $collation)[1]"/>
+      <xsl:variable name="letter" select="epub:index-group-label(substring($first-key, 1, 1), $group-collation)"/>
+
+      <section xmlns="http://www.w3.org/1999/xhtml" epub:type="index-group" id="index-{$letter}">
+        <h2><xsl:value-of select="$letter"/></h2>
+        <ul epub:type="index-entry-list">
+          <!-- Group by primary term -->
+          <xsl:for-each-group select="current-group()" group-by="@primary">
+            <xsl:sort select="current-group()[1]/@primary-sort" collation="{$collation}"/>
+
+            <xsl:variable name="primary" select="@primary"/>
+            <xsl:variable name="primary-entries" select="current-group()"/>
+            <xsl:variable name="primary-see" select="($primary-entries[@primary-see != ''])[1]/@primary-see"/>
+            <xsl:variable name="primary-see-also" select="($primary-entries[@primary-see-also != ''])[1]/@primary-see-also"/>
+            <xsl:variable name="has-sub-entries" select="exists($primary-entries[@sub != ''])"/>
+            <!-- Locators for the primary term itself (entries with no sub-term and a topic-file) -->
+            <xsl:variable name="primary-locators" select="$primary-entries[@sub = '' and @topic-file != '']"/>
+
+            <li epub:type="index-entry" id="idx-{generate-id(.)}">
+              <span epub:type="index-term"><xsl:value-of select="$primary"/></span>
+
+              <xsl:choose>
+                <!-- See-only entry: no locators, just cross-reference -->
+                <xsl:when test="$primary-see and not($has-sub-entries) and count($primary-locators) = 0">
+                  <xsl:text>. </xsl:text>
+                  <span epub:type="index-xref-preferred">
+                    <em>See</em>
+                    <xsl:text> </xsl:text>
+                    <xsl:value-of select="$primary-see"/>
+                  </span>
+                </xsl:when>
+
+                <xsl:otherwise>
+                  <!-- Primary-level locators -->
+                  <xsl:if test="count($primary-locators) > 0">
+                    <xsl:text>, </xsl:text>
+                    <xsl:call-template name="index-locator-list">
+                      <xsl:with-param name="locators" select="$primary-locators"/>
+                    </xsl:call-template>
+                  </xsl:if>
+
+                  <!-- See also at primary level -->
+                  <xsl:if test="$primary-see-also">
+                    <xsl:text>. </xsl:text>
+                    <span epub:type="index-xref-related">
+                      <em>See also</em>
+                      <xsl:text> </xsl:text>
+                      <xsl:value-of select="$primary-see-also"/>
+                    </span>
+                  </xsl:if>
+
+                  <!-- Sub-entries -->
+                  <xsl:if test="$has-sub-entries">
+                    <ul epub:type="index-entry-list">
+                      <xsl:for-each-group select="$primary-entries[@sub != '']" group-by="@sub">
+                        <xsl:sort select="current-group()[1]/@sub-sort" collation="{$collation}"/>
+
+                        <xsl:variable name="sub-entries" select="current-group()"/>
+                        <xsl:variable name="sub-see" select="($sub-entries[@sub-see != ''])[1]/@sub-see"/>
+                        <xsl:variable name="sub-see-also" select="($sub-entries[@sub-see-also != ''])[1]/@sub-see-also"/>
+                        <xsl:variable name="sub-locators" select="$sub-entries[@topic-file != '']"/>
+
+                        <li epub:type="index-entry">
+                          <span epub:type="index-term"><xsl:value-of select="@sub"/></span>
+
+                          <xsl:choose>
+                            <xsl:when test="$sub-see and count($sub-locators) = 0">
+                              <xsl:text>. </xsl:text>
+                              <span epub:type="index-xref-preferred">
+                                <em>See</em>
+                                <xsl:text> </xsl:text>
+                                <xsl:value-of select="$sub-see"/>
+                              </span>
+                            </xsl:when>
+                            <xsl:otherwise>
+                              <xsl:if test="count($sub-locators) > 0">
+                                <xsl:text>, </xsl:text>
+                                <xsl:call-template name="index-locator-list">
+                                  <xsl:with-param name="locators" select="$sub-locators"/>
+                                </xsl:call-template>
+                              </xsl:if>
+                              <xsl:if test="$sub-see-also">
+                                <xsl:text>. </xsl:text>
+                                <span epub:type="index-xref-related">
+                                  <em>See also</em>
+                                  <xsl:text> </xsl:text>
+                                  <xsl:value-of select="$sub-see-also"/>
+                                </span>
+                              </xsl:if>
+                            </xsl:otherwise>
+                          </xsl:choose>
+                        </li>
+                      </xsl:for-each-group>
+                    </ul>
+                  </xsl:if>
+                </xsl:otherwise>
+              </xsl:choose>
+            </li>
+          </xsl:for-each-group>
+        </ul>
+      </section>
+    </xsl:for-each-group>
+  </xsl:template>
+
+  <!-- One locator per topic, in reading order, linked to the topic's first matching anchor -->
+  <xsl:template name="index-locator-list">
+    <xsl:param name="locators" as="element()*"/>
+    <span xmlns="http://www.w3.org/1999/xhtml" epub:type="index-locator-list">
+      <xsl:for-each-group select="$locators" group-by="@topic-file">
+        <xsl:sort select="epub:index-locator-sort-key(.)"/>
+        <xsl:if test="position() > 1">
+          <xsl:text>, </xsl:text>
+        </xsl:if>
+        <a epub:type="index-locator" href="{@topic-file}#{@anchor-id}"><xsl:value-of select="epub:index-locator-text(.)"/></a>
+      </xsl:for-each-group>
+    </span>
+  </xsl:template>
+
+  <!-- Collation URI for the index of a language; primary strength ignores accents and case -->
+  <xsl:function name="epub:index-collation" as="xs:string">
+    <xsl:param name="lang" as="xs:string"/>
+    <xsl:param name="primary" as="xs:boolean"/>
+    <xsl:sequence select="concat('http://www.w3.org/2013/collation/UCA?lang=',
+                                 if (normalize-space($lang) != '') then normalize-space($lang) else 'en',
+                                 if ($primary) then ';strength=primary' else '')"/>
   </xsl:function>
 
-  <!-- Compute sort key for locator ordering (chapter number then section) -->
+  <!-- Heading of a letter group: the initial, upper-cased, without its accent when the language
+       treats the accented letter as the base letter (É under E in French, Å kept in Swedish) -->
+  <xsl:function name="epub:index-group-label" as="xs:string">
+    <xsl:param name="initial" as="xs:string"/>
+    <xsl:param name="group-collation" as="xs:string"/>
+    <xsl:variable name="letter" select="upper-case($initial)"/>
+    <xsl:variable name="base" select="replace(normalize-unicode($letter, 'NFD'), '\p{Mn}', '')"/>
+    <xsl:sequence select="if ($base != '' and compare($base, $letter, $group-collation) = 0) then $base else $letter"/>
+  </xsl:function>
+
+  <!-- Locator label of each topic: its position in the reading order. Chapters are numbered
+       1, 2, 3; the topics under them 1.1, 1.2, 1.2.1; appendices A, B and A.1. Entries that lead
+       to no content (key definitions, subject definitions, resource-only references) take no
+       number, and groups without a title (such as the wrappers of referenced maps) are
+       transparent. -->
+  <xsl:function name="epub:index-chapter-labels" as="element()*">
+    <xsl:param name="map" as="element()"/>
+    <xsl:variable name="chapters" select="epub:index-numbered-children($map)
+      [not(contains(@class, ' bookmap/frontmatter ') or contains(@class, ' bookmap/backmatter ')
+           or contains(@class, ' bookmap/appendices ') or contains(@class, ' bookmap/appendix '))]"/>
+    <xsl:for-each select="$chapters">
+      <xsl:sequence select="epub:index-number-entry(., string(position()))"/>
+    </xsl:for-each>
+    <xsl:for-each select="$map//*[contains(@class, ' bookmap/appendix ')][epub:index-leads-to-content(.)]">
+      <xsl:sequence select="epub:index-number-entry(., codepoints-to-string(64 + position()))"/>
+    </xsl:for-each>
+  </xsl:function>
+
+  <!-- Labels of an entry and of the entries under it -->
+  <xsl:function name="epub:index-number-entry" as="element()*">
+    <xsl:param name="entry" as="element()"/>
+    <xsl:param name="number" as="xs:string"/>
+    <xsl:if test="epub:is-content-topicref($entry)">
+      <label file="{epub:get-topic-filename($entry)}" num="{$number}"/>
+    </xsl:if>
+    <xsl:for-each select="epub:index-numbered-children($entry)">
+      <xsl:sequence select="epub:index-number-entry(., concat($number, '.', position()))"/>
+    </xsl:for-each>
+  </xsl:function>
+
+  <!-- Child entries that take a number: those that lead to content, looking through untitled
+       groups and through bookmap parts, so that chapters are numbered across parts as in a book -->
+  <xsl:function name="epub:index-numbered-children" as="element()*">
+    <xsl:param name="parent" as="element()"/>
+    <xsl:for-each select="$parent/*[contains(@class, ' map/topicref ')][epub:index-leads-to-content(.)]">
+      <xsl:choose>
+        <xsl:when test="contains(@class, ' bookmap/part ')
+                        or (not(@href) and not(@navtitle or *[contains(@class, ' map/topicmeta ')]/*[contains(@class, ' topic/navtitle ')]))">
+          <xsl:sequence select="epub:index-numbered-children(.)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:sequence select="."/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:for-each>
+  </xsl:function>
+
+  <!-- Whether an entry is, or contains, a reference to content -->
+  <xsl:function name="epub:index-leads-to-content" as="xs:boolean">
+    <xsl:param name="entry" as="element()"/>
+    <xsl:sequence select="epub:is-content-topicref($entry)
+      or exists($entry//*[contains(@class, ' map/topicref ')][epub:is-content-topicref(.)])"/>
+  </xsl:function>
+
+  <!-- Locator display text: the topic's position label, or its title when it has none -->
+  <xsl:function name="epub:index-locator-text" as="xs:string">
+    <xsl:param name="entry" as="element()"/>
+    <xsl:sequence select="if ($entry/@chapter-label != '') then string($entry/@chapter-label)
+                          else string($entry/@topic-title)"/>
+  </xsl:function>
+
+  <!-- Sort key of a locator: each part of its label, numbers padded, appendices after chapters,
+       and topics without a label last -->
   <xsl:function name="epub:index-locator-sort-key" as="xs:string">
     <xsl:param name="entry" as="element()"/>
-    <xsl:variable name="ch" select="string($entry/@chapter-label)"/>
-    <xsl:variable name="sec" select="string($entry/@section-pos)"/>
-    <!-- Numeric chapters: 0-padded. Letter appendices: sort after all numeric chapters -->
-    <xsl:variable name="ch-sort" select="
-      if (matches($ch, '^\d+$')) then format-number(xs:integer($ch), '0000')
-      else if ($ch != '') then concat('9999-', $ch)
-      else '9999-ZZZ'
-    "/>
-    <xsl:variable name="sec-sort" select="
-      if ($sec != '' and $sec != '0') then format-number(xs:integer($sec), '0000')
-      else '0000'
-    "/>
-    <xsl:sequence select="concat($ch-sort, '-', $sec-sort)"/>
+    <xsl:variable name="label" select="string($entry/@chapter-label)"/>
+    <xsl:sequence select="if ($label = '') then concat('~', $entry/@topic-title)
+      else string-join(for $part in tokenize($label, '\.')
+                       return if (matches($part, '^\d+$')) then format-number(xs:integer($part), '00000')
+                              else concat('~', $part), '.')"/>
   </xsl:function>
 
   <!-- Extract display text from an indexterm (excluding child indexterm, index-see, index-see-also, index-sort-as) -->

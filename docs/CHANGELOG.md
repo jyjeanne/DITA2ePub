@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Index letters follow the language**: the index grouped entries by their first character in code-point
+  order, so French entries starting with "É" formed a group after "Z" instead of joining "E". Groups and
+  entries now use the collation of the publication's language (UCA): a letter and its accented forms share a
+  group where the language treats them as one letter (French, German), and stay apart where it does not
+  (Swedish "Å", after "Z")
+- **Index locators**: chapter numbers counted every top-level entry of the map, including subject
+  definitions and resource-only key definitions, so the first chapter of a map with a subject scheme was
+  numbered 13; and the topics under a heading shared their chapter's number, so two topics showed the same
+  locator. Locators now give each topic its position in the reading order ("1", "1.2", "A.1"), counting only
+  entries that lead to content, and an entry lists each topic once, linked to its first anchor
+- **Other transformations left alone**: `epub3.init` was attached to `depend.preprocess.post`, so it ran in
+  every DITA-OT transformation once the plugin was installed, and HTML5 or PDF outputs got empty
+  `META-INF`, `content`, `fonts`, `images` and `styles` folders. The `dita2epub3` target already runs it
+  before preprocessing, so the hook is removed
 - **Table of contents headings link to their first topic**: a heading without content of its own (a `topichead`)
   was written as a `<span>` above its nested list. EPUB 3.3 allows it, but calibre shows the entry as a link and
   reports that the destination does not exist. The heading now links to its first topic at every depth, as it
