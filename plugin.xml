@@ -201,10 +201,9 @@
   <!-- String resources for internationalization -->
   <!-- <feature extension="dita.xsl.messages" file="strings/strings.xml"/> -->
 
-  <!-- Integration with DITA-OT pipeline -->
-  <feature extension="depend.preprocess.post"
-           value="epub3.init"/>
-
+  <!-- Integration with DITA-OT pipeline. The dita2epub3 target runs epub3.init before
+       preprocessing; it is not hooked into depend.preprocess.post, which would run it in every
+       transformation (HTML5 and PDF outputs then get empty EPUB folders). -->
   <feature extension="dita.conductor.target.relative"
            file="build-epub3.xml"/>
 </plugin>
