@@ -33,7 +33,7 @@ metadata, from the same DITA sources as their other deliverables.
 - **Real-world DITA**: multi-folder, multi-map publications; the 234-topic DITA-OT user guide builds with no
   EPUBCheck error or warning
 - **Professional output**: cover pages, themes, embedded fonts, optimized images, typographic features
-- **Tested**: 47 JUnit tests, including end-to-end builds with DITA-OT, and 144 XSpec expectations on the XSLT modules
+- **Tested**: 48 JUnit tests, including end-to-end builds with DITA-OT, and 159 XSpec expectations on the XSLT modules
 - **Developer-friendly**: modular XSLT 3.0, Gradle build, GitHub Actions workflows
 
 ### What's New in v2.1.0?
@@ -288,8 +288,10 @@ The index generator supports:
 - `<index-see>` ("See") cross-references
 - `<index-see-also>` ("See also") cross-references
 - `<index-sort-as>` for custom sort ordering
-- Alphabetical grouping with chapter.section locators
-- Precise anchor links to the exact location in the content
+- Letter groups and entries sorted with the collation of the publication's language: in French, "élevage"
+  is filed under E; in Swedish, "Å" comes after "Z"
+- One locator per topic, labeled with the topic's position in the reading order ("3", "3.2", "A.1"), and
+  linked to the exact location of the entry in the content
 
 When set to `auto` (default), the index is generated automatically when a `<indexlist/>` element is present in the bookmap.
 
@@ -531,7 +533,7 @@ dita2epub/
 │   │       │   └── epub-fonts.css           # Font declarations
 │   │       └── fonts/          # Font directory (empty template)
 │   ├── test/
-│   │   ├── java/               # JUnit tests (8 classes)
+│   │   ├── java/               # JUnit tests (9 classes)
 │   │   ├── resources/
 │   │   │   ├── dita/               # Complete English bookmap (18 topics, 10 glossary entries)
 │   │   │   ├── dita-kdp/           # Amazon KDP commercial novel
@@ -568,8 +570,8 @@ dita2epub/
 
 ### Test Suite Overview
 
-- **47 JUnit tests** in 8 classes, including end-to-end builds with DITA-OT 4.4.1 that must pass EPUBCheck
-- **144 XSpec expectations** on the XSLT modules, run with Saxon-HE 12.9 as in DITA-OT 4.4.1
+- **48 JUnit tests** in 9 classes, including end-to-end builds with DITA-OT 4.4.1 that must pass EPUBCheck
+- **159 XSpec expectations** on the XSLT modules, run with Saxon-HE 12.9 as in DITA-OT 4.4.1
 - **4 test datasets**: complete English bookmap, Amazon KDP novel, a comprehensive feature map, and EPUB 3.3 edge cases
 - **0 EPUBCheck errors** on generated EPUBs
 
