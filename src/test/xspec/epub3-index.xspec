@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Back-of-book index built by epub3-index.xsl: the locator label of each topic (its position in
+  the reading order), and the letter groups, sorted with the collation of the publication's
+  language.
+-->
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:h="http://www.w3.org/1999/xhtml"
+               xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               stylesheet="epub3-modules.xsl" run-as="external">
+
+  <!-- ================================================================ -->
+  <!-- Locator labels                                                   -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="The locator labels of a map whose first entries lead to no content">
+    <x:context href="fixtures/index/numbering.ditamap"/>
+    <x:call function="epub:index-chapter-labels">
+      <x:param href="fixtures/index/numbering.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="number the chapters from 1, skipping subject and key definitions, and look through the untitled group"
+              test="deep-equal($x:result/@num/string(), ('1.1', '1.2', '2', '2.1')) and count($x:result) = 4"/>
+    <x:expect label="give each topic under a heading its own number"
+              test="count(distinct-values($x:result/@num)) = count($x:result)"/>
+    <x:expect label="give the resource-only topic no number"
+              test="not($x:result/@file = 'shared.xhtml')"/>
+  </x:scenario>
+
+  <x:scenario label="The locator labels of the fixture bookmap">
+    <x:context href="fixtures/book.ditamap"/>
+    <x:call function="epub:index-chapter-labels">
+      <x:param href="fixtures/book.ditamap" select="/*"/>
+    </x:call>
+    <x:expect label="number the chapters, their topics and the topics under a heading, and skip external and missing topics"
+              test="deep-equal($x:result/@num/string(), ('1', '1.1', '2', '3.1', '3.2', '3.3', '3.4', '3.5'))"/>
+  </x:scenario>
+
+  <x:scenario label="The locator sort key">
+    <x:call function="epub:index-locator-sort-key"/>
+    <x:scenario label="of chapter 10, section 2">
+      <x:call><x:param><entry chapter-label="10.2" topic-title="Ten"/></x:param></x:call>
+      <x:expect label="sorts after chapter 9" test="$x:result gt '00009'"/>
+    </x:scenario>
+    <x:scenario label="of an appendix">
+      <x:call><x:param><entry chapter-label="A.1" topic-title="Appendix"/></x:param></x:call>
+      <x:expect label="sorts after every chapter" test="$x:result gt '99999'"/>
+    </x:scenario>
+  </x:scenario>
+
+  <!-- ================================================================ -->
+  <!-- Letter groups                                                    -->
+  <!-- ================================================================ -->
+
+  <x:scenario label="The index of a French publication">
+    <x:call template="index-groups">
+      <x:param name="lang" select="'fr-FR'"/>
+      <x:param name="entries" select="entry">
+        <entry primary="zèbre" primary-sort="zèbre" sub="" sub-sort="" topic-file="c.xhtml" topic-title="C" chapter-label="2" anchor-id="ixa-c-1"/>
+        <entry primary="essaim" primary-sort="essaim" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1.1" anchor-id="ixa-a-1"/>
+        <entry primary="élevage de reines" primary-sort="élevage de reines" sub="" sub-sort="" topic-file="b.xhtml" topic-title="B" chapter-label="1.2" anchor-id="ixa-b-1"/>
+        <entry primary="abeille" primary-sort="abeille" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1.1" anchor-id="ixa-a-2"/>
+        <entry primary="écorce" primary-sort="écorce" sub="" sub-sort="" topic-file="c.xhtml" topic-title="C" chapter-label="2" anchor-id="ixa-c-2"/>
+        <entry primary="essaim" primary-sort="essaim" sub="" sub-sort="" topic-file="b.xhtml" topic-title="B" chapter-label="1.2" anchor-id="ixa-b-3"/>
+        <entry primary="essaim" primary-sort="essaim" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1.1" anchor-id="ixa-a-4"/>
+      </x:param>
+    </x:call>
+    <x:expect label="files the words that start with É under E, after A and before Z"
+              test="deep-equal($x:result/h:h2/string(), ('A', 'E', 'Z')) and count($x:result) = 3"/>
+    <x:expect label="sorts the E words with the French collation"
+              test="deep-equal($x:result[h:h2 = 'E']//h:span[@epub:type = 'index-term']/string(), ('écorce', 'élevage de reines', 'essaim'))"/>
+    <x:expect label="gives each topic one locator, linked to its first anchor, in reading order"
+              test="deep-equal($x:result//h:li[h:span = 'essaim']//h:a/string(), ('1.1', '1.2'))
+                    and deep-equal($x:result//h:li[h:span = 'essaim']//h:a/@href/string(), ('a.xhtml#ixa-a-1', 'b.xhtml#ixa-b-3'))"/>
+  </x:scenario>
+
+  <x:scenario label="The index of a Swedish publication">
+    <x:call template="index-groups">
+      <x:param name="lang" select="'sv-SE'"/>
+      <x:param name="entries" select="entry">
+        <entry primary="ärm" primary-sort="ärm" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1" anchor-id="ixa-a-1"/>
+        <entry primary="zebra" primary-sort="zebra" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1" anchor-id="ixa-a-2"/>
+        <entry primary="åsna" primary-sort="åsna" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1" anchor-id="ixa-a-3"/>
+        <entry primary="apa" primary-sort="apa" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1" anchor-id="ixa-a-4"/>
+      </x:param>
+    </x:call>
+    <x:expect label="keeps Å and Ä as letters of their own, after Z"
+              test="deep-equal($x:result/h:h2/string(), ('A', 'Z', 'Å', 'Ä'))"/>
+  </x:scenario>
+
+  <x:scenario label="The index of a German publication">
+    <x:call template="index-groups">
+      <x:param name="lang" select="'de-DE'"/>
+      <x:param name="entries" select="entry">
+        <entry primary="Ärzte" primary-sort="Ärzte" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1" anchor-id="ixa-a-1"/>
+        <entry primary="Apfel" primary-sort="Apfel" sub="" sub-sort="" topic-file="a.xhtml" topic-title="A" chapter-label="1" anchor-id="ixa-a-2"/>
+      </x:param>
+    </x:call>
+    <x:expect label="files Ä under A" test="$x:result/h:h2/string() = 'A' and count($x:result) = 1"/>
+    <x:expect label="sorts Apfel before Ärzte"
+              test="deep-equal($x:result//h:span[@epub:type = 'index-term']/string(), ('Apfel', 'Ärzte'))"/>
+  </x:scenario>
+
+  <x:scenario label="The heading of a letter group">
+    <x:call function="epub:index-group-label"/>
+    <x:scenario label="for É in French">
+      <x:call>
+        <x:param select="'é'"/>
+        <x:param select="'http://www.w3.org/2013/collation/UCA?lang=fr;strength=primary'"/>
+      </x:call>
+      <x:expect label="is E" select="'E'"/>
+    </x:scenario>
+    <x:scenario label="for å in Swedish">
+      <x:call>
+        <x:param select="'å'"/>
+        <x:param select="'http://www.w3.org/2013/collation/UCA?lang=sv;strength=primary'"/>
+      </x:call>
+      <x:expect label="stays Å" select="'Å'"/>
+    </x:scenario>
+  </x:scenario>
+</x:description>
